@@ -49,7 +49,7 @@ export async function loadQaplaGames() {
  * Get the ranking of the given event
  * @param {string} eventId Event identifier
  * @returns {Array} Array of users object with fields
- * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- Any user
+ * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- For user
  */
 export async function getEvetRanking(eventId) {
     /**
