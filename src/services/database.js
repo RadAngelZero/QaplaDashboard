@@ -2,6 +2,7 @@ import { database } from './firebase';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const gamesRef = database.ref('/GamesResources');
+const eventsParticipantsRef = database.ref('/EventParticipants');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -42,4 +43,28 @@ export function deleteEvent(eventId, onFinished) {
 
 export async function loadQaplaGames() {
     return (await gamesRef.once('value')).val();
+}
+
+/**
+ * Get the ranking of the given event
+ * @param {string} eventId Event identifier
+ * @returns {Array} Array of users object with fields
+ * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- Any user
+ */
+export async function getEvetRanking(eventId) {
+    /**
+     * Get only participants with at least one match played
+     */
+    const rankedUsersObject = await eventsParticipantsRef.child(eventId).orderByChild('matchesPlayed').startAt(1).once('value');
+
+    /**
+     * Sort the users based on their points and winRate
+     */
+    return Object.keys(rankedUsersObject.val()).map((uid) => {
+        const rankedUser = rankedUsersObject.val()[uid];
+        rankedUser.winRate = rankedUser.victories / rankedUser.matchesPlayed;
+
+        return rankedUser;
+    })
+    .sort((a, b) => (b.priceQaploins + b.winRate) - (a.priceQaploins + a.winRate));
 }
