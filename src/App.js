@@ -14,13 +14,18 @@ import EventsList from './components/EventsList/EventsList';
 import EventDetails from './components/EventDetails/EventDetails';
 import CreateEvent from './components/CreateEvent/CreateEvent';
 
-import { loadEventsOrderByDate, loadQaplaGames } from './services/database';
+import { loadEventsOrderByDate, loadQaplaGames, loadQaplaPlatforms } from './services/database';
 
 function App() {
     const [events, setEvents] = useState();
     const [games, setGames] = useState({});
+    const [platforms, setPlatforms] = useState({});
 
     useEffect(() => {
+
+        /**
+         * Load and save all the events on the state
+         */
         async function loadEventsData() {
             const eventsData = await loadEventsOrderByDate();
             let eventObject = {};
@@ -28,17 +33,29 @@ function App() {
                 eventObject[event.key] = event.val();
             });
 
-            console.log(eventObject);
             setEvents(eventObject);
         }
 
+        /**
+         * Load and save all the games on the state
+         */
         async function loadGamesResources() {
             setGames(await loadQaplaGames());
         }
 
+        /**
+         * Load and save all the platforms on the state
+         */
+        async function loadPlatformsResources() {
+            setPlatforms(await loadQaplaPlatforms());
+        }
+
         loadEventsData();
         loadGamesResources();
+        loadPlatformsResources();
     }, []);
+
+    const eventsLoaded = events ? events : {};
 
     return (
         <Router>
@@ -54,17 +71,18 @@ function App() {
             </AppBar>
                 <Switch>
                     <Route exact path='/'>
-                        <EventsList events={events ? events : {}} />
+                        <EventsList events={eventsLoaded} />
                     </Route>
                     <Route exact path='/event/details/:eventId'>
                         <EventDetails
-                            events={events ? events : {}}
-                            games={games} />
+                            events={eventsLoaded}
+                            games={games}
+                            platforms={platforms} />
                     </Route>
                     <Route exact path='/event/create'>
                         <CreateEvent
-                            events={events ? events : {}}
-                            games={games} />
+                            games={games}
+                            platforms={platforms} />
                     </Route>
                 </Switch>
         </Router>

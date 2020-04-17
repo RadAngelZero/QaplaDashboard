@@ -2,6 +2,7 @@ import { database } from './firebase';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const gamesRef = database.ref('/GamesResources');
+const PlatformsRef = database.ref('/PlatformsResources');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -18,14 +19,14 @@ export async function loadEventsOrderByDate() {
 export function createEvent(eventData, onFinished) {
     const eventKey = eventsRef.push().key;
     eventData.idLogro = eventKey;
-    eventsRef.child(eventKey).update(eventData, onFinished);
+    eventsRef.child(eventKey).update(eventData, (error) => onFinished(error, eventKey));
 }
 
 /**
- * Update the given event
+ * Update an event with eventId
  * @param {string} eventId Event identifier
  * @param {object} eventData Data of the event to update
- * @param {function} onFinished Callback called when the event is created
+ * @param {function} onFinished Callback called when the event is updated
  */
 export function updateEvent(eventId, eventData, onFinished) {
     eventsRef.child(eventId).update(eventData, onFinished);
@@ -40,6 +41,18 @@ export function deleteEvent(eventId, onFinished) {
     eventsRef.child(eventId).remove(onFinished);
 }
 
+/**
+ * Load all the games ordered by platform from GamesResources
+ * database node
+ */
 export async function loadQaplaGames() {
     return (await gamesRef.once('value')).val();
+}
+
+/**
+ * Load all the platforms from PlatformsResources
+ * database node
+ */
+export async function loadQaplaPlatforms() {
+    return (await PlatformsRef.once('value')).val();
 }

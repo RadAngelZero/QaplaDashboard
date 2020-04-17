@@ -12,9 +12,7 @@ const QaplaSelect = ({ id, children, value, label, onChange, disabled = false })
             native
             variant='outlined'
             label={label}
-            inputProps={{
-                id
-            }}
+            inputProps={{ id }}
             disabled={disabled}
             value={value}
             onChange={({ target }) => onChange(target.value)}>
