@@ -9,6 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import './App.css';
 
 import EventsList from './components/EventsList/EventsList';
 import EventDetails from './components/EventDetails/EventDetails';
@@ -61,30 +62,30 @@ function App() {
         <Router>
             <AppBar position='static'>
                 <Toolbar>
-                    <Typography variant='h6' style={{ flexGrow: 1 }}>
+                    <Typography variant='h6' className='Nav-Title'>
                         Qapla Dashboard
                     </Typography>
-                    <Link to='/event/create' style={{ color: '#FFF' }}>
+                    <Link to='/event/create' className='white'>
                         <Button color='inherit'>Crear evento</Button>
                     </Link>
                 </Toolbar>
             </AppBar>
-                <Switch>
-                    <Route exact path='/'>
-                        <EventsList events={eventsLoaded} />
-                    </Route>
-                    <Route exact path='/event/details/:eventId'>
-                        <EventDetails
-                            events={eventsLoaded}
-                            games={games}
-                            platforms={platforms} />
-                    </Route>
-                    <Route exact path='/event/create'>
-                        <CreateEvent
-                            games={games}
-                            platforms={platforms} />
-                    </Route>
-                </Switch>
+            <Switch>
+                <Route exact path='/'>
+                    <EventsList events={eventsLoaded} />
+                </Route>
+                <Route exact path='/event/details/:eventId'>
+                    <EventDetails
+                        events={eventsLoaded}
+                        games={games}
+                        platforms={platforms} />
+                </Route>
+                <Route exact path='/event/create'>
+                    <CreateEvent
+                        games={games}
+                        platforms={platforms} />
+                </Route>
+            </Switch>
         </Router>
     );
 }

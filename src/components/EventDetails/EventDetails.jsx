@@ -10,7 +10,6 @@ import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { deleteEvent, updateEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
-import { createEventInvitationDeepLink } from '../../services/links';
 
 const EventDetails = ({ events, games, platforms }) => {
     const { eventId } = useParams();
@@ -56,8 +55,9 @@ const EventDetails = ({ events, games, platforms }) => {
 
         /**
          * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
-         * we need it, for example if the month is february we are going to get 2, but we need 02, to ensure
-         * the length of the dates strings are always the same
+         * we need it, for example if the day is 2, we need 02, to ensure the length of the dates strings
+         * are always the same
+         * TODO: Refactor, send this to utils.js
          */
         const UTCDay = selectedDate.getUTCDate() < 10 ? `0${selectedDate.getUTCDate()}` : selectedDate.getUTCDate();
         const UTCMonth = selectedDate.getUTCMonth() + 1 < 10 ? `0${selectedDate.getUTCMonth() + 1}` : selectedDate.getUTCMonth() + 1;
@@ -282,6 +282,10 @@ const EventDetails = ({ events, games, platforms }) => {
                     Agregar premio
                 </Button>
                 <div className={styles.MarginTop16}>
+                    {/**
+                     * MarginRight16 use !important css because without it the margin
+                     * is not applied to this button
+                     */}
                     <Button
                         variant='contained'
                         color='secondary'

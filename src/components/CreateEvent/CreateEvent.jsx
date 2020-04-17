@@ -33,8 +33,9 @@ const CreateEvent = ({ games, platforms }) => {
 
         /**
          * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
-         * we need it, for example if the month is february we are going to get 2, but we need 02, to ensure
-         * the length of the dates strings are always the same
+         * we need it, for example if the day is 2, we need 02, to ensure the length of the dates strings
+         * are always the same
+         * TODO: Refactor, send this to utils.js
          */
         const UTCDay = selectedDate.getUTCDate() < 10 ? `0${selectedDate.getUTCDate()}` : selectedDate.getUTCDate();
         const UTCMonth = selectedDate.getUTCMonth() + 1 < 10 ? `0${selectedDate.getUTCMonth() + 1}` : selectedDate.getUTCMonth() + 1;
@@ -63,9 +64,13 @@ const CreateEvent = ({ games, platforms }) => {
             },
             async (error, key) => {
                 if (error) {
-                    console.log(error)
+                    console.error(error)
                 } else {
                     const links = {};
+
+                    /**
+                     * We create one link for every language we support
+                     */
                     for (let i = 0; i < Object.keys(Languages).length; i++) {
                         const language = Object.keys(Languages)[i];
                         links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], photoUrl);

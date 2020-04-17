@@ -23,7 +23,8 @@ export async function createEventInvitationDeepLink(eventId, title, description,
 					  "androidPackageName": ANDROID_PACKAGE_NAME
 					},
 					"iosInfo": {
-					  "iosBundleId": IOS_BUNDLE_ID
+					  "iosBundleId": IOS_BUNDLE_ID,
+					  "iosAppStoreId": APPSTORE_ID
 					},
 					"socialMetaTagInfo": {
 						"socialTitle": title,
