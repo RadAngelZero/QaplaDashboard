@@ -51,20 +51,29 @@ export async function loadQaplaGames() {
  * @returns {Array} Array of users object with fields
  * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- For user
  */
-export async function getEvetRanking(eventId) {
+export async function getEventRanking(eventId) {
     /**
      * Get only participants with at least one match played
      */
     const rankedUsersObject = await eventsParticipantsRef.child(eventId).orderByChild('matchesPlayed').startAt(1).once('value');
 
-    /**
-     * Sort the users based on their points and winRate
-     */
-    return Object.keys(rankedUsersObject.val()).map((uid) => {
-        const rankedUser = rankedUsersObject.val()[uid];
-        rankedUser.winRate = rankedUser.victories / rankedUser.matchesPlayed;
+    if (rankedUsersObject.val()) {
+        /**
+         * Sort the users based on their points and winRate
+         */
+        return Object.keys(rankedUsersObject.val()).map((uid) => {
+            const rankedUser = rankedUsersObject.val()[uid];
+            rankedUser.winRate = rankedUser.victories / rankedUser.matchesPlayed;
 
-        return rankedUser;
-    })
-    .sort((a, b) => (b.priceQaploins + b.winRate) - (a.priceQaploins + a.winRate));
+            return rankedUser;
+        })
+
+        /**
+         * This sort can lead to bugs in the future, check the cloud function onEventStatusChange
+         * for a reference
+         */
+        .sort((a, b) => (b.priceQaploins + b.winRate) - (a.priceQaploins + a.winRate));
+    }
+
+    return [];
 }

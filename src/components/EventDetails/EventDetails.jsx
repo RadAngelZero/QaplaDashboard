@@ -8,7 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, getEvetRanking } from '../../services/database';
+import { deleteEvent, updateEvent, getEventRanking } from '../../services/database';
 
 const EventDetails = ({ events, games }) => {
     const { eventId } = useParams();
@@ -120,7 +120,7 @@ const EventDetails = ({ events, games }) => {
     }
 
     const showRanking = async () => {
-        (await getEvetRanking(eventId)).forEach((user, index) => {
+        (await getEventRanking(eventId)).forEach((user, index) => {
             console.log(`${index + 1}° ${user.userName}`);
         });
     }
