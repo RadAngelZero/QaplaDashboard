@@ -7,30 +7,42 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { createEvent } from '../../services/database';
+import { createEvent, updateEvent } from '../../services/database';
+import Languages from '../../utilities/Languages';
+import { createEventInvitationDeepLink } from '../../services/links';
 
-const CreateEvent = ({ games }) => {
+const CreateEvent = ({ games, platforms }) => {
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
     const [hour, setHour] = useState();
     const [photoUrl, setPhotoUrl] = useState('');
     const [discordLink, setDiscordLink] = useState('');
-    const [platform, setPlatform] = useState('switch_white');
-    const [game, setGame] = useState('xRocket');
+    const [platform, setPlatform] = useState('');
+    const [game, setGame] = useState('');
     const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState();
+    const [eventLinks, setEventLinks] = useState([]);
 
-    const saveEventOnDatabase = () => {
+    /**
+     * Format the dates and save the event on the database
+     */
+    const saveEventOnDatabase = async () => {
         const [year, month, day] = date.split('-');
         const [hours, minutes] = hour.split(':');
         const selectedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+
+        /**
+         * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
+         * we need it, for example if the day is 2, we need 02, to ensure the length of the dates strings
+         * are always the same
+         * TODO: Refactor, send this to utils.js
+         */
         const UTCDay = selectedDate.getUTCDate() < 10 ? `0${selectedDate.getUTCDate()}` : selectedDate.getUTCDate();
         const UTCMonth = selectedDate.getUTCMonth() + 1 < 10 ? `0${selectedDate.getUTCMonth() + 1}` : selectedDate.getUTCMonth() + 1;
         const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
         const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
-        createEvent(
-            {
+        createEvent({
                 title: titles,
                 titulo: titles['es'], // <- Temporary field, remove it later
                 dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
@@ -50,28 +62,75 @@ const CreateEvent = ({ games }) => {
                 descriptions,
                 description: descriptions['es'] // <- Temporary field, remove it later
             },
-            (error) => console.log(error ? error : 'Succesful update')
+            async (error, key) => {
+                if (error) {
+                    console.error(error)
+                } else {
+                    const links = {};
+
+                    /**
+                     * We create one link for every language we support
+                     */
+                    for (let i = 0; i < Object.keys(Languages).length; i++) {
+                        const language = Object.keys(Languages)[i];
+                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], photoUrl);
+                    }
+
+                    setEventLinks(links);
+                    updateEvent(key, { eventLinks: links });
+                }
+            }
         );
     }
 
+    /**
+     * Update the titles variable state based on the language to update
+     * @param {string} language Language code (example es, en)
+     * @param {string} value Value of the title
+     */
     const setTitleByLanguage = (language, value) => {
         setTitle({ ...titles, [language]: value });
     }
 
+    /**
+     * Update the descriptions variable state based on the language to update
+     * @param {string} language Language code (example es, en)
+     * @param {string} value Value of the description
+     */
     const setDescriptionByLanguage = (language, value) => {
         setDescription({ ...descriptions, [language]: value });
     }
 
+    /**
+     * Update the value for a event prize
+     * @param {string} key Key of the prize to update (1, 2, 3, etc.)
+     * @param {string} value Qoins to add as prize for the key (place)
+     */
     const setPrizeByKey = (key, value) => {
         setPrizes({ ...prizes, [key]: parseInt(value) });
     }
 
+    /**
+     * Update the key of a prize, useful to change the places who win the value
+     * For example: the second place win 300 Qoins, but now that must be
+     * the prize for the third place, this function change the 2 (previousKey)
+     * for the 3 (newKey) with the same value (300 Qoins)
+     * @param {string} previousKey Key (places) used before (1, 2, 3, etc.)
+     * @param {string} newKey New key (place) (1, 2, 5-10, etc. )
+     * @param {string} value Qoins to add as prize on the event
+     */
     const setPrizeRange = (previousKey, newKey, value) => {
         const prizesCopy = {...prizes};
         delete prizesCopy[previousKey];
         setPrizes({ ...prizesCopy, [newKey]: parseInt(value) });
     }
 
+    /**
+     * Add a prize to the object of prizes, by default with the last place + 1
+     * for example if we have prizes for: 1, 2, 3, 4-10 and we call this function
+     * will create a new element on the object with the key 11, for the 11 place
+     * on the event
+     */
     const addPrize = () => {
         if (prizes && Object.keys(prizes).length > 0) {
             const prizesCopy = {...prizes};
@@ -98,26 +157,18 @@ const CreateEvent = ({ games }) => {
         }
     }
 
+    /**
+     * Remove a prize to the object of prizes
+     * for example if we have prizes for: 1, 2, 3, 4-10 and we call this function
+     * with the 4-10 key, then the prizes object will only contains now the 1, 2, 3 places
+     * on the event
+     * @param {string} key Place to remove from the event prize object
+     */
     const removePrize = (key) => {
         const prizesCopy = {...prizes};
         delete prizesCopy[key];
         setPrizes(prizesCopy);
     }
-
-    const languages = {
-        en: {
-            names: {
-                en: 'English',
-                es: 'Spanish'
-            }
-        },
-        es: {
-            names: {
-                en: 'Ingles',
-                es: 'Español'
-            }
-        }
-    };
 
     return (
         <Container maxWidth='lg' className={styles.Container}>
@@ -125,9 +176,9 @@ const CreateEvent = ({ games }) => {
                 Evento: {titles['es']}
             </Typography>
             <form className={styles.MarginTop16}>
-                {Object.keys(languages['es'].names).map((availableLanguage) => (
+                {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
-                        label={`Titulo ${languages['es'].names[availableLanguage]}`}
+                        label={`Titulo ${Languages['es'].names[availableLanguage]}`}
                         variant='outlined'
                         value={titles[availableLanguage]}
                         onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
@@ -162,10 +213,9 @@ const CreateEvent = ({ games }) => {
                     value={platform}
                     onChange={setPlatform}>
                     <option aria-label='None' value='' />
-                    <option value='switch_white'>Nintendo switch</option>
-                    <option value='ps4_white'>PlayStation</option>
-                    <option value='xbox_white'>Xbox</option>
-                    <option value='pc_white'>PC/Movil</option>
+                    {Object.keys(platforms).map((platformKey) => (
+                        <option value={platformKey}>{platforms[platformKey].name}</option>
+                    ))}
                 </QaplaSelect>
                 <QaplaSelect
                     label='Juego'
@@ -181,13 +231,21 @@ const CreateEvent = ({ games }) => {
                     ))}
                     <option value='Torneo'>Torneo (evento sin retas)</option>
                 </QaplaSelect>
-                {Object.keys(languages['es'].names).map((availableLanguage) => (
+                {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
-                        label={`Descripción ${languages['es'].names[availableLanguage]}`}
+                        label={`Descripción ${Languages['es'].names[availableLanguage]}`}
                         multiline
                         rows={4}
                         value={descriptions[availableLanguage]}
                         onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
+                ))}
+                <Typography>
+                    Links
+                </Typography>
+                {eventLinks && Object.keys(eventLinks).map((linkKey) => (
+                    <p>
+                        {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
+                    </p>
                 ))}
                 <Typography>
                     Premios

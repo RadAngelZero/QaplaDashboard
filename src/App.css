@@ -1,6 +1,7 @@
-.Events-card-container {
-    margin-left: 8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.Nav-Title {
+    flex-grow: 1;
+}
+
+.White-Color {
+    color: '#FFF';
 }
