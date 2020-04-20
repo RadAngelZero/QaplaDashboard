@@ -8,7 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent } from '../../services/database';
+import { deleteEvent, updateEvent, getEventRanking } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const EventDetails = ({ events, games, platforms }) => {
@@ -177,6 +177,12 @@ const EventDetails = ({ events, games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    const showRanking = async () => {
+        (await getEventRanking(eventId)).forEach((user, index) => {
+            console.log(`${index + 1}° UserName: ${user.userName} GamerTag: ${user.gamerTag} uid: ${user.uid}`);
+        });
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography variant='h3' component='h3'>
@@ -185,6 +191,7 @@ const EventDetails = ({ events, games, platforms }) => {
             <form className={styles.MarginTop16}>
                 {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
+                        key={`title-${availableLanguage}`}
                         label={`Titulo ${Languages['es'].names[availableLanguage]}`}
                         variant='outlined'
                         value={titles[availableLanguage]}
@@ -221,7 +228,9 @@ const EventDetails = ({ events, games, platforms }) => {
                     onChange={setPlatform}>
                     <option aria-label='None' value='' />
                     {Object.keys(platforms).map((platformKey) => (
-                        <option value={platformKey}>{platforms[platformKey].name}</option>
+                        <option
+                            key={platformKey}
+                            value={platformKey}>{platforms[platformKey].name}</option>
                     ))}
                 </QaplaSelect>
                 <QaplaSelect
@@ -240,6 +249,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 </QaplaSelect>
                 {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
+                        key={`Description-${availableLanguage}`}
                         label={`Descripción ${Languages['es'].names[availableLanguage]}`}
                         multiline
                         rows={4}
@@ -255,7 +265,7 @@ const EventDetails = ({ events, games, platforms }) => {
                     Premios
                 </Typography>
                 {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
-                    <>
+                    <React.Fragment key={`Prize-${prizeKey}`}>
                         <QaplaTextField
                             label='Posición'
                             mini
@@ -272,7 +282,7 @@ const EventDetails = ({ events, games, platforms }) => {
                                 className={styles.RemovePrize} />
                         </Button>
                         <br/>
-                    </>
+                    </React.Fragment>
                 ))}
                 <Button
                     variant='text'
@@ -296,8 +306,14 @@ const EventDetails = ({ events, games, platforms }) => {
                     <Button
                         variant='contained'
                         color='primary'
+                        className={styles.MarginRight16}
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
+                    </Button>
+                    <Button
+                        variant='contained'
+                        onClick={showRanking}>
+                        Ver resultados al momento
                     </Button>
                 </div>
             </form>
