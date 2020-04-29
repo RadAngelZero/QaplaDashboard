@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -24,6 +24,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [descriptions, setDescriptions] = useState(events[eventId].descriptions ? events[eventId].descriptions : { 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState(events[eventId].prices ? events[eventId].prices : {});
     const [eventLinks, setEventLinks] = useState(events[eventId].eventLinks ? events[eventId].eventLinks : []);
+    const history = useHistory();
 
     useEffect(() => {
         if (events[eventId]) {
@@ -183,6 +184,8 @@ const EventDetails = ({ events, games, platforms }) => {
         });
     }
 
+    const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`)
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography variant='h3' component='h3'>
@@ -310,11 +313,19 @@ const EventDetails = ({ events, games, platforms }) => {
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
                     </Button>
-                    <Button
+                    {games && games [platform] && games[platform][game] ?
+                        <Button
                         variant='contained'
                         onClick={showRanking}>
-                        Ver resultados al momento
-                    </Button>
+                            Ver resultados al momento
+                        </Button>
+                        :
+                        <Button
+                        variant='contained'
+                        onClick={goToEventPrizes}>
+                            Repartir premios
+                        </Button>
+                    }
                 </div>
             </form>
         </Container>
