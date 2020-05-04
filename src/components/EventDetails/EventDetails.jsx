@@ -45,10 +45,16 @@ const EventDetails = ({ events, games, platforms }) => {
         }
     }, [events]);
 
+    /**
+     * Delete the event from the database
+     */
     const removeEventFromDatabase = () => {
         deleteEvent(eventId, (error) => console.log(error ? error : 'Succesful delete'));
     }
 
+    /**
+     * Update the event on the database
+     */
     const updateEventOnDatabase = () => {
         const [year, month, day] = date.split('-');
         const [hours, minutes] = hour.split(':');
@@ -178,13 +184,19 @@ const EventDetails = ({ events, games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    /**
+     * Log the current ranking of the event
+     */
     const showRanking = async () => {
         (await getEventRanking(eventId)).forEach((user, index) => {
             console.log(`${index + 1}° UserName: ${user.userName} GamerTag: ${user.gamerTag} uid: ${user.uid}`);
         });
     }
 
-    const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`)
+    /**
+     * Send the user to the assign prizes page
+     */
+    const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
 
     return (
         <Container maxWidth='lg' className={styles.Container}>

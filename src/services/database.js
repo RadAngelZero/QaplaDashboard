@@ -110,10 +110,10 @@ export async function loadQaplaPlatforms() {
 /**
  * Add any amount of Qoins to multiple users in one transaction
  *
- * @param {array} transactionArray Array of objects with the following shape [ {uid, qoins, ...}, {uid, qoins, ...} ]
- * @example addDifferentQuantityOfQoinsToMultipleUsers([ {uid: 'dkd', qoins: 50, userName: 'd'}, {uid: 'nufidb', qoins: 100, userName: 'g'} ])
+ * @param {array} transactionArray Array of objects with the following structure [ {uid, qoins, ...}, {uid, qoins, ...} ]
+ * @example distributeQoinsToMultipleUsers([ {uid: 'dkd', qoins: 50, userName: 'd'}, {uid: 'nufidb', qoins: 100, userName: 'g'} ])
  */
-export async function addDifferentQuantityOfQoinsToMultipleUsers(transactionArray) {
+export async function distributeQoinsToMultipleUsers(transactionArray) {
     try {
         let updateUsers = {};
 
@@ -133,6 +133,7 @@ export async function addDifferentQuantityOfQoinsToMultipleUsers(transactionArra
 /**
  * Return the current amount of qaploins of specific user
  * @param {string} uid User identifier of firebase node
+ * @returns {object} Qoins of the given user
  */
 async function getUserQoins(uid) {
     try {
@@ -143,7 +144,7 @@ async function getUserQoins(uid) {
 }
 
 /**
- * Create a transaction record on database
+ * Create a transaction record of a database (qoins) operation
  * @param {string} uid Unique id of the user
  * @param {number} quantity Number of qaploins
  * @param {string} concept concept of the transaction
@@ -152,11 +153,11 @@ async function recordQaploinTransaction(uid, quantity, concept) {
     var today = new Date();
 
     // Fill date information
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var yyyy = today.getFullYear();
-    var hour = today.getHours();
-    var minutes = today.getMinutes();
+    var dd = String(today.getUTCDate()).padStart(2, '0');
+    var mm = String(today.getUTCMonth() + 1).padStart(2, '0');
+    var yyyy = today.getUTCFullYear();
+    var hour = today.getUTCHours();
+    var minutes = today.getUTCMinutes();
     // Build today date with previous filled information
     today = mm + '/' + dd + '/' + yyyy + ' ' + hour + ':' + minutes;
     const transaction = {
@@ -167,7 +168,7 @@ async function recordQaploinTransaction(uid, quantity, concept) {
     };
 
     try {
-        return transactionsRef.child(uid).push(transaction);
+        transactionsRef.child(uid).push(transaction);
     } catch (error) {
         console.error('[Record Qaploin Transaction]', error);
     }

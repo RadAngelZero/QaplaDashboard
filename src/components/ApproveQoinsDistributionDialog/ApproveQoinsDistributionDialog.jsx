@@ -15,17 +15,17 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import styles from './ApproveQoinsDistributionDialog.module.css';
-import { addDifferentQuantityOfQoinsToMultipleUsers } from '../../services/database';
+import { distributeQoinsToMultipleUsers } from '../../services/database';
 
 const ApproveQoinsDistributionDialog = ({ open, onClose, users }) => {
     const distributeQoins = () => {
         const usersToAssignQoins = users
         // Filter users with no qoins (or negative qoins)
         .filter((user) => user.Qoins && user.Qoins > 0)
-        // Create a valid object for the addDifferentQuantityOfQoinsToMultipleUsers function
+        // Create a valid object for the distributeQoinsToMultipleUsers function
         .map((user) => ({ uid: user.Uid, qoins: user.Qoins }));
 
-        addDifferentQuantityOfQoinsToMultipleUsers(usersToAssignQoins);
+        distributeQoinsToMultipleUsers(usersToAssignQoins);
 
         onClose();
     }
