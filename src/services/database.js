@@ -4,6 +4,8 @@ const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
+const usersRef = database.ref('/Users');
+const transactionsRef = database.ref('/Transactions');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -85,9 +87,89 @@ export async function getEventRanking(eventId) {
 }
 
 /**
+ * Get the ranking of the given event
+ * @param {string} eventId Event identifier
+ * @returns {Object} Object of users object with fields
+ * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- For every user
+ */
+export async function getEventParticipants(eventId) {
+    /**
+     * Get only participants with at least one match played
+     */
+    return (await eventsParticipantsRef.child(eventId).once('value')).val();
+}
+
+/**
  * Load all the platforms from PlatformsResources
  * database node
  */
 export async function loadQaplaPlatforms() {
     return (await PlatformsRef.once('value')).val();
+}
+
+/**
+ * Add any amount of Qoins to multiple users in one transaction
+ *
+ * @param {array} transactionArray Array of objects with the following structure [ {uid, qoins, ...}, {uid, qoins, ...} ]
+ * @example distributeQoinsToMultipleUsers([ {uid: 'dkd', qoins: 50, userName: 'd'}, {uid: 'nufidb', qoins: 100, userName: 'g'} ])
+ */
+export async function distributeQoinsToMultipleUsers(transactionArray) {
+    try {
+        let updateUsers = {};
+
+        for (let i = 0; i < transactionArray.length; i++) {
+            const userQoins = await getUserQoins(transactionArray[i].uid);
+            updateUsers[`/${transactionArray[i].uid}/credits`] = userQoins.val() + transactionArray[i].qoins;
+            recordQaploinTransaction(transactionArray[i].uid, transactionArray[i].qoins, 'Event Prize');
+        }
+
+        usersRef.update(updateUsers);
+    }
+    catch(error) {
+        console.error('[Add Different Quantity Of Qoins To Multiple Users]', error);
+    }
+}
+
+/**
+ * Return the current amount of qaploins of specific user
+ * @param {string} uid User identifier of firebase node
+ * @returns {object} Qoins of the given user
+ */
+async function getUserQoins(uid) {
+    try {
+        return await usersRef.child(uid).child('credits').once('value');
+    } catch(error) {
+        console.error('[Get User Qaploins]', error);
+    }
+}
+
+/**
+ * Create a transaction record of a database (qoins) operation
+ * @param {string} uid Unique id of the user
+ * @param {number} quantity Number of qaploins
+ * @param {string} concept concept of the transaction
+ */
+async function recordQaploinTransaction(uid, quantity, concept) {
+    var today = new Date();
+
+    // Fill date information
+    var dd = String(today.getUTCDate()).padStart(2, '0');
+    var mm = String(today.getUTCMonth() + 1).padStart(2, '0');
+    var yyyy = today.getUTCFullYear();
+    var hour = today.getUTCHours();
+    var minutes = today.getUTCMinutes();
+    // Build today date with previous filled information
+    today = mm + '/' + dd + '/' + yyyy + ' ' + hour + ':' + minutes;
+    const transaction = {
+        date: today,
+        concept,
+        quantity,
+        isServer: true
+    };
+
+    try {
+        transactionsRef.child(uid).push(transaction);
+    } catch (error) {
+        console.error('[Record Qaploin Transaction]', error);
+    }
 }
