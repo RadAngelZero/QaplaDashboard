@@ -91,3 +91,7 @@ export async function getEventRanking(eventId) {
 export async function loadQaplaPlatforms() {
     return (await PlatformsRef.once('value')).val();
 }
+
+export function closeEvent(eventId) {
+    eventsRef.child(eventId).update({ active: false });
+}
