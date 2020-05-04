@@ -199,6 +199,9 @@ const EventDetails = ({ events, games, platforms }) => {
      */
     const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
 
+    /**
+     * Save the EventId on the user clipboard
+     */
     const copyEventId = () => {
         const field = document.getElementById('EventIdTextField');
         field.value = eventId;
