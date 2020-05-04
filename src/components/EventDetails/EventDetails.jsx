@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -198,12 +199,27 @@ const EventDetails = ({ events, games, platforms }) => {
      */
     const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
 
+    const copyEventId = () => {
+        const field = document.getElementById('EventIdTextField');
+        field.value = eventId;
+        field.select();
+        document.execCommand('copy');
+        alert('Texto copiado');
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography variant='h3' component='h3'>
                 Evento: {titles['es']}
             </Typography>
             <form className={styles.MarginTop16}>
+                <QaplaTextField
+                    label='ID del evento'
+                    value={eventId}
+                    inputAdornment={<FileCopyIcon />}
+                    onChange={() => {}}
+                    onPressAdornment={copyEventId}
+                    id='EventIdTextField' />
                 {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
                         key={`title-${availableLanguage}`}
