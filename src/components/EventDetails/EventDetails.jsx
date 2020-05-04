@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -24,6 +24,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [descriptions, setDescriptions] = useState(events[eventId].descriptions ? events[eventId].descriptions : { 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState(events[eventId].prices ? events[eventId].prices : {});
     const [eventLinks, setEventLinks] = useState(events[eventId].eventLinks ? events[eventId].eventLinks : []);
+    const history = useHistory();
 
     useEffect(() => {
         if (events[eventId]) {
@@ -45,10 +46,16 @@ const EventDetails = ({ events, games, platforms }) => {
         }
     }, [events]);
 
+    /**
+     * Delete the event from the database
+     */
     const removeEventFromDatabase = () => {
         deleteEvent(eventId, (error) => console.log(error ? error : 'Succesful delete'));
     }
 
+    /**
+     * Update the event on the database
+     */
     const updateEventOnDatabase = () => {
         const [year, month, day] = date.split('-');
         const [hours, minutes] = hour.split(':');
@@ -178,15 +185,25 @@ const EventDetails = ({ events, games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    /**
+     * Log the current ranking of the event
+     */
     const showRanking = async () => {
         (await getEventRanking(eventId)).forEach((user, index) => {
             console.log(`${index + 1}° UserName: ${user.userName} GamerTag: ${user.gamerTag} uid: ${user.uid}`);
         });
     }
 
+    /**
+     * Finish an event of matches
+     */
     const finishEvent = () => {
         closeEvent(eventId);
     }
+    /**
+     * Send the user to the assign prizes page
+     */
+    const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
 
     return (
         <Container maxWidth='lg' className={styles.Container}>
@@ -315,7 +332,7 @@ const EventDetails = ({ events, games, platforms }) => {
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
                     </Button>
-                    {games && games[platform] && games[platform][game] &&
+                    {games && games[platform] && games[platform][game] ?
                         <>
                             <Button
                             variant='contained'
@@ -330,6 +347,12 @@ const EventDetails = ({ events, games, platforms }) => {
                                 Finalizar evento
                             </Button>
                         </>
+                        :
+                        <Button
+                        variant='contained'
+                        onClick={goToEventPrizes}>
+                            Repartir premios
+                        </Button>
                     }
                 </div>
             </form>

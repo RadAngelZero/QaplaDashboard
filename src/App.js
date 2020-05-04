@@ -16,6 +16,7 @@ import EventDetails from './components/EventDetails/EventDetails';
 import CreateEvent from './components/CreateEvent/CreateEvent';
 
 import { loadEventsOrderByDate, loadQaplaGames, loadQaplaPlatforms } from './services/database';
+import AssignPrizesForEvent from './components/AssignPrizesForEvent/AssignPrizesForEvent';
 
 function App() {
     const [events, setEvents] = useState();
@@ -73,6 +74,9 @@ function App() {
             <Switch>
                 <Route exact path='/'>
                     <EventsList events={eventsLoaded} />
+                </Route>
+                <Route exact path='/event/prizes/:eventId'>
+                    <AssignPrizesForEvent />
                 </Route>
                 <Route exact path='/event/details/:eventId'>
                     <EventDetails
