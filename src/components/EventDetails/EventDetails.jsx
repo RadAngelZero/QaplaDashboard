@@ -185,8 +185,7 @@ const EventDetails = ({ events, games, platforms }) => {
     }
 
     const finishEvent = () => {
-        console.log(date);
-        // closeEvent(eventId);
+        closeEvent(eventId);
     }
 
     return (
