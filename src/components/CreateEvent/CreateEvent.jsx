@@ -20,7 +20,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
     const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
-    const [prizes, setPrizes] = useState();
+    const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
 
     /**
