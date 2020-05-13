@@ -369,7 +369,7 @@ const EventDetails = ({ events, games, platforms }) => {
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
                     </Button>
-                    {active ?
+                    {active &&
                         <>
                             {games && games[platform] && games[platform][game] ?
                                 <>
@@ -389,18 +389,18 @@ const EventDetails = ({ events, games, platforms }) => {
                                 :
                                 <Button
                                     variant='contained'
+                                    className={styles.MarginRight16}
                                     onClick={goToEventPrizes}>
                                     Repartir premios
                                 </Button>
                             }
                         </>
-                        :
-                        <Button
-                            variant='contained'
-                            onClick={goToJoinRequests}>
-                            Ver solicitudes
-                        </Button>
                     }
+                    <Button
+                        variant='contained'
+                        onClick={goToJoinRequests}>
+                        Ver solicitudes
+                    </Button>
                 </div>
             </form>
         </Container>
