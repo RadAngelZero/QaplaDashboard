@@ -108,6 +108,15 @@ export async function loadQaplaPlatforms() {
 }
 
 /**
+ * Close the given event, must be an event of matches, this action
+ * trigger the distribuite qoins cloud function
+ * @param {string} eventId Event identifier on database
+ */
+export function closeEvent(eventId) {
+    eventsRef.child(eventId).update({ active: false });
+}
+
+/**
  * Add any amount of Qoins to multiple users in one transaction
  *
  * @param {array} transactionArray Array of objects with the following structure [ {uid, qoins, ...}, {uid, qoins, ...} ]
