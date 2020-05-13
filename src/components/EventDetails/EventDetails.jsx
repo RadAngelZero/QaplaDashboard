@@ -8,7 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, getEventRanking } from '../../services/database';
+import { deleteEvent, updateEvent, getEventRanking, closeEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const EventDetails = ({ events, games, platforms }) => {
@@ -28,7 +28,7 @@ const EventDetails = ({ events, games, platforms }) => {
 
     useEffect(() => {
         if (events[eventId]) {
-            const { title, tiempoLimite, hour, photoUrl, discordLink, platform, descriptions, prices, eventLinks } = events[eventId];
+            const { title, tiempoLimite, hour, photoUrl, discordLink, platform, tipoLogro, descriptions, prices, eventLinks } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
                 const [day, month, year] = tiempoLimite.split('-');
@@ -38,6 +38,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setPhotoUrl(photoUrl ? photoUrl : '');
             setDiscordLink(discordLink ? discordLink : '');
             setPlatform(platform ? platform : '');
+            setGame(tipoLogro ? tipoLogro : '');
             setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
             setPrizes(prices ? prices : {});
             setEventLinks(eventLinks ? eventLinks : []);
@@ -194,6 +195,12 @@ const EventDetails = ({ events, games, platforms }) => {
     }
 
     /**
+     * Finish an event of matches
+     */
+    const finishEvent = () => {
+        closeEvent(eventId);
+    }
+    /**
      * Send the user to the assign prizes page
      */
     const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
@@ -325,12 +332,21 @@ const EventDetails = ({ events, games, platforms }) => {
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
                     </Button>
-                    {games && games [platform] && games[platform][game] ?
-                        <Button
-                        variant='contained'
-                        onClick={showRanking}>
-                            Ver resultados al momento
-                        </Button>
+                    {games && games[platform] && games[platform][game] ?
+                        <>
+                            <Button
+                            variant='contained'
+                            className={styles.MarginRight16}
+                            onClick={showRanking}>
+                                Ver resultados al momento
+                            </Button>
+                            <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={finishEvent}>
+                                Finalizar evento
+                            </Button>
+                        </>
                         :
                         <Button
                         variant='contained'
