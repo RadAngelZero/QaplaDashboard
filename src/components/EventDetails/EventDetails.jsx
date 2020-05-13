@@ -394,7 +394,7 @@ const EventDetails = ({ events, games, platforms }) => {
                                 </Button>
                             }
                         </>
-                    :
+                        :
                         <Button
                             variant='contained'
                             onClick={goToJoinRequests}>
