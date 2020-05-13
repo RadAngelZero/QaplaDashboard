@@ -3,6 +3,8 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -22,6 +24,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
+    const [isMatchesEvent, setIsMatchesEvent] = useState(true);
 
     /**
      * Format the dates and save the event on the database
@@ -52,7 +55,7 @@ const CreateEvent = ({ games, platforms }) => {
                 photoUrl,
                 discordLink,
                 platform,
-                prices: prizes,
+                prices: isMatchesEvent ? prizes : null,
                 game,
                 /**
                  * At this point we use the tipoLogro field for the game, in the future we must change it
@@ -247,36 +250,43 @@ const CreateEvent = ({ games, platforms }) => {
                         {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
                     </p>
                 ))}
-                <Typography>
-                    Premios
-                </Typography>
-                {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
+                <FormControlLabel
+                    control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
+                    label='Evento de retas' />
+                {isMatchesEvent &&
                     <>
-                        <QaplaTextField
-                            label='Posición'
-                            mini
-                            value={prizeKey}
-                            onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
-                        <QaplaTextField
-                            type='number'
-                            label='Premio'
-                            value={prizes[prizeKey]}
-                            onChange={(value) => setPrizeByKey(prizeKey, value)} />
-                        <Button onClick={() => removePrize(prizeKey)}>
-                            <CancelIcon
-                                color='secondary'
-                                className={styles.RemovePrize} />
+                        <Typography>
+                            Premios
+                        </Typography>
+                        {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
+                            <>
+                                <QaplaTextField
+                                    label='Posición'
+                                    mini
+                                    value={prizeKey}
+                                    onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
+                                <QaplaTextField
+                                    type='number'
+                                    label='Premio'
+                                    value={prizes[prizeKey]}
+                                    onChange={(value) => setPrizeByKey(prizeKey, value)} />
+                                <Button onClick={() => removePrize(prizeKey)}>
+                                    <CancelIcon
+                                        color='secondary'
+                                        className={styles.RemovePrize} />
+                                </Button>
+                                <br/>
+                            </>
+                        ))}
+                        <Button
+                            variant='text'
+                            color='primary'
+                            className={styles.MarginRight16}
+                            onClick={addPrize}>
+                            Agregar premio
                         </Button>
-                        <br/>
                     </>
-                ))}
-                <Button
-                    variant='text'
-                    color='primary'
-                    className={styles.MarginRight16}
-                    onClick={addPrize}>
-                    Agregar premio
-                </Button>
+                }
                 <div className={styles.MarginTop16}>
                     <Button
                         variant='contained'
