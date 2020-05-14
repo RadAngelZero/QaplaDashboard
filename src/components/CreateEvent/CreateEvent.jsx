@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
 
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -17,7 +18,6 @@ const CreateEvent = ({ games, platforms }) => {
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
     const [hour, setHour] = useState();
-    const [photoUrl, setPhotoUrl] = useState('');
     const [discordLink, setDiscordLink] = useState('');
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
@@ -25,6 +25,14 @@ const CreateEvent = ({ games, platforms }) => {
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
     const [isMatchesEvent, setIsMatchesEvent] = useState(true);
+    const [streamerName, setStreamerName] = useState('');
+    const [streamerChannelLink, setStreamerChannelLink] = useState('');
+    const [streamerPhoto, setStreamerPhoto] = useState('');
+    const [streamingPlatformImage, setStreamingPlatformImage] = useState('');
+    const [backgroundImage, setBackgroundImage] = useState('');
+    const [descriptionsTitle, setDescriptionsTitle] = useState({});
+    const [appStringPrizes, setAppStringPrizes] = useState({});
+    const [instructionsToParticipate, setInstructionsToParticipate] = useState({});
 
     /**
      * Format the dates and save the event on the database
@@ -52,7 +60,7 @@ const CreateEvent = ({ games, platforms }) => {
                 hourUTC: `${UTCHour}:${UTCMinutes}`,
                 tiempoLimite: `${day}-${month}-${year}`,
                 hour,
-                photoUrl,
+                backgroundImage,
                 discordLink,
                 platform,
                 prices: isMatchesEvent ? prizes : null,
@@ -63,7 +71,15 @@ const CreateEvent = ({ games, platforms }) => {
                  */
                 tipoLogro: game,
                 descriptions,
-                description: descriptions['es'] // <- Temporary field, remove it later
+                description: descriptions['es'], // <- Temporary field, remove it later
+                streamingPlatformImage,
+                streamerName,
+                streamerChannelLink,
+                streamerPhoto,
+                backgroundImage,
+                descriptionsTitle,
+                appStringPrizes,
+                instructionsToParticipate
             },
             async (error, key) => {
                 if (error) {
@@ -76,7 +92,7 @@ const CreateEvent = ({ games, platforms }) => {
                      */
                     for (let i = 0; i < Object.keys(Languages).length; i++) {
                         const language = Object.keys(Languages)[i];
-                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], photoUrl);
+                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
                     }
 
                     setEventLinks(links);
@@ -105,12 +121,113 @@ const CreateEvent = ({ games, platforms }) => {
     }
 
     /**
+     * 
+     * @param {string} language Language code (example es, en)
+     * @param {string} value Value of the description
+     */
+    const setDescriptionsTitleByLanguage = (language, value) => {
+        setDescriptionsTitle({ ...descriptionsTitle, [language]: value });
+    }
+
+    /**
      * Update the value for a event prize
      * @param {string} key Key of the prize to update (1, 2, 3, etc.)
      * @param {string} value Qoins to add as prize for the key (place)
      */
     const setPrizeByKey = (key, value) => {
         setPrizes({ ...prizes, [key]: parseInt(value) });
+    }
+
+    /**
+     * Update a field of the string prize object of the given language
+     * @param {string} language Language of the prize description
+     * @param {number} index Index of the prize
+     * @param {string} value Value to save
+     * @param {string} field Field to save (one of title or prize)
+     */
+    const updateAppStringPrizeByLanguage = (language, index, value, field) => {
+        const appStringPrizesCopy = appStringPrizes;
+        appStringPrizesCopy[language][index][field] = value;
+
+        setAppStringPrizes({...appStringPrizesCopy});
+    }
+
+    /**
+     * Add a prize to the appStringPrizes on the given language
+     * @param {string} language Language of the prize description
+     */
+    const addAppStringPrize = (language) => {
+        const appStringPrizesCopy = appStringPrizes;
+
+        if (!appStringPrizesCopy[language]) {
+            appStringPrizesCopy[language] = [];
+        }
+        appStringPrizesCopy[language].push({ title: '', prize: '' });
+
+        setAppStringPrizes({...appStringPrizesCopy});
+    }
+
+    /**
+     * Remove a prize to the appStringPrizes on the given language
+     * @param {string} language Language of the prize description
+     * @param {number} index Index of the prize
+     */
+    const removeAppStringPrize = (language, index) => {
+        const appStringPrizesCopy = appStringPrizes;
+
+        appStringPrizesCopy[language].splice(index, 1);
+
+        if (appStringPrizesCopy[language].length === 0) {
+            delete appStringPrizesCopy[language];
+        }
+
+        setAppStringPrizes({...appStringPrizesCopy});
+    }
+
+    /**
+     * Update a field of the instructions to participate object of the given language
+     * @param {string} language Language of the prize description
+     * @param {number} index Index of the prize
+     * @param {string} value Value to save
+     * @param {string} field Field to save (one of title or prize)
+     */
+    const updateInstructionsToParticipateByLanguage = (language, index, value) => {
+        const instructionsToParticipateCopy = instructionsToParticipate;
+        instructionsToParticipateCopy[language][index] = value;
+
+        setInstructionsToParticipate({...instructionsToParticipateCopy});
+    }
+
+    /**
+     * Add a instruction to the instructionsToParticipate on the given language
+     * @param {string} language Language of the prize description
+     */
+    const addInstructionToParticipate = (language) => {
+        const instructionsToParticipateCopy = instructionsToParticipate;
+
+        if (!instructionsToParticipateCopy[language]) {
+            instructionsToParticipateCopy[language] = [];
+        }
+        instructionsToParticipateCopy[language].push('');
+
+        setInstructionsToParticipate({...instructionsToParticipateCopy});
+    }
+
+    /**
+     * Remove a prize to the instructionsToParticipate on the given language
+     * @param {string} language Language of the prize description
+     * @param {number} index Index of the prize
+     */
+    const removeInstructionsToParticipate = (language, index) => {
+        const instructionsToParticipateCopy = instructionsToParticipate;
+
+        instructionsToParticipateCopy[language].splice(index, 1);
+
+        if (instructionsToParticipateCopy[language].length === 0) {
+            delete instructionsToParticipateCopy[language];
+        }
+
+        setInstructionsToParticipate({...instructionsToParticipateCopy});
     }
 
     /**
@@ -173,21 +290,33 @@ const CreateEvent = ({ games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    console.log(instructionsToParticipate);
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography variant='h3' component='h3'>
                 Evento: {titles['es']}
             </Typography>
             <form className={styles.MarginTop16}>
+                <Typography>
+                    Información del evento
+                </Typography>
+                <br/>
                 {Object.keys(Languages['es'].names).map((availableLanguage) => (
                     <QaplaTextField
+                        key={`Title-${availableLanguage}`}
                         label={`Titulo ${Languages['es'].names[availableLanguage]}`}
                         variant='outlined'
                         value={titles[availableLanguage]}
                         onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
                 ))}
                 <QaplaTextField
-                    label='Fecha (CST)'
+                    label='Nombre del streamer'
+                    variant='outlined'
+                    value={streamerName}
+                    onChange={setStreamerName} />
+                <QaplaTextField
+                    label='Fecha (CST) Año-mes-día'
                     variant='outlined'
                     type='date'
                     value={date}
@@ -198,55 +327,176 @@ const CreateEvent = ({ games, platforms }) => {
                     type='time'
                     value={hour}
                     onChange={setHour} />
+                {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                    <React.Fragment key={`Description-${availableLanguage}`}>
+                        <QaplaTextField
+                            label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
+                            value={descriptionsTitle[availableLanguage]}
+                            onChange={(value) => setDescriptionsTitleByLanguage(availableLanguage, value)} />
+                        <QaplaTextField
+                            label={`Descripción ${Languages['es'].names[availableLanguage]}`}
+                            multiline
+                            rows={4}
+                            value={descriptions[availableLanguage]}
+                            onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
+                    </React.Fragment>
+                ))}
+                <br/>
+                <Grid container>
+                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                        <Grid item md={6} key={`PrizeList-${availableLanguage}`}>
+                            <Typography>
+                                Premios en {Languages['es'].names[availableLanguage]}
+                            </Typography>
+                            {appStringPrizes && appStringPrizes[availableLanguage] && appStringPrizes[availableLanguage].map((prize, index) => (
+                                <React.Fragment key={`AppStringPrize-${availableLanguage}-${index}`}>
+                                    <p>
+                                        {index + 1}
+                                    </p>
+                                    <QaplaTextField
+                                        label='Posición'
+                                        mini
+                                        placeholder='Ganador, Cuarto'
+                                        value={prize.title}
+                                        onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'title')} />
+                                    <QaplaTextField
+                                        type='text'
+                                        label='Premio'
+                                        value={prize.prize}
+                                        onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'prize')} />
+                                    <Button onClick={() => removeAppStringPrize(availableLanguage, index)}>
+                                        <CancelIcon
+                                            color='secondary'
+                                            className={styles.RemovePrize} />
+                                    </Button>
+                                    <br/>
+                                </React.Fragment>
+                            ))}
+                            <br/>
+                            <Button
+                                variant='text'
+                                color='primary'
+                                className={styles.MarginRight16}
+                                onClick={() => addAppStringPrize(availableLanguage)}>
+                                Agregar premio
+                            </Button>
+                            <br/>
+                        </Grid>
+                    ))}
+                </Grid>
+                <br/>
+                <Grid container>
+                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                        <Grid item md={6} key={`InstructionsToParticipate-${availableLanguage}`}>
+                            <Typography>
+                                Instrucciones para participar en {Languages['es'].names[availableLanguage]}
+                            </Typography>
+                            {instructionsToParticipate && instructionsToParticipate[availableLanguage] && instructionsToParticipate[availableLanguage].map((instruction, index) => (
+                                <React.Fragment key={`Instructions-${availableLanguage}-${index}`}>
+                                    <p>
+                                        {index + 1}
+                                    </p>
+                                    <QaplaTextField
+                                        label={`Instrucciones para participar en ${Languages['es'].names[availableLanguage]}`}
+                                        multiline
+                                        rows={4}
+                                        value={instruction}
+                                        onChange={(value) => updateInstructionsToParticipateByLanguage(availableLanguage, index, value)} />
+                                    <Button onClick={() => removeInstructionsToParticipate(availableLanguage, index)}>
+                                        <CancelIcon
+                                            color='secondary'
+                                            className={styles.RemovePrize} />
+                                    </Button>
+                                </React.Fragment>
+                            ))}
+                            <br/>
+                            <Button
+                                variant='text'
+                                color='primary'
+                                className={styles.MarginRight16}
+                                onClick={() => addInstructionToParticipate(availableLanguage)}>
+                                Agregar Instrucción
+                            </Button>
+                            <br/>
+                        </Grid>
+                    ))}
+                </Grid>
+                <br/>
+                <Typography>
+                    Fotos y links del evento
+                </Typography>
+                <br/>
                 <QaplaTextField
-                    label='Foto (url)'
+                    label='Foto de fondo'
                     variant='outlined'
                     type='text'
-                    value={photoUrl}
-                    onChange={setPhotoUrl} />
+                    value={backgroundImage}
+                    onChange={setBackgroundImage} />
+                <QaplaTextField
+                    label='Foto de streamer'
+                    variant='outlined'
+                    type='text'
+                    value={streamerPhoto}
+                    onChange={setStreamerPhoto} />
+                <QaplaTextField
+                    label='Foto de la plataforma'
+                    variant='outlined'
+                    type='text'
+                    value={streamingPlatformImage}
+                    onChange={setStreamingPlatformImage} />
                 <QaplaTextField
                     label='Discord Link'
                     variant='outlined'
                     type='text'
                     value={discordLink}
                     onChange={setDiscordLink} />
-                <QaplaSelect
-                    label='Plataforma'
-                    id='Platform'
-                    value={platform}
-                    onChange={setPlatform}>
-                    <option aria-label='None' value='' />
-                    {Object.keys(platforms).map((platformKey) => (
-                        <option value={platformKey}>{platforms[platformKey].name}</option>
-                    ))}
-                </QaplaSelect>
-                <QaplaSelect
-                    label='Juego'
-                    id='Game'
-                    disabled={!games[platform]}
-                    value={game}
-                    onChange={setGame}>
-                    <option aria-label='None' value='' />
-                    {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
-                        <option key={gameKey} value={gameKey}>
-                            {games[platform][gameKey].name}
-                        </option>
-                    ))}
-                    <option value='Torneo'>Torneo (evento sin retas)</option>
-                </QaplaSelect>
-                {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                    <QaplaTextField
-                        label={`Descripción ${Languages['es'].names[availableLanguage]}`}
-                        multiline
-                        rows={4}
-                        value={descriptions[availableLanguage]}
-                        onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
-                ))}
+                <QaplaTextField
+                    label='Streamer Channel Link'
+                    variant='outlined'
+                    type='text'
+                    value={streamerChannelLink}
+                    onChange={setStreamerChannelLink} />
+                <Typography>
+                    Juego y plataforma
+                </Typography>
+                <br/>
+                <Grid container>
+                    <Grid item md={6}>
+                        <QaplaSelect
+                            label='Plataforma'
+                            id='Platform'
+                            value={platform}
+                            onChange={setPlatform}>
+                            <option aria-label='None' value='' />
+                            {Object.keys(platforms).map((platformKey) => (
+                                <option
+                                    key={platformKey}
+                                    value={platformKey}>{platforms[platformKey].name}</option>
+                            ))}
+                        </QaplaSelect>
+                    </Grid>
+                    <Grid item md={6}>
+                        <QaplaSelect
+                            label='Juego'
+                            id='Game'
+                            disabled={!games[platform]}
+                            value={game}
+                            onChange={setGame}>
+                            <option aria-label='None' value='' />
+                            {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
+                                <option key={gameKey} value={gameKey}>
+                                    {games[platform][gameKey].name}
+                                </option>
+                            ))}
+                            <option value='Torneo'>Torneo (evento sin retas)</option>
+                        </QaplaSelect>
+                    </Grid>
+                </Grid>
                 <Typography>
                     Links
                 </Typography>
                 {eventLinks && Object.keys(eventLinks).map((linkKey) => (
-                    <p>
+                    <p key={linkKey}>
                         {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
                     </p>
                 ))}
@@ -258,8 +508,9 @@ const CreateEvent = ({ games, platforms }) => {
                         <Typography>
                             Premios
                         </Typography>
-                        {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
-                            <>
+                        <br/>
+                        {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
+                            <React.Fragment key={`PrizeNumberKey-${index}`}>
                                 <QaplaTextField
                                     label='Posición'
                                     mini
@@ -276,7 +527,7 @@ const CreateEvent = ({ games, platforms }) => {
                                         className={styles.RemovePrize} />
                                 </Button>
                                 <br/>
-                            </>
+                            </React.Fragment>
                         ))}
                         <Button
                             variant='text'
