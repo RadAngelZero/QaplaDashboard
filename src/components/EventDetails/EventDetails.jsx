@@ -33,6 +33,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [descriptionsTitle, setDescriptionsTitle] = useState(events[eventId].descriptionsTitle ? events[eventId].descriptionsTitle : {});
     const [appStringPrizes, setAppStringPrizes] = useState(events[eventId].appStringPrizes ? events[eventId].appStringPrizes : {});
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(events[eventId].instructionsToParticipate ? events[eventId].instructionsToParticipate : {});
+    const [streamerGameData, setStreamerGameData] = useState(events[eventId].streamerGameData ? events[eventId].streamerGameData : {});
     const history = useHistory();
 
     useEffect(() => {
@@ -54,7 +55,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
-                instructionsToParticipate
+                instructionsToParticipate,
+                streamerGameData
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -76,6 +78,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
             setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
             setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
+            setStreamerGameData(streamerGameData ? streamerGameData : {});
         }
     }, [events]);
 
@@ -133,7 +136,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
-                instructionsToParticipate
+                instructionsToParticipate,
+                streamerGameData
             },
             (error) => console.log(error ? error : 'Succesful update')
         );
@@ -369,26 +373,53 @@ const EventDetails = ({ events, games, platforms }) => {
                     Información del evento
                 </Typography>
                 <br/>
-                <QaplaTextField
-                    label='ID del evento'
-                    value={eventId}
-                    inputAdornment={<FileCopyIcon />}
-                    onChange={() => {}}
-                    onPressAdornment={copyEventId}
-                    id='EventIdTextField' />
-                {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                    <QaplaTextField
-                        key={`title-${availableLanguage}`}
-                        label={`Titulo ${Languages['es'].names[availableLanguage]}`}
-                        variant='outlined'
-                        value={titles[availableLanguage]}
-                        onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
-                ))}
-                <QaplaTextField
-                    label='Nombre del streamer'
-                    variant='outlined'
-                    value={streamerName}
-                    onChange={setStreamerName} />
+                <Grid container>
+                    <Grid item md={3}>
+                        <QaplaTextField
+                            label='ID del evento'
+                            value={eventId}
+                            inputAdornment={<FileCopyIcon />}
+                            onChange={() => {}}
+                            onPressAdornment={copyEventId}
+                            id='EventIdTextField' />
+                    </Grid>
+                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                        <Grid item md={3} key={`title-${availableLanguage}`}>
+                            <QaplaTextField
+                                label={`Titulo ${Languages['es'].names[availableLanguage]}`}
+                                variant='outlined'
+                                value={titles[availableLanguage]}
+                                onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
+                        </Grid>
+                    ))}
+                    <Grid item md={3}>
+                        <QaplaTextField
+                            label='Nombre del streamer'
+                            variant='outlined'
+                            value={streamerName}
+                            onChange={setStreamerName} />
+                    </Grid>
+                    <br/>
+                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                        <Grid item md={6} key={`Description-${availableLanguage}`}>
+                            <QaplaTextField
+                                label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
+                                value={descriptionsTitle[availableLanguage]}
+                                onChange={(value) => setDescriptionsTitleByLanguage(availableLanguage, value)} />
+                            <br/>
+                            <QaplaTextField
+                                label={`Descripción ${Languages['es'].names[availableLanguage]}`}
+                                multiline
+                                rows={4}
+                                value={descriptions[availableLanguage]}
+                                onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
+                        </Grid>
+                    ))}
+                </Grid>
+                <Typography>
+                    Fecha y hora
+                </Typography>
+                <br/>
                 <QaplaTextField
                     label='Fecha (CST)'
                     variant='outlined'
@@ -401,20 +432,6 @@ const EventDetails = ({ events, games, platforms }) => {
                     type='time'
                     value={hour}
                     onChange={setHour} />
-                {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                    <React.Fragment key={`Description-${availableLanguage}`}>
-                        <QaplaTextField
-                            label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
-                            value={descriptionsTitle[availableLanguage]}
-                            onChange={(value) => setDescriptionsTitleByLanguage(availableLanguage, value)} />
-                        <QaplaTextField
-                            label={`Descripción ${Languages['es'].names[availableLanguage]}`}
-                            multiline
-                            rows={4}
-                            value={descriptions[availableLanguage]}
-                            onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
-                    </React.Fragment>
-                ))}
                 <br/>
                 <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
@@ -562,10 +579,27 @@ const EventDetails = ({ events, games, platforms }) => {
                                     {games[platform][gameKey].name}
                                 </option>
                             ))}
-                            <option value='Torneo'>Torneo (evento sin retas)</option>
                         </QaplaSelect>
                     </Grid>
                 </Grid>
+                {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
+                    <Typography>
+                        Información del streamer sobre el juego
+                    </Typography>
+                }
+                <Grid container>
+                    {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
+                            <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
+                                <br/>
+                                <QaplaTextField
+                                    label={`Streamer ${streamerDataFieldKey}`}
+                                    placeholder={games[platform][game].informationNeededToAdd[streamerDataFieldKey].hint['es']}
+                                    value={streamerGameData[streamerDataFieldKey]}
+                                    onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
+                            </Grid>
+                    ))}
+                </Grid>
+                <br/>
                 <Typography>
                     Links
                 </Typography>
