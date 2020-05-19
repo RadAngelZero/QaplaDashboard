@@ -2,13 +2,13 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
-const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '' }) => (
+const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '', placeholder = '' }) => (
     <TextField
         style={{
             marginRight: 16,
             marginBottom: 12,
-            minWidth: mini ? '10vw' : '20vw',
-            maxWidth: mini ? '10vw' : undefined
+            minWidth: mini ? '14vw' : '20vw',
+            maxWidth: mini ? '14vw' : undefined
         }}
         label={label}
         variant='outlined'
@@ -26,7 +26,8 @@ const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, t
                 </InputAdornment>
         }}
         id={id}
-        onChange={({ target }) => onChange(target.value)} />
+        onChange={({ target }) => onChange(target.value)}
+        placeholder={placeholder} />
 );
 
 export default QaplaTextField;
