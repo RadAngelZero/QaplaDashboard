@@ -154,6 +154,14 @@ async function getUserQoins(uid) {
 }
 
 /**
+ * Get the language of the user device
+ * @param {string} uid User identifier
+ */
+export async function getUserLanguage(uid) {
+    return (await usersRef.child(uid).child('language').once('value')).val();
+}
+
+/**
  * Create a transaction record of a database (qoins) operation
  * @param {string} uid Unique id of the user
  * @param {number} quantity Number of qaploins

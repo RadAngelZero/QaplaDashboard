@@ -90,10 +90,7 @@ const Router = () => {
                         platforms={platforms} />
                 </Route>
                 <Route exact path='/event/requests/:eventId'>
-                    <JoinToEventRequest
-                        events={eventsLoaded}
-                        games={games}
-                        platforms={platforms} />
+                    <JoinToEventRequest events={eventsLoaded} />
                 </Route>
                 <Route exact path='/event/participants/:eventId'>
                     <EventParticipantsList events={eventsLoaded} />
