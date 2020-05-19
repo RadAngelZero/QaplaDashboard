@@ -6,11 +6,12 @@ import { functions } from './firebase';
  * @param {string} token Firebase cloud messaging device token
  * @param {string} title Title of the push notification
  * @param {string} body Body of the push notification
+ * @param {object} payload Extra data useful for the cloud function
  * @param {object} extraData Data to send with the notification
  * @param {boolean} onlyData True if the message is an only data message, false for push notification
  */
-export async function notificateUser(uid, token, title, body, extraData = {}, onlyData = false) {
+export async function notificateUser(uid, token, title, body, payload = {}, extraData = {}, onlyData = false) {
     const notificateUser = functions.httpsCallable('notificateUser');
 
-    return await notificateUser({ uid, token, title, body, extraData, onlyData });
+    return await notificateUser({ uid, token, title, body, payload, extraData, onlyData });
 }

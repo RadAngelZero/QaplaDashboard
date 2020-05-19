@@ -76,6 +76,9 @@ const JoinToEventRequest = ({ events }) => {
             approveNotificationContent[userLanguage].title,
             approveNotificationContent[userLanguage].body,
             {
+                eventId
+            },
+            {
                 navigateTo: 'Achievements',
                 eventId
             }
@@ -109,6 +112,7 @@ const JoinToEventRequest = ({ events }) => {
                 token,
                 rejectNotificationContent[userLanguage].title,
                 rejectNotificationContent[userLanguage].body,
+                {},
                 {
                     navigateTo: 'Achievements',
                     eventId
