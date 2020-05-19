@@ -15,6 +15,7 @@ import EventDetails from './components/EventDetails/EventDetails';
 import CreateEvent from './components/CreateEvent/CreateEvent';
 import AssignPrizesForEvent from './components/AssignPrizesForEvent/AssignPrizesForEvent';
 import JoinToEventRequest from './components/JoinToEventRequest/JoinToEventRequest';
+import EventParticipantsList from './components/EventParticipantsList/EventParticipantsList';
 
 import {
     loadEventsOrderByDate,
@@ -93,6 +94,9 @@ const Router = () => {
                         events={eventsLoaded}
                         games={games}
                         platforms={platforms} />
+                </Route>
+                <Route exact path='/event/participants/:eventId'>
+                    <EventParticipantsList events={eventsLoaded} />
                 </Route>
                 <Route exact path='/event/create'>
                     <CreateEvent

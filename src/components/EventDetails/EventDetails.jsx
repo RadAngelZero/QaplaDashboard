@@ -233,7 +233,12 @@ const EventDetails = ({ events, games, platforms }) => {
     /**
      * Send the user to the join requests page
      */
-    const goToJoinRequests = () => history.push(`/event/requests/${eventId}`)
+    const goToJoinRequests = () => history.push(`/event/requests/${eventId}`);
+
+    /**
+     * Send the user to the join requests page
+     */
+    const goToEventParticipants = () => history.push(`/event/participants/${eventId}`);
 
     return (
         <Container maxWidth='lg' className={styles.Container}>
@@ -398,8 +403,14 @@ const EventDetails = ({ events, games, platforms }) => {
                     }
                     <Button
                         variant='contained'
+                        className={styles.MarginRight16}
                         onClick={goToJoinRequests}>
                         Ver solicitudes
+                    </Button>
+                    <Button
+                        variant='contained'
+                        onClick={goToEventParticipants}>
+                        Ver participantes
                     </Button>
                 </div>
             </form>

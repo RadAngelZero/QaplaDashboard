@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 
 import { getEventParticipants } from '../../services/database';
 
-const EventParticipantsList = ({ events }) => {
+const EventParticipantsList = () => {
     const { eventId } = useParams();
     const [eventParticipants, setEventParticipants] = useState({});
     const [eventFields, setEventFields] = useState([]);
