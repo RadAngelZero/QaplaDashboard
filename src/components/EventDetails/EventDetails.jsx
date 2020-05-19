@@ -427,7 +427,7 @@ const EventDetails = ({ events, games, platforms }) => {
                     value={date}
                     onChange={setDate} />
                 <QaplaTextField
-                    label='Hora (CST 12 horas)'
+                    label='Hora (CST 24 horas)'
                     variant='outlined'
                     type='time'
                     value={hour}
