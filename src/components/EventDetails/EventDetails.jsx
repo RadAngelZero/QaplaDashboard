@@ -16,6 +16,7 @@ import Languages from '../../utilities/Languages';
 const EventDetails = ({ events, games, platforms }) => {
     const { eventId } = useParams();
     events[eventId] = events[eventId] ? events[eventId] : {};
+    const [active, setActive] = useState(events[eventId].active ? events[eventId].active : false);
     const [titles, setTitle] = useState(events[eventId].title ? events[eventId].title : { 'es': '', 'en': '' });
     const [date, setDate] = useState(events[eventId].tiempoLimite ? events[eventId].tiempoLimite : '');
     const [hour, setHour] = useState(events[eventId].hour ? events[eventId].hour : '');
@@ -48,6 +49,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 descriptions,
                 prices,
                 eventLinks,
+                active,
                 streamerName,
                 streamerChannelLink,
                 streamerPhoto,
@@ -70,6 +72,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
             setPrizes(prices ? prices : {});
             setEventLinks(eventLinks ? eventLinks : []);
+            setActive(active ? active : false);
             setStreamerName(streamerName ? streamerName : '');
             setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
             setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
@@ -362,6 +365,16 @@ const EventDetails = ({ events, games, platforms }) => {
         document.execCommand('copy');
         alert('Texto copiado');
     }
+
+    /**
+     * Send the user to the join requests page
+     */
+    const goToJoinRequests = () => history.push(`/event/requests/${eventId}`);
+
+    /**
+     * Send the user to the join requests page
+     */
+    const goToEventParticipants = () => history.push(`/event/participants/${eventId}`);
 
     return (
         <Container maxWidth='lg' className={styles.Container}>
@@ -658,28 +671,44 @@ const EventDetails = ({ events, games, platforms }) => {
                         onClick={updateEventOnDatabase}>
                         Guardar cambios
                     </Button>
-                    {games && games[platform] && games[platform][game] ?
+                    {active &&
                         <>
-                            <Button
-                            variant='contained'
-                            className={styles.MarginRight16}
-                            onClick={showRanking}>
-                                Ver resultados al momento
-                            </Button>
-                            <Button
-                            variant='contained'
-                            color='primary'
-                            onClick={finishEvent}>
-                                Finalizar evento
-                            </Button>
+                            {games && games[platform] && games[platform][game] ?
+                                <>
+                                    <Button
+                                        variant='contained'
+                                        className={styles.MarginRight16}
+                                        onClick={showRanking}>
+                                        Ver resultados al momento
+                                    </Button>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={finishEvent}>
+                                        Finalizar evento
+                                    </Button>
+                                </>
+                                :
+                                <Button
+                                    variant='contained'
+                                    className={styles.MarginRight16}
+                                    onClick={goToEventPrizes}>
+                                    Repartir premios
+                                </Button>
+                            }
                         </>
-                        :
-                        <Button
-                        variant='contained'
-                        onClick={goToEventPrizes}>
-                            Repartir premios
-                        </Button>
                     }
+                    <Button
+                        variant='contained'
+                        className={styles.MarginRight16}
+                        onClick={goToJoinRequests}>
+                        Ver solicitudes
+                    </Button>
+                    <Button
+                        variant='contained'
+                        onClick={goToEventParticipants}>
+                        Ver participantes
+                    </Button>
                 </div>
             </form>
         </Container>

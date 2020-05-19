@@ -1,6 +1,7 @@
 import { database } from './firebase';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
+const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
 const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
@@ -153,6 +154,14 @@ async function getUserQoins(uid) {
 }
 
 /**
+ * Get the language of the user device
+ * @param {string} uid User identifier
+ */
+export async function getUserLanguage(uid) {
+    return (await usersRef.child(uid).child('language').once('value')).val();
+}
+
+/**
  * Create a transaction record of a database (qoins) operation
  * @param {string} uid Unique id of the user
  * @param {number} quantity Number of qaploins
@@ -181,4 +190,51 @@ async function recordQaploinTransaction(uid, quantity, concept) {
     } catch (error) {
         console.error('[Record Qaploin Transaction]', error);
     }
+}
+
+/**
+ * Put a listener to get all the join requests from the given event
+ * @param {string} eventId Event identifier
+ * @param {function} callback Callback to handle the requests returned from database
+ */
+export function getEventJoinRequests(eventId, callback) {
+    eventsRequestsRef.child(eventId).on('value', callback);
+}
+
+/**
+ * Remove a listener fom the the join requests of the given event
+ * @param {string} eventId Event identifier
+ */
+export function removeEventJoinRequestsListener(eventId) {
+    eventsRequestsRef.child(eventId).off('value');
+}
+
+/**
+ * Approve an event join request of an specific user, save the data
+ * on EventParticipants and remove it from JoinRequests node of eventosEspeciales
+ * @param {string} uid User identifier
+ * @param {string} eventId Event identifier
+ * @param {object} userData Data of the user for the event (it structure depends
+ * by the event)
+ */
+export async function approveEventJoinRequest(uid, eventId, userData) {
+    /**
+     * Necessary fields due the EventParticipants structure expected
+     * by the cloud function
+     */
+    userData.priceQaploins = 0;
+    userData.matchesPlayed = 0;
+    userData.victories = 0;
+
+    await eventsParticipantsRef.child(eventId).child(uid).update(userData);
+    await eventsRequestsRef.child(eventId).child(uid).remove();
+}
+
+/**
+ * Remove a join requesto from the JoinRequests node of eventosEspeciales
+ * @param {string} uid User identifier
+ * @param {string} eventId Event identifier
+ */
+export async function rejectEventJoinRequest(uid, eventId) {
+    await eventsRequestsRef.child(eventId).child(uid).remove();
 }
