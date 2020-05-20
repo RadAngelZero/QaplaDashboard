@@ -35,6 +35,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [appStringPrizes, setAppStringPrizes] = useState(events[eventId].appStringPrizes ? events[eventId].appStringPrizes : {});
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(events[eventId].instructionsToParticipate ? events[eventId].instructionsToParticipate : {});
     const [streamerGameData, setStreamerGameData] = useState(events[eventId].streamerGameData ? events[eventId].streamerGameData : {});
+    const [eventEntry, setEventEntry] = useState(events[eventId].eventEntry ? events[eventId].eventEntry : 0);
     const history = useHistory();
 
     useEffect(() => {
@@ -58,7 +59,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 descriptionsTitle,
                 appStringPrizes,
                 instructionsToParticipate,
-                streamerGameData
+                streamerGameData,
+                eventEntry
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -82,6 +84,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
             setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
             setStreamerGameData(streamerGameData ? streamerGameData : {});
+            setEventEntry(eventEntry ? eventEntry : 0);
         }
     }, [events]);
 
@@ -140,7 +143,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 descriptionsTitle,
                 appStringPrizes,
                 instructionsToParticipate,
-                streamerGameData
+                streamerGameData,
+                eventEntry: eventEntry ? parseInt(eventEntry) : 0
             },
             (error) => console.log(error ? error : 'Succesful update')
         );
@@ -621,6 +625,16 @@ const EventDetails = ({ events, games, platforms }) => {
                         {`Link ${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
                     </p>
                 ))}
+                <Typography>
+                    Entrada
+                </Typography>
+                <br/>
+                <QaplaTextField
+                    label='Entrada (Qoins)'
+                    type='number'
+                    value={eventEntry}
+                    onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                <br/>
                 <Typography>
                     Premios
                 </Typography>

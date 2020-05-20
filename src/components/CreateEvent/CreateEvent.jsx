@@ -34,6 +34,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [appStringPrizes, setAppStringPrizes] = useState({});
     const [instructionsToParticipate, setInstructionsToParticipate] = useState({});
     const [streamerGameData, setStreamerGameData] = useState({});
+    const [eventEntry, setEventEntry] = useState(0);
 
     /**
      * Format the dates and save the event on the database
@@ -81,7 +82,8 @@ const CreateEvent = ({ games, platforms }) => {
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
-                instructionsToParticipate
+                instructionsToParticipate,
+                eventEntry: parseInt(eventEntry)
             },
             async (error, key) => {
                 if (error) {
@@ -123,7 +125,7 @@ const CreateEvent = ({ games, platforms }) => {
     }
 
     /**
-     * 
+     * Update the description title on the given language
      * @param {string} language Language code (example es, en)
      * @param {string} value Value of the description
      */
@@ -521,14 +523,26 @@ const CreateEvent = ({ games, platforms }) => {
                     ))}
                 </Grid>
                 <br/>
-                <Typography>
-                    Links
-                </Typography>
-                {eventLinks && Object.keys(eventLinks).map((linkKey) => (
+                {eventLinks.length > 0 &&
+                    <Typography>
+                        Links
+                    </Typography>
+                }
+                {Object.keys(eventLinks).map((linkKey) => (
                     <p key={linkKey}>
                         {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
                     </p>
                 ))}
+                <Typography>
+                    Entrada
+                </Typography>
+                <br/>
+                <QaplaTextField
+                    label='Entrada (Qoins)'
+                    type='number'
+                    value={eventEntry}
+                    onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                <br/>
                 <FormControlLabel
                     control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
                     label='Evento de retas' />
