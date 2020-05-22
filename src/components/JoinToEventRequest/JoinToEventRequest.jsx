@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 import styles from './JoinToEventRequest.module.css';
-import { getEventJoinRequests, removeEventJoinRequestsListener, approveEventJoinRequest, rejectEventJoinRequest, getUserLanguage } from '../../services/database';
+import { getEventJoinRequests, removeEventJoinRequestsListener, approveEventJoinRequest, rejectEventJoinRequest, getUserLanguage, addQoinsToUser } from '../../services/database';
 import { notificateUser } from '../../services/functions';
 
 const JoinToEventRequest = ({ events }) => {
@@ -118,6 +118,10 @@ const JoinToEventRequest = ({ events }) => {
                     eventId
                 }
             );
+        }
+
+        if (events[eventId].eventEntry) {
+            addQoinsToUser(uid, events[eventId].eventEntry);
         }
     }
 

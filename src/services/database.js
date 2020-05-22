@@ -238,3 +238,24 @@ export async function approveEventJoinRequest(uid, eventId, userData) {
 export async function rejectEventJoinRequest(uid, eventId) {
     await eventsRequestsRef.child(eventId).child(uid).remove();
 }
+
+/**
+ * Add the specific amount of Qoins to the given user
+ * @param {string} uid user identifier
+ * @param {number} qoinsToAdd Qoins to add
+ */
+export function addQoinsToUser(uid, qoinsToAdd) {
+    try {
+        usersRef.child(uid).child('credits').transaction((credits) => {
+            if (credits) {
+                return credits + qoinsToAdd;
+            }
+
+            return credits;
+        }, (error, b, c) => {
+            console.log(error, b, c.val());
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
