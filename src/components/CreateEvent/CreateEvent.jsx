@@ -305,8 +305,15 @@ const CreateEvent = ({ games, platforms }) => {
                 </Typography>
                 <br/>
                 <Grid container>
+                    <Grid item md={12}>
+                        <QaplaTextField
+                            label='Nombre del streamer'
+                            variant='outlined'
+                            value={streamerName}
+                            onChange={setStreamerName} />
+                    </Grid>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={3} key={`Description-${availableLanguage}`}>
+                        <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
                             <QaplaTextField
                                 key={`Title-${availableLanguage}`}
                                 label={`Titulo ${Languages['es'].names[availableLanguage]}`}
@@ -315,16 +322,11 @@ const CreateEvent = ({ games, platforms }) => {
                                 onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
                         </Grid>
                     ))}
-                    <Grid item md={6}>
-                        <QaplaTextField
-                            label='Nombre del streamer'
-                            variant='outlined'
-                            value={streamerName}
-                            onChange={setStreamerName} />
-                    </Grid>
                     <br/>
+                </Grid>
+                <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={6} key={`Description-${availableLanguage}`}>
+                        <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
                             <QaplaTextField
                                 label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
                                 value={descriptionsTitle[availableLanguage]}
@@ -343,18 +345,24 @@ const CreateEvent = ({ games, platforms }) => {
                     Fecha y hora
                 </Typography>
                 <br/>
-                <QaplaTextField
-                    label='Fecha (CST) Año-mes-día'
-                    variant='outlined'
-                    type='date'
-                    value={date}
-                    onChange={setDate} />
-                <QaplaTextField
-                    label='Hora (CST 24 horas)'
-                    variant='outlined'
-                    type='time'
-                    value={hour}
-                    onChange={setHour} />
+                <Grid container>
+                    <Grid item md={3} lg={4}>
+                        <QaplaTextField
+                            label='Fecha (CST) Año-mes-día'
+                            variant='outlined'
+                            type='date'
+                            value={date}
+                            onChange={setDate} />
+                    </Grid>
+                    <Grid item md={3} lg={4}>
+                        <QaplaTextField
+                            label='Hora (CST 24 horas)'
+                            variant='outlined'
+                            type='time'
+                            value={hour}
+                            onChange={setHour} />
+                    </Grid>
+                </Grid>
                 <br/>
                 <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
