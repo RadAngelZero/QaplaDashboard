@@ -23,6 +23,8 @@ import {
     loadQaplaPlatforms
 } from './services/database';
 
+import './App.css';
+
 const Router = () => {
     const [events, setEvents] = useState();
     const [games, setGames] = useState({});
@@ -71,8 +73,13 @@ const Router = () => {
                     <Typography variant='h6' className='Nav-Title'>
                         Qapla Dashboard
                     </Typography>
-                    <Link to='/event/create' className='white'>
-                        <Button color='inherit'>Crear evento</Button>
+                    <Link to='/event/create' className='White-Color'>
+                        <Button
+                            variant='contained'
+                            color='secondary'
+                            style={{ color: '#FFF' }}>
+                            Crear evento
+                        </Button>
                     </Link>
                 </Toolbar>
             </AppBar>
