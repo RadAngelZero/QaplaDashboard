@@ -64,7 +64,6 @@ const CreateEvent = ({ games, platforms }) => {
                 hourUTC: `${UTCHour}:${UTCMinutes}`,
                 tiempoLimite: `${day}-${month}-${year}`,
                 hour,
-                backgroundImage,
                 discordLink,
                 platform,
                 prices: isMatchesEvent ? prizes : null,
@@ -315,11 +314,6 @@ const CreateEvent = ({ games, platforms }) => {
                     allRight = false;
                 }
                 break;
-            case 1:
-                if (isMatchesEvent && Object.keys(prizes).length <= 0) {
-                    allRight = false;
-                    break;
-                }
             case 3:
                 if (!backgroundImage ||
                     !streamerPhoto ||
@@ -350,7 +344,7 @@ const CreateEvent = ({ games, platforms }) => {
                 {currentSection === 0 &&
                     <>
                         <Typography
-                            variant='h4'
+                            variant='h5'
                             className={styles.ItalicFont}>
                             Información del evento
                         </Typography>
@@ -371,7 +365,7 @@ const CreateEvent = ({ games, platforms }) => {
                                         key={`Title-${availableLanguage}`}
                                         label={`Titulo ${Languages['es'].names[availableLanguage]}`}
                                         variant='outlined'
-                                        value={titles[availableLanguage]}
+                                        value={titles[availableLanguage] || ''}
                                         onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
                                 </Grid>
                             ))}
@@ -390,13 +384,13 @@ const CreateEvent = ({ games, platforms }) => {
                                         label={`Descripción ${Languages['es'].names[availableLanguage]}`}
                                         multiline
                                         rows={4}
-                                        value={descriptions[availableLanguage]}
+                                        value={descriptions[availableLanguage] || ''}
                                         onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
                                 </Grid>
                             ))}
                         </Grid>
                         <Typography
-                            variant='h4'
+                            variant='h5'
                             className={styles.ItalicFont}>
                             Juego y plataforma
                         </Typography>
@@ -434,7 +428,7 @@ const CreateEvent = ({ games, platforms }) => {
                         </Grid>
                         {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
                             <Typography
-                                variant='h4'
+                                variant='h5'
                                 className={styles.ItalicFont}>
                                 Información del streamer sobre el juego
                             </Typography>
@@ -454,7 +448,7 @@ const CreateEvent = ({ games, platforms }) => {
                         </Grid>
                         <br/>
                         <Typography
-                            variant='h4'
+                            variant='h5'
                             className={styles.ItalicFont}>
                             Fecha y hora
                         </Typography>
@@ -488,7 +482,7 @@ const CreateEvent = ({ games, platforms }) => {
                             {Object.keys(Languages['es'].names).map((availableLanguage) => (
                                 <Grid item md={6} key={`PrizeList-${availableLanguage}`}>
                                     <Typography
-                                        variant='h4'
+                                        variant='h5'
                                         className={styles.ItalicFont}>
                                         Descripción de premios en {Languages['es'].names[availableLanguage]}
                                     </Typography>
@@ -518,8 +512,8 @@ const CreateEvent = ({ games, platforms }) => {
                                     ))}
                                     <br/>
                                     <Button
-                                        variant='text'
-                                        color='primary'
+                                        variant='outlined'
+                                        color='secondary'
                                         className={styles.MarginRight16}
                                         onClick={() => addAppStringPrize(availableLanguage)}>
                                         Agregar premio
@@ -534,7 +528,7 @@ const CreateEvent = ({ games, platforms }) => {
                         {isMatchesEvent &&
                             <>
                                 <Typography
-                                    variant='h4'
+                                    variant='h5'
                                     className={styles.ItalicFont}>
                                     Qoins a repartir
                                 </Typography>
@@ -560,8 +554,8 @@ const CreateEvent = ({ games, platforms }) => {
                                     </React.Fragment>
                                 ))}
                                 <Button
-                                    variant='text'
-                                    color='primary'
+                                    variant='outlined'
+                                    color='secondary'
                                     className={styles.MarginRight16}
                                     onClick={addPrize}>
                                     Agregar premio
@@ -599,8 +593,8 @@ const CreateEvent = ({ games, platforms }) => {
                                     ))}
                                     <br/>
                                     <Button
-                                        variant='text'
-                                        color='primary'
+                                        variant='outlined'
+                                        color='secondary'
                                         className={styles.MarginRight16}
                                         onClick={() => addInstructionToParticipate(availableLanguage)}>
                                         Agregar Instrucción
@@ -615,7 +609,7 @@ const CreateEvent = ({ games, platforms }) => {
                 {currentSection === 3 &&
                     <>
                         <Typography
-                            variant='h4'
+                            variant='h5'
                             className={styles.ItalicFont}>
                             Fotos y links del evento
                         </Typography>
@@ -670,22 +664,10 @@ const CreateEvent = ({ games, platforms }) => {
                         <br/>
                     </>
                 }
-                {eventLinks.length > 0 &&
-                    <Typography
-                        variant='h4'
-                        className={styles.ItalicFont}>
-                        Links
-                    </Typography>
-                }
-                {Object.keys(eventLinks).map((linkKey) => (
-                    <p key={linkKey}>
-                        {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
-                    </p>
-                ))}
                 {currentSection === 4 &&
                     <>
                         <Typography
-                            variant='h4'
+                            variant='h5'
                             className={styles.ItalicFont}>
                             Entrada para el evento
                         </Typography>
@@ -695,6 +677,19 @@ const CreateEvent = ({ games, platforms }) => {
                             type='number'
                             value={eventEntry}
                             onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                        <br/>
+                        {eventLinks.length > 0 &&
+                            <Typography
+                                variant='h5'
+                                className={styles.ItalicFont}>
+                                Links
+                            </Typography>
+                        }
+                        {Object.keys(eventLinks).map((linkKey) => (
+                            <p key={linkKey}>
+                                {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
+                            </p>
+                        ))}
                     </>
                 }
                 <div className={styles.MarginTop16}>
