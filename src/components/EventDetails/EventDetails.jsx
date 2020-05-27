@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import Grid from '@material-ui/core/Grid';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -36,6 +38,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(events[eventId].instructionsToParticipate ? events[eventId].instructionsToParticipate : {});
     const [streamerGameData, setStreamerGameData] = useState(events[eventId].streamerGameData ? events[eventId].streamerGameData : {});
     const [eventEntry, setEventEntry] = useState(events[eventId].eventEntry ? events[eventId].eventEntry : 0);
+    const [isMatchesEvent, setIsMatchesEvent] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -60,7 +63,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 appStringPrizes,
                 instructionsToParticipate,
                 streamerGameData,
-                eventEntry
+                eventEntry,
+                isMatchesEvent
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -85,6 +89,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
             setStreamerGameData(streamerGameData ? streamerGameData : {});
             setEventEntry(eventEntry ? eventEntry : 0);
+            setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
         }
     }, [events]);
 
@@ -572,39 +577,46 @@ const EventDetails = ({ events, games, platforms }) => {
                         </Grid>
                     ))}
                 </Grid>
-                <Typography
-                    variant='h5'
-                    className={styles.ItalicFont}>
-                    Qoins a repartir
-                </Typography>
-                <br/>
-                {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
-                    <React.Fragment key={`Prize-${prizeKey}`}>
-                        <QaplaTextField
-                            label='Posición'
-                            mini
-                            value={prizeKey}
-                            onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
-                        <QaplaTextField
-                            type='number'
-                            label='Premio'
-                            value={prizes[prizeKey]}
-                            onChange={(value) => setPrizeByKey(prizeKey, value)} />
-                        <Button onClick={() => removePrize(prizeKey)}>
-                            <CancelIcon
-                                color='secondary'
-                                className={styles.RemovePrize} />
-                        </Button>
+                <FormControlLabel
+                    control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
+                    label='Evento de retas' />
+                {isMatchesEvent &&
+                    <>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Qoins a repartir
+                        </Typography>
                         <br/>
-                    </React.Fragment>
-                ))}
-                <Button
-                    variant='outlined'
-                    color='secondary'
-                    className={styles.MarginRight16}
-                    onClick={addPrize}>
-                    Agregar premio
-                </Button>
+                        {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
+                            <React.Fragment key={`Prize-${prizeKey}`}>
+                                <QaplaTextField
+                                    label='Posición'
+                                    mini
+                                    value={prizeKey}
+                                    onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
+                                <QaplaTextField
+                                    type='number'
+                                    label='Premio'
+                                    value={prizes[prizeKey]}
+                                    onChange={(value) => setPrizeByKey(prizeKey, value)} />
+                                <Button onClick={() => removePrize(prizeKey)}>
+                                    <CancelIcon
+                                        color='secondary'
+                                        className={styles.RemovePrize} />
+                                </Button>
+                                <br/>
+                            </React.Fragment>
+                        ))}
+                        <Button
+                            variant='outlined'
+                            color='secondary'
+                            className={styles.MarginRight16}
+                            onClick={addPrize}>
+                            Agregar premio
+                        </Button>
+                    </>
+                }
                 <br/>
                 <br/>
                 <Grid container>
