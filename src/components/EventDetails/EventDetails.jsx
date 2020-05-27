@@ -143,7 +143,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 appStringPrizes,
                 instructionsToParticipate,
                 streamerGameData,
-                eventEntry: eventEntry ? parseInt(eventEntry) : 0
+                eventEntry: eventEntry ? parseInt(eventEntry) : 0,
+                isMatchesEvent
             },
             (error) => console.log(error ? error : 'Succesful update')
         );
