@@ -15,6 +15,7 @@ import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
 
 const CreateEvent = ({ games, platforms }) => {
+    const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
     const [hour, setHour] = useState();
@@ -39,7 +40,8 @@ const CreateEvent = ({ games, platforms }) => {
     /**
      * Format the dates and save the event on the database
      */
-    const saveEventOnDatabase = async () => {
+    const saveEventOnDatabase = async (e) => {
+        e.preventDefault();
         const [year, month, day] = date.split('-');
         const [hours, minutes] = hour.split(':');
         const selectedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
@@ -83,7 +85,8 @@ const CreateEvent = ({ games, platforms }) => {
                 descriptionsTitle,
                 appStringPrizes,
                 instructionsToParticipate,
-                eventEntry: parseInt(eventEntry)
+                eventEntry: parseInt(eventEntry),
+                isMatchesEvent
             },
             async (error, key) => {
                 if (error) {
@@ -294,245 +297,383 @@ const CreateEvent = ({ games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    /**
+     * Send the user to the next step of the form
+     */
+    const goToNextStep = () => {
+        let allRight = true;
+        switch (currentSection) {
+            case 0:
+                if (!streamerName ||
+                    !titles['en'] ||
+                    !titles['es'] ||
+                    !descriptions['en'] ||
+                    !descriptions['es'] ||
+                    !date ||
+                    !hour
+                    ) {
+                    allRight = true;
+                }
+                break;
+            case 1:
+                if (isMatchesEvent && Object.keys(prizes).length <= 0) {
+                    allRight = false;
+                    break;
+                }
+            case 3:
+                if (!backgroundImage ||
+                    !streamerPhoto ||
+                    !streamingPlatformImage
+                ) {
+                    allRight = true;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (allRight) {
+            setCurrentSection(currentSection + 1);
+        } else {
+            alert('Revisa que los campos esten llenados de forma correcta');
+        }
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
-            <Typography variant='h3' component='h3'>
-                Evento: {titles['es']}
-            </Typography>
-            <form className={styles.MarginTop16}>
-                <Typography>
-                    Información del evento
+            <form onSubmit={saveEventOnDatabase}>
+                <Typography
+                    variant='h3'
+                    className={styles.EventTitle}>
+                    Evento: {titles['es']}
                 </Typography>
-                <br/>
-                <Grid container>
-                    <Grid item md={12}>
-                        <QaplaTextField
-                            label='Nombre del streamer'
-                            variant='outlined'
-                            value={streamerName}
-                            onChange={setStreamerName} />
-                    </Grid>
-                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
-                            <QaplaTextField
-                                key={`Title-${availableLanguage}`}
-                                label={`Titulo ${Languages['es'].names[availableLanguage]}`}
-                                variant='outlined'
-                                value={titles[availableLanguage]}
-                                onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
-                        </Grid>
-                    ))}
-                    <br/>
-                </Grid>
-                <Grid container>
-                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
-                            <QaplaTextField
-                                label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
-                                value={descriptionsTitle[availableLanguage]}
-                                onChange={(value) => setDescriptionsTitleByLanguage(availableLanguage, value)} />
-                            <br/>
-                            <QaplaTextField
-                                label={`Descripción ${Languages['es'].names[availableLanguage]}`}
-                                multiline
-                                rows={4}
-                                value={descriptions[availableLanguage]}
-                                onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
-                        </Grid>
-                    ))}
-                </Grid>
-                <Typography>
-                    Fecha y hora
-                </Typography>
-                <br/>
-                <Grid container>
-                    <Grid item md={3} lg={4}>
-                        <QaplaTextField
-                            label='Fecha (CST) Año-mes-día'
-                            variant='outlined'
-                            type='date'
-                            value={date}
-                            onChange={setDate} />
-                    </Grid>
-                    <Grid item md={3} lg={4}>
-                        <QaplaTextField
-                            label='Hora (CST 24 horas)'
-                            variant='outlined'
-                            type='time'
-                            value={hour}
-                            onChange={setHour} />
-                    </Grid>
-                </Grid>
-                <br/>
-                <Grid container>
-                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={6} key={`PrizeList-${availableLanguage}`}>
-                            <Typography>
-                                Premios en {Languages['es'].names[availableLanguage]}
-                            </Typography>
-                            {appStringPrizes && appStringPrizes[availableLanguage] && appStringPrizes[availableLanguage].map((prize, index) => (
-                                <React.Fragment key={`AppStringPrize-${availableLanguage}-${index}`}>
-                                    <p>
-                                        {index + 1}
-                                    </p>
+                {currentSection === 0 &&
+                    <>
+                        <Typography
+                            variant='h4'
+                            className={styles.ItalicFont}>
+                            Información del evento
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            <Grid item md={12}>
+                                <QaplaTextField
+                                    required
+                                    label='Nombre del streamer'
+                                    variant='outlined'
+                                    value={streamerName}
+                                    onChange={setStreamerName} />
+                            </Grid>
+                            {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                                <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
                                     <QaplaTextField
-                                        label='Posición'
-                                        mini
-                                        placeholder='Ganador, Cuarto'
-                                        value={prize.title}
-                                        onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'title')} />
-                                    <QaplaTextField
-                                        type='text'
-                                        label='Premio'
-                                        value={prize.prize}
-                                        onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'prize')} />
-                                    <Button onClick={() => removeAppStringPrize(availableLanguage, index)}>
-                                        <CancelIcon
-                                            color='secondary'
-                                            className={styles.RemovePrize} />
-                                    </Button>
-                                    <br/>
-                                </React.Fragment>
+                                        required
+                                        key={`Title-${availableLanguage}`}
+                                        label={`Titulo ${Languages['es'].names[availableLanguage]}`}
+                                        variant='outlined'
+                                        value={titles[availableLanguage]}
+                                        onChange={(value) => setTitleByLanguage(availableLanguage, value)} />
+                                </Grid>
                             ))}
                             <br/>
-                            <Button
-                                variant='text'
-                                color='primary'
-                                className={styles.MarginRight16}
-                                onClick={() => addAppStringPrize(availableLanguage)}>
-                                Agregar premio
-                            </Button>
-                            <br/>
                         </Grid>
-                    ))}
-                </Grid>
-                <br/>
-                <Grid container>
-                    {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={6} key={`InstructionsToParticipate-${availableLanguage}`}>
-                            <Typography>
-                                Instrucciones para participar en {Languages['es'].names[availableLanguage]}
-                            </Typography>
-                            {instructionsToParticipate && instructionsToParticipate[availableLanguage] && instructionsToParticipate[availableLanguage].map((instruction, index) => (
-                                <React.Fragment key={`Instructions-${availableLanguage}-${index}`}>
-                                    <p>
-                                        {index + 1}
-                                    </p>
+                        <Grid container>
+                            {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                                <Grid item md={3} lg={4} key={`Description-${availableLanguage}`}>
                                     <QaplaTextField
-                                        label={`Instrucciones para participar en ${Languages['es'].names[availableLanguage]}`}
+                                        label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
+                                        value={descriptionsTitle[availableLanguage]}
+                                        onChange={(value) => setDescriptionsTitleByLanguage(availableLanguage, value)} />
+                                    <br/>
+                                    <QaplaTextField
+                                        required
+                                        label={`Descripción ${Languages['es'].names[availableLanguage]}`}
                                         multiline
                                         rows={4}
-                                        value={instruction}
-                                        onChange={(value) => updateInstructionsToParticipateByLanguage(availableLanguage, index, value)} />
-                                    <Button onClick={() => removeInstructionsToParticipate(availableLanguage, index)}>
-                                        <CancelIcon
-                                            color='secondary'
-                                            className={styles.RemovePrize} />
-                                    </Button>
-                                </React.Fragment>
+                                        value={descriptions[availableLanguage]}
+                                        onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
+                                </Grid>
                             ))}
-                            <br/>
-                            <Button
-                                variant='text'
-                                color='primary'
-                                className={styles.MarginRight16}
-                                onClick={() => addInstructionToParticipate(availableLanguage)}>
-                                Agregar Instrucción
-                            </Button>
-                            <br/>
                         </Grid>
-                    ))}
-                </Grid>
-                <br/>
-                <Typography>
-                    Fotos y links del evento
-                </Typography>
-                <br/>
-                <QaplaTextField
-                    label='Foto de fondo'
-                    variant='outlined'
-                    type='text'
-                    value={backgroundImage}
-                    onChange={setBackgroundImage} />
-                <QaplaTextField
-                    label='Foto de streamer'
-                    variant='outlined'
-                    type='text'
-                    value={streamerPhoto}
-                    onChange={setStreamerPhoto} />
-                <QaplaTextField
-                    label='Foto de la plataforma'
-                    variant='outlined'
-                    type='text'
-                    value={streamingPlatformImage}
-                    onChange={setStreamingPlatformImage} />
-                <QaplaTextField
-                    label='Discord Link'
-                    variant='outlined'
-                    type='text'
-                    value={discordLink}
-                    onChange={setDiscordLink} />
-                <QaplaTextField
-                    label='Streamer Channel Link'
-                    variant='outlined'
-                    type='text'
-                    value={streamerChannelLink}
-                    onChange={setStreamerChannelLink} />
-                <Typography>
-                    Juego y plataforma
-                </Typography>
-                <br/>
-                <Grid container>
-                    <Grid item md={6}>
-                        <QaplaSelect
-                            label='Plataforma'
-                            id='Platform'
-                            value={platform}
-                            onChange={setPlatform}>
-                            <option aria-label='None' value='' />
-                            {Object.keys(platforms).map((platformKey) => (
-                                <option
-                                    key={platformKey}
-                                    value={platformKey}>{platforms[platformKey].name}</option>
-                            ))}
-                        </QaplaSelect>
-                    </Grid>
-                    <Grid item md={6}>
-                        <QaplaSelect
-                            label='Juego'
-                            id='Game'
-                            disabled={!games[platform]}
-                            value={game}
-                            onChange={setGame}>
-                            <option aria-label='None' value='' />
-                            {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
-                                <option key={gameKey} value={gameKey}>
-                                    {games[platform][gameKey].name}
-                                </option>
-                            ))}
-                        </QaplaSelect>
-                    </Grid>
-                </Grid>
-                {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
-                    <Typography>
-                        Información del streamer sobre el juego
-                    </Typography>
-                }
-                <Grid container>
-                    {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
-                            <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
-                                <br/>
-                                <QaplaTextField
-                                    label={`Streamer ${streamerDataFieldKey}`}
-                                    placeholder={games[platform][game].informationNeededToAdd[streamerDataFieldKey].hint['es']}
-                                    value={streamerGameData[streamerDataFieldKey]}
-                                    onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
+                        <Typography
+                            variant='h4'
+                            className={styles.ItalicFont}>
+                            Juego y plataforma
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            <Grid item md={4}>
+                                <QaplaSelect
+                                    label='Plataforma'
+                                    id='Platform'
+                                    value={platform}
+                                    onChange={setPlatform}>
+                                    <option aria-label='None' value='' />
+                                    {Object.keys(platforms).map((platformKey) => (
+                                        <option
+                                            key={platformKey}
+                                            value={platformKey}>{platforms[platformKey].name}</option>
+                                    ))}
+                                </QaplaSelect>
                             </Grid>
-                    ))}
-                </Grid>
-                <br/>
+                            <Grid item md={4}>
+                                <QaplaSelect
+                                    label='Juego'
+                                    id='Game'
+                                    disabled={!games[platform]}
+                                    value={game}
+                                    onChange={setGame}>
+                                    <option aria-label='None' value='' />
+                                    {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
+                                        <option key={gameKey} value={gameKey}>
+                                            {games[platform][gameKey].name}
+                                        </option>
+                                    ))}
+                                </QaplaSelect>
+                            </Grid>
+                        </Grid>
+                        {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
+                            <Typography
+                                variant='h4'
+                                className={styles.ItalicFont}>
+                                Información del streamer sobre el juego
+                            </Typography>
+                        }
+                        <Grid container>
+                            {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
+                                    <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
+                                        <br/>
+                                        <QaplaTextField
+                                            required
+                                            label={`Streamer ${streamerDataFieldKey}`}
+                                            placeholder={games[platform][game].informationNeededToAdd[streamerDataFieldKey].hint['es']}
+                                            value={streamerGameData[streamerDataFieldKey]}
+                                            onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
+                                    </Grid>
+                            ))}
+                        </Grid>
+                        <br/>
+                        <Typography
+                            variant='h4'
+                            className={styles.ItalicFont}>
+                            Fecha y hora
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            <Grid item md={3} lg={4}>
+                                <QaplaTextField
+                                    required
+                                    label='Fecha (CST) Año-mes-día'
+                                    variant='outlined'
+                                    type='date'
+                                    value={date}
+                                    onChange={setDate} />
+                            </Grid>
+                            <Grid item md={3} lg={4}>
+                                <QaplaTextField
+                                    required
+                                    label='Hora (CST 24 horas)'
+                                    variant='outlined'
+                                    type='time'
+                                    value={hour}
+                                    onChange={setHour} />
+                            </Grid>
+                        </Grid>
+                        <br/>
+                    </>
+                }
+                {currentSection === 1 &&
+                    <>
+                        <Grid container>
+                            {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                                <Grid item md={6} key={`PrizeList-${availableLanguage}`}>
+                                    <Typography
+                                        variant='h4'
+                                        className={styles.ItalicFont}>
+                                        Descripción de premios en {Languages['es'].names[availableLanguage]}
+                                    </Typography>
+                                    {appStringPrizes && appStringPrizes[availableLanguage] && appStringPrizes[availableLanguage].map((prize, index) => (
+                                        <React.Fragment key={`AppStringPrize-${availableLanguage}-${index}`}>
+                                            <p>
+                                                {index + 1}
+                                            </p>
+                                            <QaplaTextField
+                                                label='Posición'
+                                                mini
+                                                placeholder='Ganador, Cuarto'
+                                                value={prize.title}
+                                                onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'title')} />
+                                            <QaplaTextField
+                                                type='text'
+                                                label='Premio'
+                                                value={prize.prize}
+                                                onChange={(value) => updateAppStringPrizeByLanguage(availableLanguage, index, value, 'prize')} />
+                                            <Button onClick={() => removeAppStringPrize(availableLanguage, index)}>
+                                                <CancelIcon
+                                                    color='secondary'
+                                                    className={styles.RemovePrize} />
+                                            </Button>
+                                            <br/>
+                                        </React.Fragment>
+                                    ))}
+                                    <br/>
+                                    <Button
+                                        variant='text'
+                                        color='primary'
+                                        className={styles.MarginRight16}
+                                        onClick={() => addAppStringPrize(availableLanguage)}>
+                                        Agregar premio
+                                    </Button>
+                                    <br/>
+                                </Grid>
+                            ))}
+                        </Grid>
+                        <FormControlLabel
+                            control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
+                            label='Evento de retas' />
+                        {isMatchesEvent &&
+                            <>
+                                <Typography
+                                    variant='h4'
+                                    className={styles.ItalicFont}>
+                                    Qoins a repartir
+                                </Typography>
+                                <br/>
+                                {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
+                                    <React.Fragment key={`PrizeNumberKey-${index}`}>
+                                        <QaplaTextField
+                                            label='Posición'
+                                            mini
+                                            value={prizeKey}
+                                            onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
+                                        <QaplaTextField
+                                            type='number'
+                                            label='Premio'
+                                            value={prizes[prizeKey]}
+                                            onChange={(value) => setPrizeByKey(prizeKey, value)} />
+                                        <Button onClick={() => removePrize(prizeKey)}>
+                                            <CancelIcon
+                                                color='secondary'
+                                                className={styles.RemovePrize} />
+                                        </Button>
+                                        <br/>
+                                    </React.Fragment>
+                                ))}
+                                <Button
+                                    variant='text'
+                                    color='primary'
+                                    className={styles.MarginRight16}
+                                    onClick={addPrize}>
+                                    Agregar premio
+                                </Button>
+                            </>
+                        }
+                        <br/>
+                    </>
+                }
+                {currentSection === 2 &&
+                    <>
+                        <Grid container>
+                            {Object.keys(Languages['es'].names).map((availableLanguage) => (
+                                <Grid item md={6} key={`InstructionsToParticipate-${availableLanguage}`}>
+                                    <Typography>
+                                        Instrucciones para participar en {Languages['es'].names[availableLanguage]}
+                                    </Typography>
+                                    {instructionsToParticipate && instructionsToParticipate[availableLanguage] && instructionsToParticipate[availableLanguage].map((instruction, index) => (
+                                        <React.Fragment key={`Instructions-${availableLanguage}-${index}`}>
+                                            <p>
+                                                {index + 1}
+                                            </p>
+                                            <QaplaTextField
+                                                label={`Instrucciones para participar en ${Languages['es'].names[availableLanguage]}`}
+                                                multiline
+                                                rows={4}
+                                                value={instruction}
+                                                onChange={(value) => updateInstructionsToParticipateByLanguage(availableLanguage, index, value)} />
+                                            <Button onClick={() => removeInstructionsToParticipate(availableLanguage, index)}>
+                                                <CancelIcon
+                                                    color='secondary'
+                                                    className={styles.RemovePrize} />
+                                            </Button>
+                                        </React.Fragment>
+                                    ))}
+                                    <br/>
+                                    <Button
+                                        variant='text'
+                                        color='primary'
+                                        className={styles.MarginRight16}
+                                        onClick={() => addInstructionToParticipate(availableLanguage)}>
+                                        Agregar Instrucción
+                                    </Button>
+                                    <br/>
+                                </Grid>
+                            ))}
+                        </Grid>
+                        <br/>
+                    </>
+                }
+                {currentSection === 3 &&
+                    <>
+                        <Typography
+                            variant='h4'
+                            className={styles.ItalicFont}>
+                            Fotos y links del evento
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            <Grid md={12}>
+                                <QaplaTextField
+                                    required
+                                    label='Foto de streamer'
+                                    variant='outlined'
+                                    type='text'
+                                    value={streamerPhoto}
+                                    onChange={setStreamerPhoto} />
+                            </Grid>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    required
+                                    label='Foto de fondo'
+                                    variant='outlined'
+                                    type='text'
+                                    value={backgroundImage}
+                                    onChange={setBackgroundImage} />
+                            </Grid>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    required
+                                    label='Foto de la plataforma'
+                                    variant='outlined'
+                                    type='text'
+                                    value={streamingPlatformImage}
+                                    onChange={setStreamingPlatformImage} />
+                            </Grid>
+                        </Grid>
+                        <Grid container>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    label='Discord Link'
+                                    variant='outlined'
+                                    type='text'
+                                    value={discordLink}
+                                    onChange={setDiscordLink} />
+                            </Grid>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    label='Streamer Channel Link'
+                                    variant='outlined'
+                                    type='text'
+                                    value={streamerChannelLink}
+                                    onChange={setStreamerChannelLink} />
+                            </Grid>
+                        </Grid>
+                        <br/>
+                    </>
+                }
                 {eventLinks.length > 0 &&
-                    <Typography>
+                    <Typography
+                        variant='h4'
+                        className={styles.ItalicFont}>
                         Links
                     </Typography>
                 }
@@ -541,61 +682,48 @@ const CreateEvent = ({ games, platforms }) => {
                         {`${linkKey}.-`} <a href={eventLinks[linkKey]}>{`${eventLinks[linkKey]}`}</a>
                     </p>
                 ))}
-                <Typography>
-                    Entrada
-                </Typography>
-                <br/>
-                <QaplaTextField
-                    label='Entrada (Qoins)'
-                    type='number'
-                    value={eventEntry}
-                    onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
-                <br/>
-                <FormControlLabel
-                    control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
-                    label='Evento de retas' />
-                {isMatchesEvent &&
+                {currentSection === 4 &&
                     <>
-                        <Typography>
-                            Premios
+                        <Typography
+                            variant='h4'
+                            className={styles.ItalicFont}>
+                            Entrada para el evento
                         </Typography>
                         <br/>
-                        {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
-                            <React.Fragment key={`PrizeNumberKey-${index}`}>
-                                <QaplaTextField
-                                    label='Posición'
-                                    mini
-                                    value={prizeKey}
-                                    onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
-                                <QaplaTextField
-                                    type='number'
-                                    label='Premio'
-                                    value={prizes[prizeKey]}
-                                    onChange={(value) => setPrizeByKey(prizeKey, value)} />
-                                <Button onClick={() => removePrize(prizeKey)}>
-                                    <CancelIcon
-                                        color='secondary'
-                                        className={styles.RemovePrize} />
-                                </Button>
-                                <br/>
-                            </React.Fragment>
-                        ))}
-                        <Button
-                            variant='text'
-                            color='primary'
-                            className={styles.MarginRight16}
-                            onClick={addPrize}>
-                            Agregar premio
-                        </Button>
+                        <QaplaTextField
+                            label='Entrada (Qoins)'
+                            type='number'
+                            value={eventEntry}
+                            onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
                     </>
                 }
                 <div className={styles.MarginTop16}>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={saveEventOnDatabase}>
-                        Crear evento
-                    </Button>
+                    <>
+                        {currentSection > 0 &&
+                            <Button
+                                variant='contained'
+                                onClick={() => setCurrentSection(currentSection - 1)}
+                                className={styles.MarginRight16}>
+                                Atras
+                            </Button>
+                        }
+                        {currentSection < 4 &&
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                className={styles.MarginRight16}
+                                onClick={goToNextStep}>
+                                Siguiente
+                            </Button>
+                        }
+                        <Button
+                            disabled={currentSection !== 4}
+                            variant='contained'
+                            color='primary'
+                            type='submit'>
+                                Crear evento
+                        </Button>
+                    </>
                 </div>
             </form>
         </Container>

@@ -3,12 +3,20 @@
     margin-bottom: 1em;
 }
 
+.EventTitle {
+    text-align: center;
+}
+
 .MarginTop16 {
     margin-top: 1em;
 }
 
+.ItalicFont {
+    font-style: italic;
+}
+
 .MarginRight16 {
-    margin-right: 1em;
+    margin-right: 1em !important;
 }
 
 .FormContainer {
