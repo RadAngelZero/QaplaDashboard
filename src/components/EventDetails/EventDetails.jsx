@@ -8,6 +8,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -38,7 +40,9 @@ const EventDetails = ({ events, games, platforms }) => {
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(events[eventId].instructionsToParticipate ? events[eventId].instructionsToParticipate : {});
     const [streamerGameData, setStreamerGameData] = useState(events[eventId].streamerGameData ? events[eventId].streamerGameData : {});
     const [eventEntry, setEventEntry] = useState(events[eventId].eventEntry ? events[eventId].eventEntry : 0);
-    const [isMatchesEvent, setIsMatchesEvent] = useState(false);
+    const [isMatchesEvent, setIsMatchesEvent] = useState(events[eventId].isMatchesEvent ? events[eventId].isMatchesEvent : false);
+    const [acceptAllUsers, setAcceptAllUsers] = useState(events[eventId].acceptAllUsers ? events[eventId].acceptAllUsers : false);
+
     const history = useHistory();
 
     useEffect(() => {
@@ -64,7 +68,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 instructionsToParticipate,
                 streamerGameData,
                 eventEntry,
-                isMatchesEvent
+                isMatchesEvent,
+                acceptAllUsers
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -90,6 +95,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setStreamerGameData(streamerGameData ? streamerGameData : {});
             setEventEntry(eventEntry ? eventEntry : 0);
             setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
+            setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
         }
     }, [events]);
 
@@ -149,7 +155,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 instructionsToParticipate,
                 streamerGameData,
                 eventEntry: eventEntry ? parseInt(eventEntry) : 0,
-                isMatchesEvent
+                isMatchesEvent,
+                acceptAllUsers
             },
             (error) => console.log(error ? error : 'Succesful update')
         );
@@ -716,6 +723,21 @@ const EventDetails = ({ events, games, platforms }) => {
                     type='number'
                     value={eventEntry}
                     onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Manejo de inscripciones
+                </Typography>
+                <RadioGroup value={acceptAllUsers} onChange={() => setAcceptAllUsers(!acceptAllUsers)}>
+                    <FormControlLabel
+                        value={true}
+                        control={<Radio />}
+                        label='Aceptar a todos' />
+                    <FormControlLabel
+                        value={false}
+                        control={<Radio />}
+                        label='Revisar solicitudes' />
+                </RadioGroup>
                 <br/>
                 <div className={styles.MarginTop16}>
                     {/**

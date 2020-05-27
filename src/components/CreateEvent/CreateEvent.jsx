@@ -6,6 +6,8 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
@@ -36,6 +38,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [instructionsToParticipate, setInstructionsToParticipate] = useState({});
     const [streamerGameData, setStreamerGameData] = useState({});
     const [eventEntry, setEventEntry] = useState(0);
+    const [acceptAllUsers, setAcceptAllUsers] = useState(true);
 
     /**
      * Format the dates and save the event on the database
@@ -85,7 +88,8 @@ const CreateEvent = ({ games, platforms }) => {
                 appStringPrizes,
                 instructionsToParticipate,
                 eventEntry: parseInt(eventEntry),
-                isMatchesEvent
+                isMatchesEvent,
+                acceptAllUsers
             },
             async (error, key) => {
                 if (error) {
@@ -523,7 +527,7 @@ const CreateEvent = ({ games, platforms }) => {
                             ))}
                         </Grid>
                         <FormControlLabel
-                            control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} name="checkedA" color='primary' />}
+                            control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} color='primary' />}
                             label='Evento de retas' />
                         {isMatchesEvent &&
                             <>
@@ -677,6 +681,22 @@ const CreateEvent = ({ games, platforms }) => {
                             type='number'
                             value={eventEntry}
                             onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                        <br/>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Manejo de inscripciones
+                        </Typography>
+                        <RadioGroup value={acceptAllUsers} onChange={() => setAcceptAllUsers(!acceptAllUsers)}>
+                            <FormControlLabel
+                                value={true}
+                                control={<Radio />}
+                                label='Aceptar a todos' />
+                            <FormControlLabel
+                                value={false}
+                                control={<Radio />}
+                                label='Revisar solicitudes' />
+                        </RadioGroup>
                         <br/>
                         {eventLinks.length > 0 &&
                             <Typography
