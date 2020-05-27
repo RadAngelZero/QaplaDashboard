@@ -312,7 +312,7 @@ const CreateEvent = ({ games, platforms }) => {
                     !date ||
                     !hour
                     ) {
-                    allRight = true;
+                    allRight = false;
                 }
                 break;
             case 1:
@@ -325,7 +325,7 @@ const CreateEvent = ({ games, platforms }) => {
                     !streamerPhoto ||
                     !streamingPlatformImage
                 ) {
-                    allRight = true;
+                    allRight = false;
                 }
                 break;
             default:
