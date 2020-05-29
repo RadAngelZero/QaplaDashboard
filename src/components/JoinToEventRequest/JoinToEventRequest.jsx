@@ -15,8 +15,9 @@ import { notificateUser } from '../../services/functions';
 
 const JoinToEventRequest = ({ events }) => {
     const { eventId } = useParams();
-    const [usersRequests, setUsersRequests] = useState({});
+    const [usersRequests, setUsersRequests] = useState([]);
     const [eventFields, setEventFields] = useState([]);
+    const hidedFields = ['token', 'timeStamp', 'firebaseUserIdentifier'];
 
     useEffect(() => {
         getEventJoinRequests(eventId, loadUserRequests);
@@ -34,7 +35,8 @@ const JoinToEventRequest = ({ events }) => {
     const loadUserRequests = (usersRequest) => {
         if (usersRequest.exists()) {
             let eventFields = {};
-            Object.keys(usersRequest.val()).some((userKey) => {
+            Object.keys(usersRequest.val())
+            .some((userKey) => {
                 eventFields = Object.getOwnPropertyNames(usersRequest.val()[userKey]);
 
                 delete eventFields.token;
@@ -42,10 +44,19 @@ const JoinToEventRequest = ({ events }) => {
                 return true;
             });
 
-            setUsersRequests(usersRequest.val());
+            setUsersRequests(
+                Object.keys(usersRequest.val())
+                .sort((a, b) => usersRequest.val()[a].timeStamp - usersRequest.val()[b].timeStamp)
+                .map((uid) => {
+                    const userRequest = usersRequest.val()[uid];
+                    userRequest.firebaseUserIdentifier = uid;
+
+                    return userRequest;
+                })
+            );
             setEventFields(eventFields);
         } else {
-            setUsersRequests({});
+            setUsersRequests([]);
         }
     }
 
@@ -132,7 +143,7 @@ const JoinToEventRequest = ({ events }) => {
                 <TableRow>
                     {eventFields.map((eventField) => (
                         <React.Fragment key={eventField}>
-                        {eventField !== 'token' ?
+                        {hidedFields.indexOf(eventField) === -1 ?
                             <TableCell align='center'>
                                 {eventField}
                             </TableCell>
@@ -147,13 +158,13 @@ const JoinToEventRequest = ({ events }) => {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Object.keys(usersRequests).map((requesterUid) => (
-                        <TableRow key={`request${requesterUid}`}>
-                            {Object.keys(usersRequests[requesterUid]).map((requestField, index) => (
-                                <React.Fragment key={`${requesterUid}${requestField}-${index}`}>
-                                    {requestField !== 'token' ?
+                    {usersRequests.map((request) => (
+                        <TableRow key={`request${request.firebaseUserIdentifier}`}>
+                            {Object.keys(request).map((requestField, index) => (
+                                <React.Fragment key={`${request.firebaseUserIdentifier}${requestField}-${index}`}>
+                                    {hidedFields.indexOf(requestField) === -1 ?
                                         <TableCell align='center'>
-                                            {usersRequests[requesterUid][requestField]}
+                                            {request[requestField]}
                                         </TableCell>
                                         :
                                         <></>
@@ -165,13 +176,13 @@ const JoinToEventRequest = ({ events }) => {
                                     variant='contained'
                                     color='primary'
                                     className={styles.AcceptButton}
-                                    onClick={() => acceptUserRequest(requesterUid, usersRequests[requesterUid])}>
+                                    onClick={() => acceptUserRequest(request.firebaseUserIdentifier, request)}>
                                     Aceptar
                                 </Button>
                                 <Button
                                     variant='contained'
                                     color='secondary'
-                                    onClick={() => deleteUserRequest(requesterUid, usersRequests[requesterUid].token)}>
+                                    onClick={() => deleteUserRequest(request.firebaseUserIdentifier, request.token)}>
                                     Rechazar
                                 </Button>
                             </TableCell>
