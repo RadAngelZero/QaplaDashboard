@@ -273,7 +273,7 @@ const CreateEvent = ({ games, platforms }) => {
                     b = b.split('-')[1];
                 }
 
-                return parseInt(a) < parseInt(b);
+                return parseInt(b) - parseInt(a);
             })[0];
 
             if (lastPlace.includes('-')) {
@@ -529,43 +529,39 @@ const CreateEvent = ({ games, platforms }) => {
                         <FormControlLabel
                             control={<Checkbox checked={isMatchesEvent} onChange={() => setIsMatchesEvent(!isMatchesEvent)} color='primary' />}
                             label='Evento de retas' />
-                        {isMatchesEvent &&
-                            <>
-                                <Typography
-                                    variant='h5'
-                                    className={styles.ItalicFont}>
-                                    Qoins a repartir
-                                </Typography>
-                                <br/>
-                                {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
-                                    <React.Fragment key={`PrizeNumberKey-${index}`}>
-                                        <QaplaTextField
-                                            label='Posición'
-                                            mini
-                                            value={prizeKey}
-                                            onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
-                                        <QaplaTextField
-                                            type='number'
-                                            label='Premio'
-                                            value={prizes[prizeKey]}
-                                            onChange={(value) => setPrizeByKey(prizeKey, value)} />
-                                        <Button onClick={() => removePrize(prizeKey)}>
-                                            <CancelIcon
-                                                color='secondary'
-                                                className={styles.RemovePrize} />
-                                        </Button>
-                                        <br/>
-                                    </React.Fragment>
-                                ))}
-                                <Button
-                                    variant='outlined'
-                                    color='secondary'
-                                    className={styles.MarginRight16}
-                                    onClick={addPrize}>
-                                    Agregar premio
-                                </Button>
-                            </>
-                        }
+                            <Typography
+                                variant='h5'
+                                className={styles.ItalicFont}>
+                                Qoins a repartir
+                            </Typography>
+                            <br/>
+                            {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
+                                <React.Fragment key={`PrizeNumberKey-${index}`}>
+                                    <QaplaTextField
+                                        label='Posición'
+                                        mini
+                                        value={prizeKey}
+                                        onChange={(value) => setPrizeRange(prizeKey, value, prizes[prizeKey])} />
+                                    <QaplaTextField
+                                        type='number'
+                                        label='Premio'
+                                        value={prizes[prizeKey]}
+                                        onChange={(value) => setPrizeByKey(prizeKey, value)} />
+                                    <Button onClick={() => removePrize(prizeKey)}>
+                                        <CancelIcon
+                                            color='secondary'
+                                            className={styles.RemovePrize} />
+                                    </Button>
+                                    <br/>
+                                </React.Fragment>
+                            ))}
+                            <Button
+                                variant='outlined'
+                                color='secondary'
+                                className={styles.MarginRight16}
+                                onClick={addPrize}>
+                                Agregar premio
+                            </Button>
                         <br/>
                     </>
                 }
