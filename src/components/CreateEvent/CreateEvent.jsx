@@ -69,7 +69,7 @@ const CreateEvent = ({ games, platforms }) => {
                 hour,
                 discordLink,
                 platform,
-                prices: isMatchesEvent ? prizes : null,
+                prices: prizes,
                 game,
                 /**
                  * At this point we use the tipoLogro field for the game, in the future we must change it
