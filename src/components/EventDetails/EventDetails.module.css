@@ -3,8 +3,16 @@
     margin-bottom: 1em;
 }
 
+.EventTitle {
+    text-align: center;
+}
+
 .MarginTop16 {
     margin-top: 1em;
+}
+
+.ItalicFont {
+    font-style: italic;
 }
 
 .MarginRight16 {
