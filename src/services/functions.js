@@ -13,5 +13,9 @@ import { functions } from './firebase';
 export async function notificateUser(uid, token, title, body, payload = {}, extraData = {}, onlyData = false) {
     const notificateUser = functions.httpsCallable('notificateUser');
 
-    return await notificateUser({ uid, token, title, body, payload, extraData, onlyData });
+    try {
+        return await notificateUser({ uid, token, title, body, payload, extraData, onlyData });
+    } catch (error) {
+        console.log(error);
+    }
 }
