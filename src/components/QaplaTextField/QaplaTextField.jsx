@@ -2,8 +2,9 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
-const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '', placeholder = '' }) => (
+const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '', placeholder = '', required = false }) => (
     <TextField
+        required={required}
         style={{
             marginRight: 16,
             marginBottom: 12,

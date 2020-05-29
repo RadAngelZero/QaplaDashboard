@@ -4,7 +4,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 
 const QaplaSelect = ({ id, children, value, label, onChange, disabled = false }) => (
-    <FormControl variant='outlined' style={{ minWidth: '30vw', marginRight: 16, marginBottom: 12 }}>
+    <FormControl variant='outlined' style={{ minWidth: '20vw', marginRight: 16, marginBottom: 12 }}>
         <InputLabel htmlFor={id}>
             {label}
         </InputLabel>
