@@ -494,20 +494,20 @@ const EventDetails = ({ events, games, platforms }) => {
                         </QaplaSelect>
                     </Grid>
                 </Grid>
-                {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
+                {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent &&
                     <Typography
                         variant='h5'
                         className={styles.ItalicFont}>
-                        Información del streamer sobre el juego
+                        Información para los participantes
                     </Typography>
                 }
                 <Grid container>
-                    {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
-                            <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
+                    {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent && Object.keys(games[platform][game].informationNeededForEvent).map((streamerDataFieldKey) => (
+                            <Grid item md={4} key={`streamerGameField-${streamerDataFieldKey}`}>
                                 <br/>
                                 <QaplaTextField
                                     label={`Streamer ${streamerDataFieldKey}`}
-                                    placeholder={games[platform][game].informationNeededToAdd[streamerDataFieldKey].hint['es']}
+                                    placeholder={games[platform][game].informationNeededForEvent[streamerDataFieldKey].hint['es']}
                                     value={streamerGameData[streamerDataFieldKey] || ''}
                                     onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
                             </Grid>
