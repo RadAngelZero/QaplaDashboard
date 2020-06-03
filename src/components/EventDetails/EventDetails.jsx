@@ -125,6 +125,13 @@ const EventDetails = ({ events, games, platforms }) => {
         const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
         const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
+        let streamerGameDataFiltered = {};
+        Object.keys(streamerGameData)
+            .filter((key) => streamerGameData[key] !== '')
+            .forEach((key) => {
+                streamerGameDataFiltered[key] = streamerGameData[key];
+            });
+
         updateEvent(
             eventId,
             {
@@ -153,12 +160,20 @@ const EventDetails = ({ events, games, platforms }) => {
                 descriptionsTitle,
                 appStringPrizes,
                 instructionsToParticipate,
-                streamerGameData,
+                streamerGameData: streamerGameDataFiltered,
                 eventEntry: eventEntry ? parseInt(eventEntry) : 0,
                 isMatchesEvent,
                 acceptAllUsers
             },
-            (error) => console.log(error ? error : 'Succesful update')
+            (error) => {
+                if (error) {
+                    console.error(error);
+                    alert('Hubo un problema al actualizar el evento');
+                    return;
+                }
+
+                alert('Evento actualizado exitosamente');
+            }
         );
     }
 
@@ -181,7 +196,7 @@ const EventDetails = ({ events, games, platforms }) => {
     }
 
     /**
-     * 
+     * Update the description title on the given language
      * @param {string} language Language code (example es, en)
      * @param {string} value Value of the description
      */
