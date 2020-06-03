@@ -10,9 +10,10 @@ const transactionsRef = database.ref('/Transactions');
 
 /**
  * Returns the events ordered by their dateUTC field
+ * @param callback Handler for the returned events
  */
-export async function loadEventsOrderByDate() {
-    return await eventsRef.orderByChild('dateUTC').once('value');
+export async function loadEventsOrderByDate(callback) {
+    return eventsRef.orderByChild('dateUTC').on('value', callback);
 }
 
 /**
