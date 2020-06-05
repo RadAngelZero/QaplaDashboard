@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +16,28 @@ import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { createEvent, updateEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
+
+const fixedPrizesValues = {
+    0: {},
+    16: {
+        '1': 500,
+        '2': 250,
+        '3': 150,
+        '4-100': 75
+    },
+    32: {
+        '1': 320,
+        '2': 250,
+        '3': 150,
+        '4-100': 75
+    },
+    64: {
+        '1': 640,
+        '2': 250,
+        '3': 150,
+        '4-100': 75
+    }
+};
 
 const CreateEvent = ({ games, platforms }) => {
     const [currentSection, setCurrentSection] = useState(0);
@@ -40,6 +62,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [streamerGameData, setStreamerGameData] = useState({});
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
+    const [participantNumber, setParticipantNumber] = useState(0);
     const history = useHistory();
 
     /**
@@ -306,6 +329,11 @@ const CreateEvent = ({ games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    const setPrizesForParticipantNumber = (participantNumber) => {
+        setParticipantNumber(participantNumber);
+        setPrizes(fixedPrizesValues[participantNumber]);
+    }
+
     /**
      * Send the user to the next step of the form
      */
@@ -539,6 +567,16 @@ const CreateEvent = ({ games, platforms }) => {
                                 className={styles.ItalicFont}>
                                 Qoins a repartir
                             </Typography>
+                            <br/>
+                            <QaplaSelect
+                                label='Numero de participantes'
+                                value={participantNumber}
+                                onChange={setPrizesForParticipantNumber}>
+                                <option value={0} />
+                                <option value={16}>16</option>
+                                <option value={32}>32</option>
+                                <option value={64}>64</option>
+                            </QaplaSelect>
                             <br/>
                             {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
                                 <React.Fragment key={`PrizeNumberKey-${index}`}>
