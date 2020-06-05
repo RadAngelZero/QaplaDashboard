@@ -20,22 +20,21 @@ import { createEventInvitationDeepLink } from '../../services/links';
 const fixedPrizesValues = {
     0: {},
     16: {
-        '1': 500,
-        '2': 250,
-        '3': 150,
-        '4-100': 75
+        '1': 100,
+        '2': 75,
+        '3': 50,
+        '4': 25,
+        '5-16': 15,
+        '17-100': 10
     },
     32: {
-        '1': 320,
-        '2': 250,
-        '3': 150,
-        '4-100': 75
-    },
-    64: {
-        '1': 640,
-        '2': 250,
-        '3': 150,
-        '4-100': 75
+        '1': 200,
+        '2': 150,
+        '3': 100,
+        '4': 50,
+        '5-8': 25,
+        '9-16': 15,
+        '17-100': 10
     }
 };
 
@@ -114,7 +113,8 @@ const CreateEvent = ({ games, platforms }) => {
                 instructionsToParticipate,
                 eventEntry: parseInt(eventEntry),
                 isMatchesEvent,
-                acceptAllUsers
+                acceptAllUsers,
+                participantNumber
             },
             async (error, key) => {
                 if (error) {
@@ -515,6 +515,21 @@ const CreateEvent = ({ games, platforms }) => {
                 }
                 {currentSection === 1 &&
                     <>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Numero de participantes
+                        </Typography>
+                        <br/>
+                        <QaplaSelect
+                            label='Numero de participantes'
+                            value={participantNumber}
+                            onChange={setPrizesForParticipantNumber}>
+                            <option value={0} />
+                            <option value={16}>16</option>
+                            <option value={32}>32</option>
+                        </QaplaSelect>
+                        <br/>
                         <Grid container>
                             {Object.keys(Languages['es'].names).map((availableLanguage) => (
                                 <Grid item md={6} key={`PrizeList-${availableLanguage}`}>
@@ -567,16 +582,6 @@ const CreateEvent = ({ games, platforms }) => {
                                 className={styles.ItalicFont}>
                                 Qoins a repartir
                             </Typography>
-                            <br/>
-                            <QaplaSelect
-                                label='Numero de participantes'
-                                value={participantNumber}
-                                onChange={setPrizesForParticipantNumber}>
-                                <option value={0} />
-                                <option value={16}>16</option>
-                                <option value={32}>32</option>
-                                <option value={64}>64</option>
-                            </QaplaSelect>
                             <br/>
                             {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey, index) => (
                                 <React.Fragment key={`PrizeNumberKey-${index}`}>

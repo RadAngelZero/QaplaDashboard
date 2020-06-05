@@ -17,6 +17,27 @@ import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { deleteEvent, updateEvent, getEventRanking, closeEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
+const fixedPrizesValues = {
+    0: {},
+    16: {
+        '1': 100,
+        '2': 75,
+        '3': 50,
+        '4': 25,
+        '5-16': 15,
+        '17-100': 10
+    },
+    32: {
+        '1': 200,
+        '2': 150,
+        '3': 100,
+        '4': 50,
+        '5-8': 25,
+        '9-16': 15,
+        '17-100': 10
+    }
+};
+
 const EventDetails = ({ events, games, platforms }) => {
     const { eventId } = useParams();
     events[eventId] = events[eventId] ? events[eventId] : {};
@@ -42,6 +63,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [eventEntry, setEventEntry] = useState(events[eventId].eventEntry ? events[eventId].eventEntry : 0);
     const [isMatchesEvent, setIsMatchesEvent] = useState(events[eventId].isMatchesEvent ? events[eventId].isMatchesEvent : false);
     const [acceptAllUsers, setAcceptAllUsers] = useState(events[eventId].acceptAllUsers ? events[eventId].acceptAllUsers : false);
+    const [participantNumber, setParticipantNumber] = useState(events[eventId].participantNumber ? events[eventId].participantNumber : 0);
 
     const history = useHistory();
 
@@ -69,7 +91,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 streamerGameData,
                 eventEntry,
                 isMatchesEvent,
-                acceptAllUsers
+                acceptAllUsers,
+                participantNumber
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -96,6 +119,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setEventEntry(eventEntry ? eventEntry : 0);
             setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
             setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
+            setParticipantNumber(participantNumber ? participantNumber : 0);
         }
     }, [events]);
 
@@ -163,7 +187,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 streamerGameData: streamerGameDataFiltered,
                 eventEntry: eventEntry ? parseInt(eventEntry) : 0,
                 isMatchesEvent,
-                acceptAllUsers
+                acceptAllUsers,
+                participantNumber
             },
             (error) => {
                 if (error) {
@@ -407,6 +432,11 @@ const EventDetails = ({ events, games, platforms }) => {
      */
     const goToEventParticipants = () => history.push(`/event/participants/${eventId}`);
 
+    const setPrizesForParticipantNumber = (participantNumber) => {
+        setParticipantNumber(participantNumber);
+        setPrizes(fixedPrizesValues[participantNumber]);
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -553,6 +583,21 @@ const EventDetails = ({ events, games, platforms }) => {
                             onChange={setHour} />
                     </Grid>
                 </Grid>
+                <br/>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Numero de participantes
+                </Typography>
+                <br/>
+                <QaplaSelect
+                    label='Numero de participantes'
+                    value={participantNumber}
+                    onChange={setPrizesForParticipantNumber}>
+                    <option value={0} />
+                    <option value={16}>16</option>
+                    <option value={32}>32</option>
+                </QaplaSelect>
                 <br/>
                 <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
