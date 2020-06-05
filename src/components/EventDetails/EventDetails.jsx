@@ -428,7 +428,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 <br/>
                 <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={3} key={`Title-${availableLanguage}`}>
+                        <Grid item md={4} key={`Title-${availableLanguage}`}>
                             <QaplaTextField
                                 key={`title-${availableLanguage}`}
                                 label={`Titulo ${Languages['es'].names[availableLanguage]}`}
@@ -441,7 +441,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 <br/>
                 <Grid container>
                     {Object.keys(Languages['es'].names).map((availableLanguage) => (
-                        <Grid item md={3} key={`Description-${availableLanguage}`}>
+                        <Grid item md={4} key={`Description-${availableLanguage}`}>
                             <QaplaTextField
                                 label={`Titulo de la descripción ${Languages['es'].names[availableLanguage]}`}
                                 value={descriptionsTitle[availableLanguage] || ''}
@@ -503,7 +503,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 }
                 <Grid container>
                     {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
-                            <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
+                            <Grid item md={4} key={`streamerGameField-${streamerDataFieldKey}`}>
                                 <br/>
                                 <QaplaTextField
                                     label={`Streamer ${streamerDataFieldKey}`}
@@ -521,7 +521,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 </Typography>
                 <br/>
                 <Grid container>
-                    <Grid item md={3}>
+                    <Grid item md={4}>
                         <QaplaTextField
                             label='Fecha (CST)'
                             variant='outlined'
@@ -529,7 +529,7 @@ const EventDetails = ({ events, games, platforms }) => {
                             value={date}
                             onChange={setDate} />
                     </Grid>
-                    <Grid item md={3}>
+                    <Grid item md={4}>
                         <QaplaTextField
                             label='Hora (CST 24 horas)'
                             variant='outlined'
