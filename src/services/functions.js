@@ -19,3 +19,21 @@ export async function notificateUser(uid, token, title, body, payload = {}, extr
         console.log(error);
     }
 }
+
+/**
+ * Send a push notification to the given topic
+ * @param {string} topic Topic identifier
+ * @param {object} titles Titles of the push notification (in different languages)
+ * @param {object} bodys Bodys of the push notification (in different languages)
+ * @param {object} extraData Data to send with the notification
+ * @param {boolean} onlyData True if the message is an only data message, false for push notification
+ */
+export async function notificateToTopic(topic, titles, bodys, extraData = {}, onlyData = false) {
+    const notificateToTopic = functions.httpsCallable('notificateToTopic');
+
+    try {
+        return await notificateToTopic({ topic, titles, bodys, extraData, onlyData });
+    } catch (error) {
+        console.log(error);
+    }
+}
