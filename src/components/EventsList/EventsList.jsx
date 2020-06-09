@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 
 import styles from './EventsList.module.css'
 import EventCard from '../EventCard/EventCard';
-import { getDateElementsAsNumber } from '../../utils/utils';
+import { getDateElementsAsNumber, getHourElementsAsNumber } from '../../utils/utils';
 import { Toolbar } from '@material-ui/core';
 
 const EventListOfTheDay = ({ day, initialShow }) => {
@@ -64,8 +64,10 @@ const EventsList = ({ events }) => {
     // Fill orderedEvents array for the SectionList of the LogrosList component
     .reverse().forEach((event) => {
         let [day, month, year] = getDateElementsAsNumber(event.dateUTC);
+        let [hour, minute] = getHourElementsAsNumber(event.hourUTC);
+        const localDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
-        const eventSectionTitle = `${day}/${month}/${year}`;
+        const eventSectionTitle = `${localDate.getDate()}/${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
 
         if (orderedEvents.some((eventsOfTheDay) => eventsOfTheDay.title === eventSectionTitle)) {
             orderedEvents[orderedEvents.length - 1].data.push(event);
