@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -39,6 +40,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [streamerGameData, setStreamerGameData] = useState({});
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
+    const history = useHistory();
 
     /**
      * Format the dates and save the event on the database
@@ -93,21 +95,25 @@ const CreateEvent = ({ games, platforms }) => {
             },
             async (error, key) => {
                 if (error) {
-                    console.error(error)
-                } else {
-                    const links = {};
-
-                    /**
-                     * We create one link for every language we support
-                     */
-                    for (let i = 0; i < Object.keys(Languages).length; i++) {
-                        const language = Object.keys(Languages)[i];
-                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
-                    }
-
-                    setEventLinks(links);
-                    updateEvent(key, { eventLinks: links });
+                    console.error(error);
+                    alert('Hubo un problema al crear el evento');
+                    return;
                 }
+
+                const links = {};
+
+                /**
+                 * We create one link for every language we support
+                 */
+                for (let i = 0; i < Object.keys(Languages).length; i++) {
+                    const language = Object.keys(Languages)[i];
+                    links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
+                }
+
+                setEventLinks(links);
+                updateEvent(key, { eventLinks: links });
+                alert('Evento publicado exitosamente');
+                history.push('');
             }
         );
     }
@@ -430,21 +436,20 @@ const CreateEvent = ({ games, platforms }) => {
                                 </QaplaSelect>
                             </Grid>
                         </Grid>
-                        {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd &&
+                        {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent &&
                             <Typography
                                 variant='h5'
                                 className={styles.ItalicFont}>
-                                Información del streamer sobre el juego
+                                Información para los participantes
                             </Typography>
                         }
                         <Grid container>
-                            {game && games[platform] && games[platform][game] && games[platform][game].informationNeededToAdd && Object.keys(games[platform][game].informationNeededToAdd).map((streamerDataFieldKey) => (
+                            {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent && Object.keys(games[platform][game].informationNeededForEvent).map((streamerDataFieldKey) => (
                                     <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
                                         <br/>
                                         <QaplaTextField
-                                            required
                                             label={`Streamer ${streamerDataFieldKey}`}
-                                            placeholder={games[platform][game].informationNeededToAdd[streamerDataFieldKey].hint['es']}
+                                            placeholder={games[platform][game].informationNeededForEvent[streamerDataFieldKey].hint['es']}
                                             value={streamerGameData[streamerDataFieldKey]}
                                             onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
                                     </Grid>

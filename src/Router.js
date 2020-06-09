@@ -33,19 +33,6 @@ const Router = () => {
     useEffect(() => {
 
         /**
-         * Load and save all the events on the state
-         */
-        async function loadEventsData() {
-            const eventsData = await loadEventsOrderByDate();
-            let eventObject = {};
-            eventsData.forEach((event) => {
-                eventObject[event.key] = event.val();
-            });
-
-            setEvents(eventObject);
-        }
-
-        /**
          * Load and save all the games on the state
          */
         async function loadGamesResources() {
@@ -59,10 +46,19 @@ const Router = () => {
             setPlatforms(await loadQaplaPlatforms());
         }
 
-        loadEventsData();
+        loadEventsOrderByDate(loadEventsData);
         loadGamesResources();
         loadPlatformsResources();
     }, []);
+
+    /**
+     * Load and save all the events on the state
+     */
+    const loadEventsData = (eventsData) => {
+        if (eventsData.exists()) {
+            setEvents(eventsData.val());
+        }
+    }
 
     const eventsLoaded = events ? events : {};
 
