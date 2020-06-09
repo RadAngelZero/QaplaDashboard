@@ -14,22 +14,25 @@ const EventParticipantsList = () => {
     const { eventId } = useParams();
     const [eventParticipants, setEventParticipants] = useState({});
     const [eventFields, setEventFields] = useState([]);
+    const hidedFields = ['token', 'timeStamp', 'firebaseUserIdentifier', 'eventEntry'];
 
     useEffect(() => {
         async function getParticipants() {
             const eventParticipants = await getEventParticipants(eventId);
-            let eventFields = {};
+            if (eventParticipants) {
+                let eventFields = {};
 
-            Object.keys(eventParticipants).some((userKey) => {
-                eventFields = Object.getOwnPropertyNames(eventParticipants[userKey]);
+                Object.keys(eventParticipants).some((userKey) => {
+                    eventFields = Object.getOwnPropertyNames(eventParticipants[userKey]);
 
-                delete eventFields.token;
+                    delete eventFields.token;
 
-                return true;
-            });
+                    return true;
+                });
 
-            setEventParticipants(eventParticipants);
-            setEventFields(eventFields);
+                setEventParticipants(eventParticipants);
+                setEventFields(eventFields);
+            }
         }
 
         getParticipants();
@@ -41,33 +44,31 @@ const EventParticipantsList = () => {
                 <TableHead>
                     <TableRow>
                         {eventFields.map((eventField) => (
-                            <>
-                            {eventField !== 'token' ?
-                                <TableCell key={eventField} align='center'>
+                            <React.Fragment key={eventField}>
+                            {hidedFields.indexOf(eventField) === -1 ?
+                                <TableCell align='center'>
                                     {eventField}
                                 </TableCell>
                                 :
                                 <></>
                             }
-                            </>
+                            </React.Fragment>
                         ))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Object.keys(eventParticipants).map((requesterUid, index) => (
+                    {eventParticipants && Object.keys(eventParticipants).map((requesterUid, index) => (
                         <TableRow key={`requestNumber${index}`}>
                             {Object.keys(eventParticipants[requesterUid]).map((requestField, index) => (
-                                <>
-                                    {requestField !== 'token' ?
-                                        <TableCell
-                                            align='center'
-                                            key={`${index}${eventParticipants[requesterUid][requestField]}`}>
+                                <React.Fragment key={`${index}${eventParticipants[requesterUid][requestField]}`}>
+                                    {hidedFields.indexOf(requestField) === -1?
+                                        <TableCell align='center'>
                                             {eventParticipants[requesterUid][requestField]}
                                         </TableCell>
                                         :
                                         <></>
                                     }
-                                </>
+                                </React.Fragment>
                             ))}
                         </TableRow>
                     ))}

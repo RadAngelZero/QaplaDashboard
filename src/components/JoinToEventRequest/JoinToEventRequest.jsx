@@ -17,7 +17,7 @@ const JoinToEventRequest = ({ events }) => {
     const { eventId } = useParams();
     const [usersRequests, setUsersRequests] = useState([]);
     const [eventFields, setEventFields] = useState([]);
-    const hidedFields = ['token', 'timeStamp', 'firebaseUserIdentifier'];
+    const hidedFields = ['token', 'timeStamp', 'firebaseUserIdentifier', 'eventEntry'];
 
     useEffect(() => {
         getEventJoinRequests(eventId, loadUserRequests);
@@ -33,6 +33,7 @@ const JoinToEventRequest = ({ events }) => {
      * @param {object} usersRequest Requests of the user
      */
     const loadUserRequests = (usersRequest) => {
+        console.log(usersRequest.val());
         if (usersRequest.exists()) {
             let eventFields = {};
             Object.keys(usersRequest.val())
@@ -118,17 +119,21 @@ const JoinToEventRequest = ({ events }) => {
             rejectEventJoinRequest(uid, eventId);
             const userLanguage = await getUserLanguage(uid);
 
-            notificateUser(
-                uid,
-                token,
-                rejectNotificationContent[userLanguage].title,
-                rejectNotificationContent[userLanguage].body,
-                {},
-                {
-                    navigateTo: 'Achievements',
-                    eventId
-                }
-            );
+            try {
+                notificateUser(
+                    uid,
+                    token,
+                    rejectNotificationContent[userLanguage].title,
+                    rejectNotificationContent[userLanguage].body,
+                    {},
+                    {
+                        navigateTo: 'Achievements',
+                        eventId
+                    }
+                );
+            } catch (e) {
+                console.log(e);
+            }
         }
 
         if (events[eventId].eventEntry) {
