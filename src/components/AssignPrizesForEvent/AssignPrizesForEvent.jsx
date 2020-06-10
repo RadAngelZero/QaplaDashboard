@@ -13,7 +13,7 @@ import styles from './AssignPrizesForEvent.module.css';
 import { getEventParticipants } from '../../services/database';
 import ApproveQoinsDistributionDialog from './../ApproveQoinsDistributionDialog/ApproveQoinsDistributionDialog';
 
-const AssignPrizesForEvent = () => {
+const AssignPrizesForEvent = ({ events }) => {
     const [ users, setUsers ] = useState([]);
     const [openApproveDialog, setOpenApproveDialog] = useState(false);
     const { eventId } = useParams();
@@ -46,7 +46,7 @@ const AssignPrizesForEvent = () => {
                         workBook.SheetNames.forEach((sheetName) => {
                             xlsx.utils.sheet_to_json(workBook.Sheets[sheetName])
                             // Sort users by prize (just because we need to show this data after)
-                            .sort((a, b) => b['Qoins'] - a['Qoins'])
+                            .sort((a, b) => a['Place'] - b['Place'])
                             .forEach((row) => {
                                 usersArray.push(row);
                             });
@@ -74,13 +74,22 @@ const AssignPrizesForEvent = () => {
         const participants = await getEventParticipants(eventId);
 
         const participantsData = Object.keys(participants).map((participant) => {
-            const { email, gamerTag, userName } = participants[participant];
+            const { email, userName } = participants[participant];
+            delete participants[participant].eventEntry;
+            delete participants[participant].timeStamp;
+            delete participants[participant].token;
+            delete participants[participant].matchesPlayed;
+            delete participants[participant].priceQaploins;
+            delete participants[participant].victories;
+            delete participants[participant].firebaseUserIdentifier;
+            delete participants[participant].email;
+            delete participants[participant].userName;
             return {
-                Uid: participant,
+                'Qapla ID': participant,
                 Email: email,
-                GamerTag: gamerTag,
                 UserName: userName,
-                Qoins: 0
+                ...participants[participant],
+                Place: null
             }
         });
 
@@ -88,7 +97,7 @@ const AssignPrizesForEvent = () => {
 
         let newWorkBook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(newWorkBook, dataToWrite, 'Participants');
-        xlsx.writeFile(newWorkBook, `${eventId}.xlsx`);
+        xlsx.writeFile(newWorkBook, `${events[eventId].titulo}.xlsx`);
     }
 
     return (
@@ -121,6 +130,7 @@ const AssignPrizesForEvent = () => {
                 <ApproveQoinsDistributionDialog
                     open={openApproveDialog}
                     users={users}
+                    eventId={eventId}
                     onClose={() => setOpenApproveDialog(false)} />
             </Grid>
         </Container>

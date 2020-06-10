@@ -84,7 +84,7 @@ const Router = () => {
                     <EventsList events={eventsLoaded} />
                 </Route>
                 <Route exact path='/event/prizes/:eventId'>
-                    <AssignPrizesForEvent />
+                    <AssignPrizesForEvent events={eventsLoaded} />
                 </Route>
                 <Route exact path='/event/details/:eventId'>
                     <EventDetails

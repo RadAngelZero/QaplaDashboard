@@ -142,6 +142,24 @@ export async function distributeQoinsToMultipleUsers(transactionArray) {
 }
 
 /**
+ * Upload the results of an event to the EventParticipants node and close the event after
+ * so the qoins are distributed by a cloud function
+ * @param {Array} placesArray Array with the participants data (uid and place at least)
+ */
+export async function uploadEventResults(eventId, placesArray) {
+    let updateEventPoints = {};
+    placesArray.sort((a, b) => parseInt(a.place) - parseInt(b.place))
+    .forEach((participant, index) => {
+        updateEventPoints[`/${participant.uid}/matchesPlayed`] = placesArray.length;
+        updateEventPoints[`/${participant.uid}/victories`] = placesArray.length - index;
+        updateEventPoints[`/${participant.uid}/priceQaploins`] = ((placesArray.length - index) * 3) + index;
+    });
+    await eventsParticipantsRef.child(eventId).update(updateEventPoints);
+
+    closeEvent(eventId);
+}
+
+/**
  * Return the current amount of qaploins of specific user
  * @param {string} uid User identifier of firebase node
  * @returns {object} Qoins of the given user
