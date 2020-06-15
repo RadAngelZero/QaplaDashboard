@@ -248,13 +248,13 @@ export async function rejectEventJoinRequest(uid, eventId) {
 export function addQoinsToUser(uid, qoinsToAdd) {
     try {
         usersRef.child(uid).child('credits').transaction((credits) => {
-            if (credits) {
+            if (typeof credits === 'number') {
                 return credits + qoinsToAdd;
             }
 
             return credits;
-        }, (error, b, c) => {
-            console.log(error, b, c.val());
+        }, (error) => {
+            console.log(error);
         });
     } catch (error) {
         console.error(error);
