@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +16,27 @@ import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { createEvent, updateEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
+
+const fixedPrizesValues = {
+    0: {},
+    16: {
+        '1': 100,
+        '2': 75,
+        '3': 50,
+        '4': 25,
+        '5-16': 15,
+        '17-100': 10
+    },
+    32: {
+        '1': 200,
+        '2': 150,
+        '3': 100,
+        '4': 50,
+        '5-8': 25,
+        '9-16': 15,
+        '17-100': 10
+    }
+};
 
 const CreateEvent = ({ games, platforms }) => {
     const [currentSection, setCurrentSection] = useState(0);
@@ -40,6 +61,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [streamerGameData, setStreamerGameData] = useState({});
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
+    const [participantNumber, setParticipantNumber] = useState(0);
     const history = useHistory();
 
     /**
@@ -91,7 +113,8 @@ const CreateEvent = ({ games, platforms }) => {
                 instructionsToParticipate,
                 eventEntry: parseInt(eventEntry),
                 isMatchesEvent,
-                acceptAllUsers
+                acceptAllUsers,
+                participantNumber
             },
             async (error, key) => {
                 if (error) {
@@ -306,6 +329,11 @@ const CreateEvent = ({ games, platforms }) => {
         setPrizes(prizesCopy);
     }
 
+    const setPrizesForParticipantNumber = (participantNumber) => {
+        setParticipantNumber(participantNumber);
+        setPrizes(fixedPrizesValues[participantNumber]);
+    }
+
     /**
      * Send the user to the next step of the form
      */
@@ -487,6 +515,21 @@ const CreateEvent = ({ games, platforms }) => {
                 }
                 {currentSection === 1 &&
                     <>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Numero de participantes
+                        </Typography>
+                        <br/>
+                        <QaplaSelect
+                            label='Numero de participantes'
+                            value={participantNumber}
+                            onChange={setPrizesForParticipantNumber}>
+                            <option value={0} />
+                            <option value={16}>16</option>
+                            <option value={32}>32</option>
+                        </QaplaSelect>
+                        <br/>
                         <Grid container>
                             {Object.keys(Languages['es'].names).map((availableLanguage) => (
                                 <Grid item md={6} key={`PrizeList-${availableLanguage}`}>

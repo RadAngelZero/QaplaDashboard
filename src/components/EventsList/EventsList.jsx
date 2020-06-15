@@ -6,8 +6,10 @@ import styles from './EventsList.module.css'
 import EventCard from '../EventCard/EventCard';
 import { getDateElementsAsNumber, getHourElementsAsNumber } from '../../utils/utils';
 import { Toolbar } from '@material-ui/core';
+import SendPushNotificationDialog from '../SendPushNotificationDialog/SendPushNotificationDialog';
+import { getEventParticipants } from '../../services/database';
 
-const EventListOfTheDay = ({ day, initialShow }) => {
+const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
     const [show, setShow] = useState(initialShow);
 
     return (
@@ -26,6 +28,7 @@ const EventListOfTheDay = ({ day, initialShow }) => {
                     {day.data.map((event, index) => (
                         <EventCard
                             key={index}
+                            setSelectedEvent={setSelectedEventKey}
                             eventKey={event.idLogro}
                             photoUrl={event.photoUrl}
                             title={event.titulo}
@@ -39,6 +42,7 @@ const EventListOfTheDay = ({ day, initialShow }) => {
 }
 
 const EventsList = ({ events }) => {
+    const [selectedEventKey, setSelectedEventKey] = useState(null);
     const orderedEvents = [];
 
     Object.keys(events).filter((eventKey) => {
@@ -81,8 +85,13 @@ const EventsList = ({ events }) => {
             {orderedEvents.map((dayEvents, index) => (
                 <EventListOfTheDay
                     initialShow={index < 6}
-                    day={dayEvents} />
+                    day={dayEvents}
+                    setSelectedEventKey={setSelectedEventKey} />
             ))}
+            <SendPushNotificationDialog
+                open={Boolean(selectedEventKey)}
+                onClose={() => setSelectedEventKey(null)}
+                topic={selectedEventKey} />
         </Container>
     );
 }
