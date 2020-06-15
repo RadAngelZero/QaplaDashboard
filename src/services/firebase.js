@@ -2,8 +2,8 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/functions';
 
-/* Uncomment for testing
-const firebaseTESTConfig = {
+//Uncomment for testing
+/* const firebaseTESTConfig = {
     apiKey: "AIzaSyAe5CB9vnrEsqxv39UkymWB90T1Pc4LDkw",
     authDomain: "qaplatesting.firebaseapp.com",
     databaseURL: "https://qaplatesting.firebaseio.com",
@@ -16,7 +16,7 @@ const firebaseTESTConfig = {
 
 firebase.initializeApp(firebaseTESTConfig); */
 
-// Comment for testing
+ // Comment for testing
 const firebaseConfig = {
     apiKey: "AIzaSyAwrwwTRiyYV7-SzOvE6kEteE0lmYhBe8c",
     authDomain: "qapplaapp.firebaseapp.com",
