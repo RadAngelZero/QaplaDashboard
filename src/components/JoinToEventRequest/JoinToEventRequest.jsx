@@ -79,6 +79,8 @@ const JoinToEventRequest = ({ events }) => {
             }
         };
 
+        delete userData.firebaseUserIdentifier;
+
         approveEventJoinRequest(uid, eventId, userData);
         const userLanguage = await getUserLanguage(uid);
 

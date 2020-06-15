@@ -816,7 +816,7 @@ const EventDetails = ({ events, games, platforms }) => {
                     </Button>
                     {active &&
                         <>
-                            {games && games[platform] && games[platform][game] ?
+                            {isMatchesEvent ?
                                 <>
                                     <Button
                                         variant='contained'

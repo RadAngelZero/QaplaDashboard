@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,17 +15,28 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import styles from './ApproveQoinsDistributionDialog.module.css';
-import { distributeQoinsToMultipleUsers } from '../../services/database';
+import { uploadEventResults } from '../../services/database';
 
-const ApproveQoinsDistributionDialog = ({ open, onClose, users }) => {
-    const distributeQoins = () => {
+const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId }) => {
+    const [userFields, setUserFields] = useState([]);
+    const hidedFields = ['__rowNum__', 'Qapla ID'];
+
+    useEffect(() => {
+        users.some((user) => {
+            setUserFields(Object.getOwnPropertyNames(user));
+
+            return true;
+        });
+    }, [open]);
+
+    const distributeQoins = async () => {
         const usersToAssignQoins = users
-        // Filter users with no qoins (or negative qoins)
-        .filter((user) => user.Qoins && user.Qoins > 0)
-        // Create a valid object for the distributeQoinsToMultipleUsers function
-        .map((user) => ({ uid: user.Uid, qoins: user.Qoins }));
+        // Filter users with no Place
+        .filter((user) => user.Place)
+        // Create a valid object for the uploadEventResults function
+        .map((user) => ({ uid: user['Qapla ID'], place: user.Place }));
 
-        distributeQoinsToMultipleUsers(usersToAssignQoins);
+        await uploadEventResults(eventId, usersToAssignQoins);
 
         onClose();
     }
@@ -48,26 +59,26 @@ const ApproveQoinsDistributionDialog = ({ open, onClose, users }) => {
             <TableContainer component={Paper}>
                 <Table stickyHeader>
                     <TableHead>
-                    <TableRow>
-                        <TableCell align='center'>User id</TableCell>
-                        <TableCell align='center'>GamerTag</TableCell>
-                        <TableCell align='center'>UserName</TableCell>
-                        <TableCell align='center'>Qoins Ganados</TableCell>
-                        <TableCell align='center'>Email</TableCell>
-                    </TableRow>
+                        <TableRow>
+                            {userFields.map((field) => (
+                                <React.Fragment key={field}>
+                                    {hidedFields.indexOf(field) === -1 &&
+                                        <TableCell align='center'>{field}</TableCell>
+                                    }
+                                </React.Fragment>
+                            ))}
+                        </TableRow>
                     </TableHead>
                     <TableBody>
                     {users.map((user) => (
-                        <TableRow key={user.Uid}>
-                            <TableCell align='center'>{user.Uid}</TableCell>
-                            <TableCell align='center'>{user.GamerTag}</TableCell>
-                            <TableCell align='center'>{user.UserName}</TableCell>
-                            <TableCell align='center'>
-                                <Typography>
-                                    {user.Qoins}
-                                </Typography>
-                            </TableCell>
-                            <TableCell align='center'>{user.Email}</TableCell>
+                        <TableRow key={user['Qapla ID']}>
+                            {user.Place && userFields.map((userField) => (
+                                <React.Fragment key={`${userField}-${user['Qapla ID']}`}>
+                                    {hidedFields.indexOf(userField) === -1 &&
+                                        <TableCell align='center'>{user[userField]}</TableCell>
+                                    }
+                                </React.Fragment>
+                            ))}
                         </TableRow>
                     ))}
                     </TableBody>
