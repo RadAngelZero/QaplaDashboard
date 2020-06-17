@@ -56,14 +56,19 @@ const EventsList = ({ events }) => {
     .map((eventKey) => events[eventKey])
     // Sort the events by date
     .sort((a, b) => {
-        const [aDay, aMonth] = getDateElementsAsNumber(a.dateUTC);
-        const [bDay, bMonth] = getDateElementsAsNumber(b.dateUTC);
+        const [aDay, aMonth, aYear] = getDateElementsAsNumber(a.dateUTC);
+            const [aHour, aMinute] = getHourElementsAsNumber(a.hourUTC);
+            const [bDay, bMonth, bYear] = getDateElementsAsNumber(b.dateUTC);
+            const [bHour, bMinute] = getHourElementsAsNumber(b.hourUTC);
 
-        if (aMonth === bMonth) {
-            return aDay - bDay;
-        }
+            if (aMonth > bMonth) {
+                return 1;
+            }
 
-        return aMonth - bMonth;
+            const aEventDate = new Date(Date.UTC(aYear, aMonth - 1, aDay, aHour, aMinute));
+            const bEventDate = new Date(Date.UTC(bYear, bMonth - 1, bDay, bHour, bMinute));
+
+            return aEventDate.getTime() - bEventDate.getTime();
     })
     // Fill orderedEvents array for the SectionList of the LogrosList component
     .reverse().forEach((event) => {
