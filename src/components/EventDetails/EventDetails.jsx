@@ -127,8 +127,14 @@ const EventDetails = ({ events, games, platforms }) => {
      * Delete the event from the database
      */
     const removeEventFromDatabase = () => {
-        deleteEvent(eventId, (error) => console.log(error ? error : 'Succesful delete'));
+        deleteEvent(eventId, (error) => {
+            alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
+            if (!error) {
+                history.push(`/`);
+            }
+        });
     }
+
 
     /**
      * Update the event on the database
