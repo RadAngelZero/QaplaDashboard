@@ -91,14 +91,24 @@ export async function getEventRanking(eventId) {
 /**
  * Get the ranking of the given event
  * @param {string} eventId Event identifier
+ * @param {callback} loadParticipantList Handle the list of participants
  * @returns {Object} Object of users object with fields
  * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- For every user
  */
-export async function getEventParticipants(eventId) {
+export async function getEventParticipants(eventId, loadParticipantList) {
     /**
      * Get only participants with at least one match played
      */
-    return (await eventsParticipantsRef.child(eventId).once('value')).val();
+    eventsParticipantsRef.child(eventId).on('value', (d) => loadParticipantList(d.val()));
+}
+
+/**
+ * Removes a participant from the given event
+ * @param {string} uid User identifier
+ * @param {string} eventId Event identifier
+ */
+export async function removeEventParticipant(uid, eventId) {
+    eventsParticipantsRef.child(eventId).child(uid).remove();
 }
 
 /**
