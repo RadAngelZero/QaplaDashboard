@@ -59,9 +59,9 @@ const EventParticipantsList = () => {
                 <TableBody>
                     {eventParticipants && Object.keys(eventParticipants).map((requesterUid, index) => (
                         <TableRow key={`requestNumber${index}`}>
-                            {Object.keys(eventParticipants[requesterUid]).map((requestField, index) => (
+                            {eventFields.map((requestField, index) => (
                                 <React.Fragment key={`${index}${eventParticipants[requesterUid][requestField]}`}>
-                                    {hidedFields.indexOf(requestField) === -1?
+                                    {hidedFields.indexOf(requestField) === -1 ?
                                         <TableCell align='center'>
                                             {eventParticipants[requesterUid][requestField]}
                                         </TableCell>
