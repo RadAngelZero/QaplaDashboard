@@ -30,6 +30,8 @@ const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
                             key={index}
                             setSelectedEvent={setSelectedEventKey}
                             eventKey={event.idLogro}
+                            streamerPhoto={event.streamerPhoto}
+                            streamerName={event.streamerName}
                             photoUrl={event.photoUrl}
                             title={event.titulo}
                             description={event.description}
