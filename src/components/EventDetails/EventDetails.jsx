@@ -443,6 +443,29 @@ const EventDetails = ({ events, games, platforms }) => {
         setPrizes(fixedPrizesValues[participantNumber]);
     }
 
+    const addInformationNeededForEvent = () => {
+        const name = window.prompt('Nombre del campo a agregar:', `${games[platform][game].name} ID`);
+        if (name) {
+            if (!games[platform][game].informationNeededForEvent) {
+                games[platform][game].informationNeededForEvent = {};
+            }
+
+            games[platform][game].informationNeededForEvent[name] = {};
+            games[platform][game].informationNeededForEvent[name].hint = {};
+            Object.keys(Languages).forEach((language) => {
+                games[platform][game].informationNeededForEvent[name].hint[language] = name;
+            });
+            setStreamerGameData({ ...streamerGameData, [name]: '' });
+        }
+    }
+
+    const setSelectedGame = (value) => {
+        setGame(value);
+        setStreamerGameData({});
+    }
+
+    console.log(streamerGameData);
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -535,7 +558,7 @@ const EventDetails = ({ events, games, platforms }) => {
                             id='Game'
                             disabled={!games[platform]}
                             value={game}
-                            onChange={setGame}>
+                            onChange={setSelectedGame}>
                             <option aria-label='None' value='' />
                             {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
                                 <option key={gameKey} value={gameKey}>
@@ -545,24 +568,33 @@ const EventDetails = ({ events, games, platforms }) => {
                         </QaplaSelect>
                     </Grid>
                 </Grid>
-                {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent &&
-                    <Typography
-                        variant='h5'
-                        className={styles.ItalicFont}>
-                        Información para los participantes
-                    </Typography>
-                }
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Información para los participantes
+                </Typography>
                 <Grid container>
-                    {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent && Object.keys(games[platform][game].informationNeededForEvent).map((streamerDataFieldKey) => (
-                            <Grid item md={4} key={`streamerGameField-${streamerDataFieldKey}`}>
-                                <br/>
-                                <QaplaTextField
-                                    label={`Streamer ${streamerDataFieldKey}`}
-                                    placeholder={games[platform][game].informationNeededForEvent[streamerDataFieldKey].hint['es']}
-                                    value={streamerGameData[streamerDataFieldKey] || ''}
-                                    onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
-                            </Grid>
+                    {Object.keys(streamerGameData).map((streamerDataFieldKey) => (
+                        <Grid item md={4} key={`streamerGameField-${streamerDataFieldKey}`}>
+                            <br/>
+                            <QaplaTextField
+                                label={streamerDataFieldKey}
+                                placeholder={streamerDataFieldKey}
+                                value={streamerGameData[streamerDataFieldKey] || ''}
+                                onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
+                        </Grid>
                     ))}
+                    {game && games[platform] && games[platform][game] &&
+                        <Grid item md={12}>
+                            <Button
+                                variant='outlined'
+                                color='secondary'
+                                className={styles.MarginRight16}
+                                onClick={addInformationNeededForEvent}>
+                                Agregar campo
+                            </Button>
+                        </Grid>
+                    }
                 </Grid>
                 <br/>
                 <Typography
