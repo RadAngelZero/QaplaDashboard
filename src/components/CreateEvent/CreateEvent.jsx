@@ -371,6 +371,9 @@ const CreateEvent = ({ games, platforms }) => {
         }
     }
 
+    /**
+     * Add a custom field for the streamerGameData
+     */
     const addInformationNeededForEvent = () => {
         const name = window.prompt('Nombre del campo a agregar:', `${games[platform][game].name} ID`);
         if (name) {
@@ -387,6 +390,10 @@ const CreateEvent = ({ games, platforms }) => {
         }
     }
 
+    /**
+     * Update the selected game and delete all the streamerGameData
+     * @param {string} value New game value
+     */
     const setSelectedGame = (value) => {
         setGame(value);
         setStreamerGameData({});
