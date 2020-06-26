@@ -371,6 +371,34 @@ const CreateEvent = ({ games, platforms }) => {
         }
     }
 
+    /**
+     * Add a custom field for the streamerGameData
+     */
+    const addInformationNeededForEvent = () => {
+        const name = window.prompt('Nombre del campo a agregar:', `${games[platform][game].name} ID`);
+        if (name) {
+            if (!games[platform][game].informationNeededForEvent) {
+                games[platform][game].informationNeededForEvent = {};
+            }
+
+            games[platform][game].informationNeededForEvent[name] = {};
+            games[platform][game].informationNeededForEvent[name].hint = {};
+            Object.keys(Languages).forEach((language) => {
+                games[platform][game].informationNeededForEvent[name].hint[language] = name;
+            });
+            setStreamerGameData({ ...streamerGameData, [name]: '' });
+        }
+    }
+
+    /**
+     * Update the selected game and delete all the streamerGameData
+     * @param {string} value New game value
+     */
+    const setSelectedGame = (value) => {
+        setGame(value);
+        setStreamerGameData({});
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <form onSubmit={saveEventOnDatabase}>
@@ -454,7 +482,7 @@ const CreateEvent = ({ games, platforms }) => {
                                     id='Game'
                                     disabled={!games[platform]}
                                     value={game}
-                                    onChange={setGame}>
+                                    onChange={(value) => setSelectedGame(value)}>
                                     <option aria-label='None' value='' />
                                     {games && games[platform] && Object.keys(games[platform]).map((gameKey) => (
                                         <option key={gameKey} value={gameKey}>
@@ -473,15 +501,27 @@ const CreateEvent = ({ games, platforms }) => {
                         }
                         <Grid container>
                             {game && games[platform] && games[platform][game] && games[platform][game].informationNeededForEvent && Object.keys(games[platform][game].informationNeededForEvent).map((streamerDataFieldKey) => (
-                                    <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
-                                        <br/>
-                                        <QaplaTextField
-                                            label={`Streamer ${streamerDataFieldKey}`}
-                                            placeholder={games[platform][game].informationNeededForEvent[streamerDataFieldKey].hint['es']}
-                                            value={streamerGameData[streamerDataFieldKey]}
-                                            onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
-                                    </Grid>
+                                <Grid item md={3} key={`streamerGameField-${streamerDataFieldKey}`}>
+                                    <br/>
+                                    <QaplaTextField
+                                        label={streamerDataFieldKey}
+                                        placeholder={games[platform][game].informationNeededForEvent[streamerDataFieldKey].hint['es']}
+                                        value={streamerGameData[streamerDataFieldKey] || ''}
+                                        onChange={(value) => setStreamerGameData({ ...streamerGameData, [streamerDataFieldKey]: value })} />
+                                </Grid>
                             ))}
+                            <br/>
+                            {game && games[platform] && games[platform][game] &&
+                                <Grid item md={12}>
+                                    <Button
+                                        variant='outlined'
+                                        color='secondary'
+                                        className={styles.MarginRight16}
+                                        onClick={addInformationNeededForEvent}>
+                                        Agregar campo
+                                    </Button>
+                                </Grid>
+                            }
                         </Grid>
                         <br/>
                         <Typography
