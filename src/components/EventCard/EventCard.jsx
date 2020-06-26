@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import styles from './EventCard.module.css';
 
-const EventCard = ({ eventKey, photoUrl, title, description, setSelectedEvent }) => {
+const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, setSelectedEvent }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const history = useHistory();
 
@@ -27,8 +28,7 @@ const EventCard = ({ eventKey, photoUrl, title, description, setSelectedEvent })
     const goToEventDetails = () => history.push(`/event/details/${eventKey}`);
 
     return (
-            <Card
-                className={styles.EventCard}>
+            <Card className={styles.EventCard}>
                 <CardActionArea onClick={goToEventDetails}>
                     <div className={styles.EventCardDetailsContainer}>
                         <CardContent className={styles.EventCardDetailsContent}>
@@ -40,10 +40,6 @@ const EventCard = ({ eventKey, photoUrl, title, description, setSelectedEvent })
                             </Typography>
                         </CardContent>
                     </div>
-                    <CardMedia
-                        className={styles.EventCardImage}
-                        image={photoUrl}
-                        title='Live from space album cover' />
                 </CardActionArea>
                 <div onClick={openMenu}>
                     <IconButton
@@ -53,6 +49,11 @@ const EventCard = ({ eventKey, photoUrl, title, description, setSelectedEvent })
                         style={{ height: 48, width: 48 }}>
                         <MoreVertIcon />
                     </IconButton>
+                    <Tooltip title={streamerName} style={{ marginTop: 8 }}>
+                        <Avatar
+                            alt={streamerName}
+                            src={streamerPhoto} />
+                    </Tooltip>
                 </div>
                 <Menu
                     id='long-menu'
