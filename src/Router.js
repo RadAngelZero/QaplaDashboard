@@ -66,9 +66,11 @@ const Router = () => {
         <RouterPackage>
             <AppBar position='static'>
                 <Toolbar>
-                    <Typography variant='h6' className='Nav-Title'>
-                        Qapla Dashboard
-                    </Typography>
+                    <Link to='/' className='Nav-Title White-Color'>
+                        <Typography variant='h6' style={{ color: '#FFF' }} >
+                                Qapla Dashboard
+                        </Typography>
+                    </Link>
                     <Link to='/event/create' className='White-Color'>
                         <Button
                             variant='contained'
