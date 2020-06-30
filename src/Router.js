@@ -17,18 +17,18 @@ import AssignPrizesForEvent from './components/AssignPrizesForEvent/AssignPrizes
 import JoinToEventRequest from './components/JoinToEventRequest/JoinToEventRequest';
 import EventParticipantsList from './components/EventParticipantsList/EventParticipantsList';
 
-import {
-    loadEventsOrderByDate,
-    loadQaplaGames,
-    loadQaplaPlatforms
-} from './services/database';
+import { loadEventsOrderByDate, loadQaplaGames, loadQaplaPlatforms, loadCreatorProfile, loadUserAdminProfile, loadUserClientProfile } from './services/database';
+import { handleUserAuthentication } from './services/auth';
 
 import './App.css';
+import Login from './components/Login/Login';
+import { auth } from './services/firebase';
 
 const Router = () => {
     const [events, setEvents] = useState();
     const [games, setGames] = useState({});
     const [platforms, setPlatforms] = useState({});
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
 
@@ -46,9 +46,23 @@ const Router = () => {
             setPlatforms(await loadQaplaPlatforms());
         }
 
+        async function checkIfUserIsAuthenticated() {
+            handleUserAuthentication((user) => {
+                loadUserAdminProfile(user.uid, (user) => {
+                    setUser({ ...user, admin: true });
+                });
+                loadUserClientProfile(user.uid, (user) => {
+                    setUser({ ...user, admin: false });
+                });
+            }, () => {
+                setUser(undefined);
+            });
+        }
+
         loadEventsOrderByDate(loadEventsData);
         loadGamesResources();
         loadPlatformsResources();
+        checkIfUserIsAuthenticated();
     }, []);
 
     /**
@@ -71,7 +85,31 @@ const Router = () => {
                                 Qapla Dashboard
                         </Typography>
                     </Link>
-                    <Link to='/event/create' className='White-Color'>
+                    {user === undefined &&
+                        <Link to='/login' className='White-Color'>
+                            <Button
+                                color='inherit'
+                                style={{ color: '#FFF' }}>
+                                Login
+                            </Button>
+                        </Link>
+                    }
+                    {user &&
+                        <Link to='/event/create' className='White-Color Margin-Right'>
+                            <Button
+                                color='inherit'
+                                style={{ color: '#FFF' }}>
+                                Plantillas
+                            </Button>
+                        </Link>
+                    }
+                    <Button
+                        color='inherit'
+                        style={{ color: '#FFF' }}
+                        onClick={() => auth.signOut()}>
+                        Cerrar sesión
+                    </Button>
+                    <Link to='/event/create' className='White-Color Margin-Right'>
                         <Button
                             variant='contained'
                             color='secondary'
@@ -104,6 +142,9 @@ const Router = () => {
                     <CreateEvent
                         games={games}
                         platforms={platforms} />
+                </Route>
+                <Route exact path='/login'>
+                    <Login user={user} />
                 </Route>
             </Switch>
         </RouterPackage>

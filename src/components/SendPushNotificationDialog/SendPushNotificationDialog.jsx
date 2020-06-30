@@ -63,7 +63,7 @@ const SendPushNotificationDialog = ({ topic, open, onClose }) => {
                 </DialogContentText>
                 <Grid container>
                     {Object.keys(Languages).map((language) => (
-                        <>
+                        <React.Fragment key={`PushNotificationTitle-${language}`}>
                             <Grid item md={5}>
                                 <QaplaTextField
                                     fullWidth
@@ -73,10 +73,10 @@ const SendPushNotificationDialog = ({ topic, open, onClose }) => {
                                     onChange={(title) => setTitleByLanguage(language, title)} />
                             </Grid>
                             <Grid item md={1} />
-                        </>
+                        </React.Fragment>
                     ))}
                     {Object.keys(Languages).map((language) => (
-                        <>
+                        <React.Fragment key={`PushNotificationDescription-${language}`}>
                             <Grid item md={5}>
                                 <QaplaTextField
                                     fullWidth
@@ -89,7 +89,7 @@ const SendPushNotificationDialog = ({ topic, open, onClose }) => {
                                 <div style={{ width: 16 }} />
                             </Grid>
                             <Grid item md={1} />
-                        </>
+                        </React.Fragment>
                     ))}
                 </Grid>
             </DialogContent>

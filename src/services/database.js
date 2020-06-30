@@ -6,6 +6,9 @@ const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
 const usersRef = database.ref('/Users');
+const dashboardUsersRef = database.ref('/DashboardUsers');
+const dashboardUsersAdmin = dashboardUsersRef.child('Admins');
+const dashboardUsersClient = dashboardUsersRef.child('Clients');
 const transactionsRef = database.ref('/Transactions');
 
 /**
@@ -287,4 +290,54 @@ export function addQoinsToUser(uid, qoinsToAdd) {
     } catch (error) {
         console.error(error);
     }
+}
+
+/**
+ * Creators
+ */
+
+/**
+ * Listen for the admin profile and their changes
+ * @param {string} uid Creator identifier
+ * @param {callback} dataHandler Handler for the loaded data
+ */
+export function loadUserAdminProfile(uid, dataHandler) {
+    dashboardUsersAdmin.child(uid).on('value', (adminData) => {
+        if (adminData.exists()) {
+            dataHandler(adminData.val());
+        } else {
+            removeUserAdminListener(uid);
+        }
+    });
+}
+
+/**
+ * Remove the listener from the user admin profile
+ * @param {string} uid User identifier
+ */
+export function removeUserAdminListener(uid) {
+    dashboardUsersAdmin.child(uid).off('value');
+}
+
+/**
+ * Listen for the client profile and their changes
+ * @param {string} uid Creator identifier
+ * @param {callback} dataHandler Handler for the loaded data
+ */
+export function loadUserClientProfile(uid, dataHandler) {
+    dashboardUsersClient.child(uid).on('value', (clientData) => {
+        if (clientData.exists()) {
+            dataHandler(clientData.val());
+        } else {
+            removeUserClientListener(uid);
+        }
+    });
+}
+
+/**
+ * Remove the listener from the user client profile
+ * @param {string} uid User identifier
+ */
+export function removeUserClientListener(uid) {
+    dashboardUsersAdmin.child(uid).off('value');
 }
