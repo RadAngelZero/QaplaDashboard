@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import * as xlsx from 'xlsx';
 
 import styles from './AssignPrizesForEvent.module.css';
-import { getEventParticipants } from '../../services/database';
+import { getEventParticipantsOnce } from '../../services/database';
 import ApproveQoinsDistributionDialog from './../ApproveQoinsDistributionDialog/ApproveQoinsDistributionDialog';
 
 const AssignPrizesForEvent = ({ events }) => {
@@ -71,7 +71,7 @@ const AssignPrizesForEvent = ({ events }) => {
      * participants
      */
     const generateParticipantFormat = async () => {
-        const participants = await getEventParticipants(eventId);
+        const participants = await getEventParticipantsOnce(eventId);
 
         const participantsData = Object.keys(participants).map((participant) => {
             const { email, userName } = participants[participant];
@@ -97,7 +97,7 @@ const AssignPrizesForEvent = ({ events }) => {
 
         let newWorkBook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(newWorkBook, dataToWrite, 'Participants');
-        xlsx.writeFile(newWorkBook, `${events[eventId].titulo}.xlsx`);
+        xlsx.writeFile(newWorkBook, `${events[eventId].title['es']}.xlsx`);
     }
 
     return (

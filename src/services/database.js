@@ -103,6 +103,20 @@ export async function getEventParticipants(eventId, loadParticipantList) {
 }
 
 /**
+ * Get the ranking of the given event
+ * @param {string} eventId Event identifier
+ * @param {callback} loadParticipantList Handle the list of participants
+ * @returns {Object} Object of users object with fields
+ * { uid, winRate, victories, matchesPlayed, userName, gamerTag } <- For every user
+ */
+export async function getEventParticipantsOnce(eventId) {
+    /**
+     * Get only participants with at least one match played
+     */
+    return (await eventsParticipantsRef.child(eventId).once('value')).val();
+}
+
+/**
  * Removes a participant from the given event
  * @param {string} uid User identifier
  * @param {string} eventId Event identifier
