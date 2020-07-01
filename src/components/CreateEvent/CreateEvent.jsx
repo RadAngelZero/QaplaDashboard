@@ -13,7 +13,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { createEvent, updateEvent } from '../../services/database';
+import { createEvent, updateEvent, saveEventTemplate } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
 
@@ -38,7 +38,7 @@ const fixedPrizesValues = {
     }
 };
 
-const CreateEvent = ({ games, platforms }) => {
+const CreateEvent = ({ games, platforms, template = false, user }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
@@ -62,6 +62,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
+    const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
     const history = useHistory();
 
     /**
@@ -84,61 +85,75 @@ const CreateEvent = ({ games, platforms }) => {
         const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
         const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
-        createEvent({
-                title: titles,
-                titulo: titles['es'], // <- Temporary field, remove it later
-                dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-                hourUTC: `${UTCHour}:${UTCMinutes}`,
-                tiempoLimite: `${day}-${month}-${year}`,
-                hour,
-                discordLink,
-                platform,
-                prices: prizes,
-                game,
-                /**
-                 * At this point we use the tipoLogro field for the game, in the future we must change it
-                 * for the game field
-                 */
-                tipoLogro: game,
-                descriptions,
-                description: descriptions['es'], // <- Temporary field, remove it later
-                streamingPlatformImage,
-                streamerGameData,
-                streamerName,
-                streamerChannelLink,
-                streamerPhoto,
-                backgroundImage,
-                descriptionsTitle,
-                appStringPrizes,
-                instructionsToParticipate,
-                eventEntry: parseInt(eventEntry),
-                isMatchesEvent,
-                acceptAllUsers,
-                participantNumber
-            },
-            async (error, key) => {
+        const eventData = {
+            title: titles,
+            titulo: titles['es'], // <- Temporary field, remove it later
+            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
+            hourUTC: `${UTCHour}:${UTCMinutes}`,
+            tiempoLimite: `${day}-${month}-${year}`,
+            hour,
+            discordLink,
+            platform,
+            prices: prizes,
+            game,
+            /**
+             * At this point we use the tipoLogro field for the game, in the future we must change it
+             * for the game field
+             */
+            tipoLogro: game,
+            descriptions,
+            description: descriptions['es'], // <- Temporary field, remove it later
+            streamingPlatformImage,
+            streamerGameData,
+            streamerName,
+            streamerChannelLink,
+            streamerPhoto,
+            backgroundImage,
+            descriptionsTitle,
+            appStringPrizes,
+            instructionsToParticipate,
+            eventEntry: parseInt(eventEntry),
+            isMatchesEvent,
+            acceptAllUsers,
+            participantNumber
+        };
+
+        if (template) {
+            saveEventTemplate('uidd', eventData, isPrivateTemplate, (error) => {
                 if (error) {
-                    console.error(error);
-                    alert('Hubo un problema al crear el evento');
-                    return;
+                    alert('Error al guardar la plantilla');
+                    return console.error(error);
                 }
 
-                const links = {};
+                alert('Plantilla guardada correctamente');
+                history.push('/');
+            });
+        } else {
+            createEvent(eventData,
+                async (error, key) => {
+                    if (error) {
+                        console.error(error);
+                        alert('Hubo un problema al crear el evento');
+                        return;
+                    }
 
-                /**
-                 * We create one link for every language we support
-                 */
-                for (let i = 0; i < Object.keys(Languages).length; i++) {
-                    const language = Object.keys(Languages)[i];
-                    links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
+                    const links = {};
+
+                    /**
+                     * We create one link for every language we support
+                     */
+                    for (let i = 0; i < Object.keys(Languages).length; i++) {
+                        const language = Object.keys(Languages)[i];
+                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
+                    }
+
+                    setEventLinks(links);
+                    updateEvent(key, { eventLinks: links });
+                    alert('Evento publicado exitosamente');
+                    history.push('');
                 }
-
-                setEventLinks(links);
-                updateEvent(key, { eventLinks: links });
-                alert('Evento publicado exitosamente');
-                history.push('');
-            }
-        );
+            );
+        }
     }
 
     /**
@@ -364,7 +379,7 @@ const CreateEvent = ({ games, platforms }) => {
                 break;
         }
 
-        if (allRight) {
+        if (allRight || template) {
             setCurrentSection(currentSection + 1);
         } else {
             alert('Revisa que los campos esten llenados de forma correcta');
@@ -405,10 +420,35 @@ const CreateEvent = ({ games, platforms }) => {
                 <Typography
                     variant='h3'
                     className={styles.EventTitle}>
-                    Evento: {titles['es']}
+                    {template ? `Plantilla: ${titles['es']}` : `Evento: ${titles['es']}`}
                 </Typography>
                 {currentSection === 0 &&
                     <>
+                        {template && user && user.admin &&
+                            <>
+                                <Typography
+                                    variant='h5'
+                                    className={styles.ItalicFont}>
+                                    Tipo de plantilla
+                                </Typography>
+                                <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
+                                    <Grid container>
+                                        <Grid item md={3}>
+                                            <FormControlLabel
+                                                value={true}
+                                                control={<Radio />}
+                                                label='Plantilla Privada' />
+                                        </Grid>
+                                        <Grid item md={3}>
+                                            <FormControlLabel
+                                                value={false}
+                                                control={<Radio />}
+                                                label='Plantilla publica' />
+                                        </Grid>
+                                    </Grid>
+                                </RadioGroup>
+                            </>
+                        }
                         <Typography
                             variant='h5'
                             className={styles.ItalicFont}>

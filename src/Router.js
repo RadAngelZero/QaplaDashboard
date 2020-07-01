@@ -49,13 +49,13 @@ const Router = () => {
         async function checkIfUserIsAuthenticated() {
             handleUserAuthentication((user) => {
                 loadUserAdminProfile(user.uid, (user) => {
-                    setUser({ ...user, admin: true });
+                    setUser({ ...user, admin: true, uid: user.uid });
                 });
                 loadUserClientProfile(user.uid, (user) => {
-                    setUser({ ...user, admin: false });
+                    setUser({ ...user, admin: false, uid: user.uid });
                 });
             }, () => {
-                setUser(undefined);
+                setUser({ admin: false });
             });
         }
 
@@ -95,7 +95,7 @@ const Router = () => {
                         </Link>
                     }
                     {user &&
-                        <Link to='/event/create' className='White-Color Margin-Right'>
+                        <Link to='/user/templates/create' className='White-Color Margin-Right'>
                             <Button
                                 color='inherit'
                                 style={{ color: '#FFF' }}>
@@ -142,6 +142,13 @@ const Router = () => {
                     <CreateEvent
                         games={games}
                         platforms={platforms} />
+                </Route>
+                <Route exact path='/user/templates/create'>
+                    <CreateEvent
+                        games={games}
+                        platforms={platforms}
+                        template
+                        user={user} />
                 </Route>
                 <Route exact path='/login'>
                     <Login user={user} />
