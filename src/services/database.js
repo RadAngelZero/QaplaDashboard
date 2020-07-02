@@ -370,11 +370,26 @@ export function removeUserClientListener(uid) {
  * @param {boolean} privateTemplate True if template is private
  * @param {callback} onComplete Function called after save event template on database
  */
-export async function saveEventTemplate(uid, eventData, privateTemplate, onComplete) {
+export function saveEventTemplate(uid, eventData, privateTemplate, onComplete) {
     eventData.author = uid;
     if (privateTemplate) {
         eventPrivateTemplates.child(uid).push(eventData, onComplete);
     } else {
         eventPublicTemplates.push(eventData, onComplete);
     }
+}
+
+/**
+ * Loads all the public event templates
+ */
+export async function loadPublicEventTemplates() {
+    return (await eventPublicTemplates.once('value')).val();
+}
+
+/**
+ * Loads all the private event templates of the given user
+ * @param {string} uid User identfier
+ */
+export async function loadPrivateTemplates(uid) {
+    return (await eventPrivateTemplates.child(uid).once('value')).val();
 }

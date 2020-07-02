@@ -13,7 +13,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { createEvent, updateEvent, saveEventTemplate } from '../../services/database';
+import { createEvent, updateEvent, saveEventTemplate, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
 
@@ -38,7 +38,7 @@ const fixedPrizesValues = {
     }
 };
 
-const CreateEvent = ({ games, platforms, template = false, user }) => {
+const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
@@ -46,7 +46,7 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
     const [discordLink, setDiscordLink] = useState('');
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
-    const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
+    const [descriptions, setDescriptions] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
     const [isMatchesEvent, setIsMatchesEvent] = useState(true);
@@ -63,6 +63,9 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
     const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
+    const [publicEventsTemplates, setPublicEventsTemplates] = useState({});
+    const [privateEventsTemplates, setPrivateEventsTemplates] = useState({});
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
     const history = useHistory();
 
     /**
@@ -119,7 +122,7 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
         };
 
         if (template) {
-            saveEventTemplate('uidd', eventData, isPrivateTemplate, (error) => {
+            saveEventTemplate(user.uid, eventData, isPrivateTemplate, (error) => {
                 if (error) {
                     alert('Error al guardar la plantilla');
                     return console.error(error);
@@ -171,7 +174,7 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
      * @param {string} value Value of the description
      */
     const setDescriptionByLanguage = (language, value) => {
-        setDescription({ ...descriptions, [language]: value });
+        setDescriptions({ ...descriptions, [language]: value });
     }
 
     /**
@@ -414,6 +417,77 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
         setStreamerGameData({});
     }
 
+    /**
+     * Update the selected template (also all the fields in the template)
+     * @param {string} selectedTemplate Key of the selected template
+     */
+    const setTemplate = (selectedTemplate) => {
+        let template = {};
+        if (selectedTemplate) {
+            template = privateEventsTemplates[selectedTemplate] ? privateEventsTemplates[selectedTemplate] : publicEventsTemplates[selectedTemplate];
+        }
+        setSelectedTemplate(selectedTemplate);
+        const {
+            title,
+            tiempoLimite,
+            hour,
+            discordLink,
+            platform,
+            tipoLogro,
+            descriptions,
+            prices,
+            eventLinks,
+            streamerName,
+            streamerChannelLink,
+            streamerPhoto,
+            streamingPlatformImage,
+            backgroundImage,
+            descriptionsTitle,
+            appStringPrizes,
+            instructionsToParticipate,
+            streamerGameData,
+            eventEntry,
+            isMatchesEvent,
+            acceptAllUsers,
+            participantNumber
+        } = template;
+        setTitle(title ? title : { 'es': '', 'en': '' });
+        if (tiempoLimite && tiempoLimite.includes('-')) {
+            const [day, month, year] = tiempoLimite.split('-');
+            setDate(`${year}-${month}-${day}`);
+        }
+        setHour(hour ? hour : '');
+        setDiscordLink(discordLink ? discordLink : '');
+        setPlatform(platform ? platform : '');
+        setGame(tipoLogro ? tipoLogro : '');
+        setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
+        setPrizes(prices ? prices : {});
+        setEventLinks(eventLinks ? eventLinks : []);
+        setStreamerName(streamerName ? streamerName : '');
+        setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
+        setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
+        setStreamingPlatformImage(streamingPlatformImage ? streamingPlatformImage : '');
+        setBackgroundImage(backgroundImage ? backgroundImage : '');
+        setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
+        setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
+        setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
+        setStreamerGameData(streamerGameData ? streamerGameData : {});
+        setEventEntry(eventEntry ? eventEntry : 0);
+        setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
+        setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
+        setParticipantNumber(participantNumber ? participantNumber : 0);
+    }
+
+    /**
+     * Load all the eventes templates (privates and publics)
+     */
+    const loadEventTemplates = async () => {
+        setPublicEventsTemplates(await loadPublicEventTemplates());
+        if (user && user.uid) {
+            setPrivateEventsTemplates(await loadPrivateTemplates(user.uid));
+        }
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <form onSubmit={saveEventOnDatabase}>
@@ -424,6 +498,45 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
                 </Typography>
                 {currentSection === 0 &&
                     <>
+                        {!template &&
+                            <>
+                                <Typography
+                                    variant='h5'
+                                    className={styles.ItalicFont}>
+                                    Plantilla (opcional)
+                                </Typography>
+                                <br/>
+                                {Object.keys(publicEventsTemplates).length > 0 || Object.keys(privateEventsTemplates).length > 0 ?
+                                    <QaplaSelect
+                                        label='Plantilla'
+                                        id='Template'
+                                        value={selectedTemplate}
+                                        onChange={setTemplate}>
+                                        <option aria-label='None' value='' />
+                                        {Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
+                                            <option
+                                                key={privateTemplateKey}
+                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].title['es']}</option>
+                                        ))}
+                                        {Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
+                                            <option
+                                                key={publicTemplateKey}
+                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].title['es']}</option>
+                                        ))}
+                                    </QaplaSelect>
+                                    :
+                                    <Button
+                                        variant='contained'
+                                        color='secondary'
+                                        disabled={user === null || (typeof user !== 'object' && Object.keys(user).length <= 0)}
+                                        onClick={loadEventTemplates}>
+                                        Cargar plantillas
+                                    </Button>
+                                }
+                                <br/>
+                                <br/>
+                            </>
+                        }
                         {template && user && user.admin &&
                             <>
                                 <Typography
@@ -860,7 +973,7 @@ const CreateEvent = ({ games, platforms, template = false, user }) => {
                             variant='contained'
                             color='primary'
                             type='submit'>
-                                Crear evento
+                                {template ? 'Guardar Plantilla' : 'Crear evento'}
                         </Button>
                     </>
                 </div>

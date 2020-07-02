@@ -17,7 +17,13 @@ import AssignPrizesForEvent from './components/AssignPrizesForEvent/AssignPrizes
 import JoinToEventRequest from './components/JoinToEventRequest/JoinToEventRequest';
 import EventParticipantsList from './components/EventParticipantsList/EventParticipantsList';
 
-import { loadEventsOrderByDate, loadQaplaGames, loadQaplaPlatforms, loadCreatorProfile, loadUserAdminProfile, loadUserClientProfile } from './services/database';
+import {
+    loadEventsOrderByDate,
+    loadQaplaGames,
+    loadQaplaPlatforms,
+    loadUserAdminProfile,
+    loadUserClientProfile
+} from './services/database';
 import { handleUserAuthentication } from './services/auth';
 
 import './App.css';
@@ -48,14 +54,14 @@ const Router = () => {
 
         async function checkIfUserIsAuthenticated() {
             handleUserAuthentication((user) => {
-                loadUserAdminProfile(user.uid, (user) => {
-                    setUser({ ...user, admin: true, uid: user.uid });
+                loadUserAdminProfile(user.uid, (userData) => {
+                    setUser({ ...userData, admin: true, uid: user.uid });
                 });
-                loadUserClientProfile(user.uid, (user) => {
-                    setUser({ ...user, admin: false, uid: user.uid });
+                loadUserClientProfile(user.uid, (userData) => {
+                    setUser({ ...userData, admin: false, uid: user.uid });
                 });
             }, () => {
-                setUser({ admin: false });
+                setUser(undefined);
             });
         }
 
@@ -82,7 +88,7 @@ const Router = () => {
                 <Toolbar>
                     <Link to='/' className='Nav-Title White-Color'>
                         <Typography variant='h6' style={{ color: '#FFF' }} >
-                                Qapla Dashboard
+                            Qapla Dashboard
                         </Typography>
                     </Link>
                     {user === undefined &&
@@ -141,7 +147,8 @@ const Router = () => {
                 <Route exact path='/event/create'>
                     <CreateEvent
                         games={games}
-                        platforms={platforms} />
+                        platforms={platforms}
+                        user={user} />
                 </Route>
                 <Route exact path='/user/templates/create'>
                     <CreateEvent
