@@ -27,6 +27,8 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
 
     const goToEventDetails = () => history.push(`/event/details/${eventKey}`);
 
+    const duplicateEvent = () => history.push(`/event/duplicate/${eventKey}`);
+
     return (
             <Card className={styles.EventCard}>
                 <CardActionArea onClick={goToEventDetails}>
@@ -63,6 +65,7 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
                     keepMounted>
                     <MenuItem onClick={goToEventDetails}>Ver detalles</MenuItem>
                     <MenuItem onClick={() => setSelectedEvent(eventKey)}>Enviar notificación</MenuItem>
+                    <MenuItem onClick={duplicateEvent}>Duplicar</MenuItem>
                     <MenuItem disabled>Eliminar</MenuItem>
                 </Menu>
             </Card>
