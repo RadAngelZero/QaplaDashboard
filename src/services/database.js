@@ -6,7 +6,13 @@ const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
 const usersRef = database.ref('/Users');
+const dashboardUsersRef = database.ref('/DashboardUsers');
+const dashboardUsersAdmin = dashboardUsersRef.child('Admins');
+const dashboardUsersClient = dashboardUsersRef.child('Clients');
 const transactionsRef = database.ref('/Transactions');
+const eventTemplates = database.ref('/EventsTemplates');
+const eventPrivateTemplates = eventTemplates.child('Private');
+const eventPublicTemplates = eventTemplates.child('Public');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -301,4 +307,89 @@ export function addQoinsToUser(uid, qoinsToAdd) {
     } catch (error) {
         console.error(error);
     }
+}
+
+/**
+ * Dashboard Users
+ */
+
+/**
+ * Listen for the admin profile and their changes
+ * @param {string} uid Creator identifier
+ * @param {callback} dataHandler Handler for the loaded data
+ */
+export function loadUserAdminProfile(uid, dataHandler) {
+    dashboardUsersAdmin.child(uid).on('value', (adminData) => {
+        if (adminData.exists()) {
+            dataHandler(adminData.val());
+        } else {
+            removeUserAdminListener(uid);
+        }
+    });
+}
+
+/**
+ * Remove the listener from the user admin profile
+ * @param {string} uid User identifier
+ */
+export function removeUserAdminListener(uid) {
+    dashboardUsersAdmin.child(uid).off('value');
+}
+
+/**
+ * Listen for the client profile and their changes
+ * @param {string} uid Creator identifier
+ * @param {callback} dataHandler Handler for the loaded data
+ */
+export function loadUserClientProfile(uid, dataHandler) {
+    dashboardUsersClient.child(uid).on('value', (clientData) => {
+        if (clientData.exists()) {
+            dataHandler(clientData.val());
+        } else {
+            removeUserClientListener(uid);
+        }
+    });
+}
+
+/**
+ * Remove the listener from the user client profile
+ * @param {string} uid User identifier
+ */
+export function removeUserClientListener(uid) {
+    dashboardUsersAdmin.child(uid).off('value');
+}
+
+/**
+ * Templates
+ */
+
+/**
+ * Saves an event template on the database
+ * @param {string} uid User identfier
+ * @param {object} eventData Template data to save
+ * @param {boolean} privateTemplate True if template is private
+ * @param {callback} onComplete Function called after save event template on database
+ */
+export function saveEventTemplate(uid, eventData, privateTemplate, onComplete) {
+    eventData.author = uid;
+    if (privateTemplate) {
+        eventPrivateTemplates.child(uid).push(eventData, onComplete);
+    } else {
+        eventPublicTemplates.push(eventData, onComplete);
+    }
+}
+
+/**
+ * Loads all the public event templates
+ */
+export async function loadPublicEventTemplates() {
+    return (await eventPublicTemplates.once('value')).val();
+}
+
+/**
+ * Loads all the private event templates of the given user
+ * @param {string} uid User identfier
+ */
+export async function loadPrivateTemplates(uid) {
+    return (await eventPrivateTemplates.child(uid).once('value')).val();
 }

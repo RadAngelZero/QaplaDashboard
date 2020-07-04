@@ -7,7 +7,6 @@ import EventCard from '../EventCard/EventCard';
 import { getDateElementsAsNumber, getHourElementsAsNumber } from '../../utils/utils';
 import { Toolbar } from '@material-ui/core';
 import SendPushNotificationDialog from '../SendPushNotificationDialog/SendPushNotificationDialog';
-import { getEventParticipants } from '../../services/database';
 
 const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
     const [show, setShow] = useState(initialShow);
@@ -16,7 +15,7 @@ const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
         <>
             <div onClick={() => setShow(!show)} style={{ cursor: 'pointer' }}>
                 <Toolbar className={styles.Toolbar}>
-                    <Typography className variant='h5' component='div'>
+                    <Typography variant='h5' component='div'>
                         {day.title}
                     </Typography>
                 </Toolbar>
@@ -27,7 +26,7 @@ const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
                     className={styles.MarginBottom16}>
                     {day.data.map((event, index) => (
                         <EventCard
-                            key={index}
+                            key={`EventCard-${index}`}
                             setSelectedEvent={setSelectedEventKey}
                             eventKey={event.idLogro}
                             streamerPhoto={event.streamerPhoto}
@@ -91,6 +90,7 @@ const EventsList = ({ events }) => {
         <Container maxWidth='xl' className={styles.MarginBottom16}>
             {orderedEvents.map((dayEvents, index) => (
                 <EventListOfTheDay
+                    key={`EventList-${index}`}
                     initialShow={index < 6}
                     day={dayEvents}
                     setSelectedEventKey={setSelectedEventKey} />
