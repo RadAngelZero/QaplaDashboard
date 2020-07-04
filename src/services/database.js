@@ -10,6 +10,9 @@ const dashboardUsersRef = database.ref('/DashboardUsers');
 const dashboardUsersAdmin = dashboardUsersRef.child('Admins');
 const dashboardUsersClient = dashboardUsersRef.child('Clients');
 const transactionsRef = database.ref('/Transactions');
+const eventTemplates = database.ref('/EventsTemplates');
+const eventPrivateTemplates = eventTemplates.child('Private');
+const eventPublicTemplates = eventTemplates.child('Public');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -307,7 +310,7 @@ export function addQoinsToUser(uid, qoinsToAdd) {
 }
 
 /**
- * Creators
+ * Dashboard Users
  */
 
 /**
@@ -354,4 +357,39 @@ export function loadUserClientProfile(uid, dataHandler) {
  */
 export function removeUserClientListener(uid) {
     dashboardUsersAdmin.child(uid).off('value');
+}
+
+/**
+ * Templates
+ */
+
+/**
+ * Saves an event template on the database
+ * @param {string} uid User identfier
+ * @param {object} eventData Template data to save
+ * @param {boolean} privateTemplate True if template is private
+ * @param {callback} onComplete Function called after save event template on database
+ */
+export function saveEventTemplate(uid, eventData, privateTemplate, onComplete) {
+    eventData.author = uid;
+    if (privateTemplate) {
+        eventPrivateTemplates.child(uid).push(eventData, onComplete);
+    } else {
+        eventPublicTemplates.push(eventData, onComplete);
+    }
+}
+
+/**
+ * Loads all the public event templates
+ */
+export async function loadPublicEventTemplates() {
+    return (await eventPublicTemplates.once('value')).val();
+}
+
+/**
+ * Loads all the private event templates of the given user
+ * @param {string} uid User identfier
+ */
+export async function loadPrivateTemplates(uid) {
+    return (await eventPrivateTemplates.child(uid).once('value')).val();
 }
