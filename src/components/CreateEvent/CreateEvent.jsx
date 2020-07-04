@@ -63,8 +63,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
     const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
-    const [publicEventsTemplates, setPublicEventsTemplates] = useState({});
-    const [privateEventsTemplates, setPrivateEventsTemplates] = useState({});
+    const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
+    const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const history = useHistory();
 
@@ -482,9 +482,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
      * Load all the eventes templates (privates and publics)
      */
     const loadEventTemplates = async () => {
-        setPublicEventsTemplates(await loadPublicEventTemplates());
+        setPublicEventsTemplates(await loadPublicEventTemplates() || {});
         if (user && user.uid) {
-            setPrivateEventsTemplates(await loadPrivateTemplates(user.uid));
+            setPrivateEventsTemplates(await loadPrivateTemplates(user.uid) || {});
         }
     }
 
@@ -506,19 +506,19 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                     Plantilla (opcional)
                                 </Typography>
                                 <br/>
-                                {Object.keys(publicEventsTemplates).length > 0 || Object.keys(privateEventsTemplates).length > 0 ?
+                                {publicEventsTemplates || privateEventsTemplates ?
                                     <QaplaSelect
                                         label='Plantilla'
                                         id='Template'
                                         value={selectedTemplate}
                                         onChange={setTemplate}>
                                         <option aria-label='None' value='' />
-                                        {Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
+                                        {privateEventsTemplates && Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
                                             <option
                                                 key={privateTemplateKey}
                                                 value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].title['es']}</option>
                                         ))}
-                                        {Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
+                                        {privateEventsTemplates && Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
                                             <option
                                                 key={publicTemplateKey}
                                                 value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].title['es']}</option>
