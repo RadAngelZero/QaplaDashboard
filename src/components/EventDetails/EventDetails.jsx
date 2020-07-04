@@ -861,21 +861,23 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                      * MarginRight16 use !important css because without it the margin
                      * is not applied to this button
                      */}
-                    <Button
-                        variant='contained'
-                        color='secondary'
-                        className={styles.MarginRight16}
-                        onClick={removeEventFromDatabase}>
-                        Eliminar
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        className={styles.MarginRight16}
-                        onClick={updateEventOnDatabase}>
-                        Guardar cambios
-                    </Button>
-                    {active &&
+                    {!eventDuplicated &&
+                        <Button
+                            variant='contained'
+                            color='secondary'
+                            className={styles.MarginRight16}
+                            onClick={removeEventFromDatabase}>
+                            Eliminar
+                        </Button>
+                    }
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                className={styles.MarginRight16}
+                                onClick={updateEventOnDatabase}>
+                                {eventDuplicated ? 'Crear Evento' : 'Guardar Cambios'}
+                            </Button>
+                    {!eventDuplicated && active &&
                         <>
                             {isMatchesEvent ?
                                 <>
@@ -902,17 +904,21 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                             }
                         </>
                     }
-                    <Button
-                        variant='contained'
-                        className={styles.MarginRight16}
-                        onClick={goToJoinRequests}>
-                        Ver solicitudes
-                    </Button>
-                    <Button
-                        variant='contained'
-                        onClick={goToEventParticipants}>
-                        Ver participantes
-                    </Button>
+                    {!eventDuplicated &&
+                        <>
+                            <Button
+                                variant='contained'
+                                className={styles.MarginRight16}
+                                onClick={goToJoinRequests}>
+                                Ver solicitudes
+                            </Button>
+                            <Button
+                                variant='contained'
+                                onClick={goToEventParticipants}>
+                                Ver participantes
+                            </Button>
+                        </>
+                    }
                 </div>
             </form>
         </Container>
