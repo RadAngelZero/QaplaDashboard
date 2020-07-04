@@ -101,20 +101,22 @@ const Router = () => {
                         </Link>
                     }
                     {user &&
-                        <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                        <>
+                            <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                                <Button
+                                    color='inherit'
+                                    style={{ color: '#FFF' }}>
+                                    Plantillas
+                                </Button>
+                            </Link>
                             <Button
                                 color='inherit'
-                                style={{ color: '#FFF' }}>
-                                Plantillas
+                                style={{ color: '#FFF' }}
+                                onClick={() => auth.signOut()}>
+                                Cerrar sesión
                             </Button>
-                        </Link>
+                        </>
                     }
-                    <Button
-                        color='inherit'
-                        style={{ color: '#FFF' }}
-                        onClick={() => auth.signOut()}>
-                        Cerrar sesión
-                    </Button>
                     <Link to='/event/create' className='White-Color Margin-Right'>
                         <Button
                             variant='contained'

@@ -314,6 +314,14 @@ export function addQoinsToUser(uid, qoinsToAdd) {
  */
 
 /**
+ * Checks if the given user is a valid user for this platform
+ * @param {string} uid User identifier
+ */
+ export async function isDashboardUser(uid) {
+    return (await dashboardUsersAdmin.child(uid).once('value')).exists() || (await dashboardUsersClient.child(uid).once('value')).exists();
+ }
+
+/**
  * Listen for the admin profile and their changes
  * @param {string} uid Creator identifier
  * @param {callback} dataHandler Handler for the loaded data

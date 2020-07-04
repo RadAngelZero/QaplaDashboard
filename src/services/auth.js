@@ -1,4 +1,5 @@
 import { auth, FacebookAuthProvider, GoogleAuthProvider } from './firebase';
+import { isDashboardUser } from './database';
 
 /**
  * Listens for changes on the user authentication status
@@ -8,7 +9,12 @@ import { auth, FacebookAuthProvider, GoogleAuthProvider } from './firebase';
 export function handleUserAuthentication(callbackForAuthenticatedUser, callbackForUserNotAuthenticated) {
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            await callbackForAuthenticatedUser(user);
+            if (await isDashboardUser(user.uid)) {
+                await callbackForAuthenticatedUser(user);
+            } else {
+                auth.signOut();
+                alert('Usuario no autorizado, habla con el staff de Qapla para que autorizen tu cuenta');
+            }
         } else {
             await callbackForUserNotAuthenticated();
         }
