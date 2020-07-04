@@ -157,6 +157,13 @@ const Router = () => {
                         template
                         user={user} />
                 </Route>
+                <Route exact path='/event/duplicate/:eventId'>
+                    <EventDetails
+                        events={eventsLoaded}
+                        games={games}
+                        platforms={platforms}
+                        eventDuplicated />
+                </Route>
                 <Route exact path='/login'>
                     <Login user={user} />
                 </Route>
