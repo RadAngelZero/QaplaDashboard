@@ -20,11 +20,20 @@ const Login = ({ user }) => {
     }, [user]);
 
     const authWithFacebook = async () => {
-        await signInWithFacebook();
+        try {
+            await signInWithFacebook();
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     const authWithGoogle = async () => {
-        await signInWithGoogle();
+        try {
+            await signInWithGoogle();
+            history.push('/');
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
