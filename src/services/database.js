@@ -364,7 +364,7 @@ export function loadUserClientProfile(uid, dataHandler) {
  * @param {string} uid User identifier
  */
 export function removeUserClientListener(uid) {
-    dashboardUsersAdmin.child(uid).off('value');
+    dashboardUsersClient.child(uid).off('value');
 }
 
 /**

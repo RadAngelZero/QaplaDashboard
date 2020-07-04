@@ -52,7 +52,7 @@ const Router = () => {
             setPlatforms(await loadQaplaPlatforms());
         }
 
-        async function checkIfUserIsAuthenticated() {
+        function checkIfUserIsAuthenticated() {
             handleUserAuthentication((user) => {
                 loadUserAdminProfile(user.uid, (userData) => {
                     setUser({ ...userData, admin: true, uid: user.uid });
