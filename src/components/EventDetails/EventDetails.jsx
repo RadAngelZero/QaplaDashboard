@@ -369,6 +369,23 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     }
 
     /**
+     * Sort the prizes object
+     */
+    const sortPrizeObject = () => {
+        return Object.keys(prizes).sort((a, b) => {
+            if (a.includes('-') && a.split('-')[1]) {
+                a = parseInt(a.split('-')[0]) < parseInt(a.split('-')[1]) ? a.split('-')[1] : a.split('-')[0];
+            }
+
+            if (b.includes('-') && b.split('-')[1]) {
+                b = parseInt(b.split('-')[0]) < parseInt(b.split('-')[1]) ? b.split('-')[1] : b.split('-')[0];
+            }
+
+            return parseInt(b) - parseInt(a);
+        });
+    }
+
+    /**
      * Add a prize to the object of prizes, by default with the last place + 1
      * for example if we have prizes for: 1, 2, 3, 4-10 and we call this function
      * will create a new element on the object with the key 11, for the 11 place
@@ -377,17 +394,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const addPrize = () => {
         if (prizes && Object.keys(prizes).length > 0) {
             const prizesCopy = {...prizes};
-            let lastPlace = Object.keys(prizes).sort((a, b) => {
-                if (a.includes('-')) {
-                    a = a.split('-')[1];
-                }
-
-                if (b.includes('-')) {
-                    b = b.split('-')[1];
-                }
-
-                return parseInt(a) < parseInt(b);
-            })[0];
+            let lastPlace = sortPrizeObject()[0];
 
             if (lastPlace.includes('-')) {
                 lastPlace = lastPlace.split('-')[1];
@@ -637,7 +644,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                     </Grid>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Hora (CST 24 horas)'
+                            label='Hora'
                             variant='outlined'
                             type='time'
                             value={hour}
@@ -714,8 +721,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                     Qoins a repartir
                 </Typography>
                 <br/>
-                {prizes && Object.keys(prizes).sort((a, b) => parseInt(b) < parseInt(a)).map((prizeKey) => (
-                    <React.Fragment key={`Prize-${prizeKey}`}>
+                {prizes && sortPrizeObject().reverse().map((prizeKey, index) => (
+                    <React.Fragment key={`Prize-${index}`}>
                         <QaplaTextField
                             label='Posición'
                             mini
