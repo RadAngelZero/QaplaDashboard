@@ -54,6 +54,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [streamerChannelLink, setStreamerChannelLink] = useState('');
     const [streamerPhoto, setStreamerPhoto] = useState('');
     const [streamingPlatformImage, setStreamingPlatformImage] = useState('');
+    const [sponsorImage, setSponsorImage] = useState('');
     const [backgroundImage, setBackgroundImage] = useState('');
     const [descriptionsTitle, setDescriptionsTitle] = useState({});
     const [appStringPrizes, setAppStringPrizes] = useState({});
@@ -116,7 +117,8 @@ const CreateEvent = ({ games, platforms }) => {
                 isMatchesEvent,
                 acceptAllUsers,
                 participantNumber,
-                featured
+                featured,
+                sponsorImage
             },
             async (error, key) => {
                 if (error) {
@@ -701,11 +703,11 @@ const CreateEvent = ({ games, platforms }) => {
                         <Typography
                             variant='h5'
                             className={styles.ItalicFont}>
-                            Fotos y links del evento
+                            Fotos, multimedia y links del evento
                         </Typography>
                         <br/>
                         <Grid container>
-                            <Grid md={12}>
+                            <Grid md={4}>
                                 <QaplaTextField
                                     required
                                     label='Foto de streamer'
@@ -723,6 +725,8 @@ const CreateEvent = ({ games, platforms }) => {
                                     value={backgroundImage}
                                     onChange={setBackgroundImage} />
                             </Grid>
+                        </Grid>
+                        <Grid container>
                             <Grid md={4}>
                                 <QaplaTextField
                                     required
@@ -731,6 +735,15 @@ const CreateEvent = ({ games, platforms }) => {
                                     type='text'
                                     value={streamingPlatformImage}
                                     onChange={setStreamingPlatformImage} />
+                            </Grid>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    required
+                                    label='Foto de patrocinador'
+                                    variant='outlined'
+                                    type='text'
+                                    value={sponsorImage}
+                                    onChange={setSponsorImage} />
                             </Grid>
                         </Grid>
                         <Grid container>

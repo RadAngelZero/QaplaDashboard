@@ -55,6 +55,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [streamerChannelLink, setStreamerChannelLink] = useState(events[eventId].streamerChannelLink ? events[eventId].streamerChannelLink : '');
     const [streamerPhoto, setStreamerPhoto] = useState(events[eventId].streamerPhoto ? events[eventId].streamerPhoto : '');
     const [streamingPlatformImage, setStreamingPlatformImage] = useState(events[eventId].streamingPlatformImage ? events[eventId].streamingPlatformImage : '');
+    const [sponsorImage, setSponsorImage] = useState(events[eventId].sponsorImage ? events[eventId].sponsorImage : '');
     const [backgroundImage, setBackgroundImage] = useState(events[eventId].backgroundImage ? events[eventId].backgroundImage : '');
     const [descriptionsTitle, setDescriptionsTitle] = useState(events[eventId].descriptionsTitle ? events[eventId].descriptionsTitle : {});
     const [appStringPrizes, setAppStringPrizes] = useState(events[eventId].appStringPrizes ? events[eventId].appStringPrizes : {});
@@ -85,6 +86,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 streamerChannelLink,
                 streamerPhoto,
                 streamingPlatformImage,
+                sponsorImage,
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
@@ -113,6 +115,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
             setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
             setStreamingPlatformImage(streamingPlatformImage ? streamingPlatformImage : '');
+            setSponsorImage(sponsorImage ? sponsorImage : '');
             setBackgroundImage(backgroundImage ? backgroundImage : '');
             setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
             setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
@@ -186,6 +189,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 descriptions,
                 description: descriptions['es'], // <- Temporary field, remove it later
                 streamingPlatformImage,
+                sponsorImage,
                 streamerName,
                 streamerChannelLink,
                 streamerPhoto,
@@ -771,7 +775,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 <Typography
                     variant='h5'
                     className={styles.ItalicFont}>
-                    Fotos y links del evento
+                    Fotos, multimedia y links del evento
                 </Typography>
                 <br/>
                 <QaplaTextField
@@ -792,6 +796,13 @@ const EventDetails = ({ events, games, platforms }) => {
                     type='text'
                     value={streamingPlatformImage}
                     onChange={setStreamingPlatformImage} />
+                <QaplaTextField
+                    required
+                    label='Foto de patrocinador'
+                    variant='outlined'
+                    type='text'
+                    value={sponsorImage}
+                    onChange={setSponsorImage} />
                 <QaplaTextField
                     label='Discord Link'
                     variant='outlined'
