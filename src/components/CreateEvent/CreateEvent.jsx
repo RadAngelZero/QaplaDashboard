@@ -62,6 +62,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
+    const [featured, setFeatured] = useState(false);
     const history = useHistory();
 
     /**
@@ -114,7 +115,8 @@ const CreateEvent = ({ games, platforms }) => {
                 eventEntry: parseInt(eventEntry),
                 isMatchesEvent,
                 acceptAllUsers,
-                participantNumber
+                participantNumber,
+                featured
             },
             async (error, key) => {
                 if (error) {
@@ -781,6 +783,14 @@ const CreateEvent = ({ games, platforms }) => {
                                 control={<Radio />}
                                 label='Revisar solicitudes' />
                         </RadioGroup>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Información adicional
+                        </Typography>
+                        <FormControlLabel
+                            control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
+                            label='Destacar evento' />
                         <br/>
                         {eventLinks.length > 0 &&
                             <Typography

@@ -64,6 +64,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [isMatchesEvent, setIsMatchesEvent] = useState(events[eventId].isMatchesEvent ? events[eventId].isMatchesEvent : false);
     const [acceptAllUsers, setAcceptAllUsers] = useState(events[eventId].acceptAllUsers ? events[eventId].acceptAllUsers : false);
     const [participantNumber, setParticipantNumber] = useState(events[eventId].participantNumber ? events[eventId].participantNumber : 0);
+    const [featured, setFeatured] = useState(events[eventId].featured ? events[eventId].featured : false);
 
     const history = useHistory();
 
@@ -92,7 +93,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 eventEntry,
                 isMatchesEvent,
                 acceptAllUsers,
-                participantNumber
+                participantNumber,
+                featured
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -120,6 +122,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
             setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
             setParticipantNumber(participantNumber ? participantNumber : 0);
+            setFeatured(featured ? featured : false);
         }
     }, [events]);
 
@@ -194,7 +197,8 @@ const EventDetails = ({ events, games, platforms }) => {
                 eventEntry: eventEntry ? parseInt(eventEntry) : 0,
                 isMatchesEvent,
                 acceptAllUsers,
-                participantNumber
+                participantNumber,
+                featured
             },
             (error) => {
                 if (error) {
@@ -837,6 +841,14 @@ const EventDetails = ({ events, games, platforms }) => {
                         control={<Radio />}
                         label='Revisar solicitudes' />
                 </RadioGroup>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Información adicional
+                </Typography>
+                <FormControlLabel
+                    control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
+                    label='Evento destacado' />
                 <br/>
                 <div className={styles.MarginTop16}>
                     {/**
