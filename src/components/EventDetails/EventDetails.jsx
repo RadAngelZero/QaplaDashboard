@@ -56,6 +56,7 @@ const EventDetails = ({ events, games, platforms }) => {
     const [streamerPhoto, setStreamerPhoto] = useState(events[eventId].streamerPhoto ? events[eventId].streamerPhoto : '');
     const [streamingPlatformImage, setStreamingPlatformImage] = useState(events[eventId].streamingPlatformImage ? events[eventId].streamingPlatformImage : '');
     const [sponsorImage, setSponsorImage] = useState(events[eventId].sponsorImage ? events[eventId].sponsorImage : '');
+    const [gradientColors, setGradientColors] = useState(events[eventId].gradientColors ? events[eventId].gradientColors : { primary: '', secondary: '' });
     const [backgroundImage, setBackgroundImage] = useState(events[eventId].backgroundImage ? events[eventId].backgroundImage : '');
     const [descriptionsTitle, setDescriptionsTitle] = useState(events[eventId].descriptionsTitle ? events[eventId].descriptionsTitle : {});
     const [appStringPrizes, setAppStringPrizes] = useState(events[eventId].appStringPrizes ? events[eventId].appStringPrizes : {});
@@ -87,6 +88,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 streamerPhoto,
                 streamingPlatformImage,
                 sponsorImage,
+                gradientColors,
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
@@ -108,6 +110,7 @@ const EventDetails = ({ events, games, platforms }) => {
             setPlatform(platform ? platform : '');
             setGame(tipoLogro ? tipoLogro : '');
             setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
+            setGradientColors(gradientColors ? gradientColors : { primary: '', secondary: '' });
             setPrizes(prices ? prices : {});
             setEventLinks(eventLinks ? eventLinks : []);
             setActive(active ? active : false);
@@ -188,6 +191,7 @@ const EventDetails = ({ events, games, platforms }) => {
                 tipoLogro: game,
                 descriptions,
                 description: descriptions['es'], // <- Temporary field, remove it later
+                gradientColors,
                 streamingPlatformImage,
                 sponsorImage,
                 streamerName,
@@ -479,6 +483,10 @@ const EventDetails = ({ events, games, platforms }) => {
         setStreamerGameData({});
     }
 
+    const setGradient = (position, value) => {
+        setGradientColors({ ...gradientColors, [position]: value });
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -543,6 +551,25 @@ const EventDetails = ({ events, games, platforms }) => {
                             <br/>
                         </Grid>
                     ))}
+                </Grid>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Colores del evento (app card)
+                </Typography>
+                <br/>
+                <Grid container>
+                    {Object.keys(gradientColors).map((positionKey) => (
+                        <Grid item md={4} key={`Gradient-${positionKey}`}>
+                            <QaplaTextField
+                                key={`${positionKey}`}
+                                label={`${positionKey} Gradient`}
+                                variant='outlined'
+                                value={gradientColors[positionKey] || ''}
+                                onChange={(value) => setGradient(positionKey, value)} />
+                        </Grid>
+                    ))}
+                    <br/>
                 </Grid>
                 <Typography
                     variant='h5'
@@ -797,7 +824,6 @@ const EventDetails = ({ events, games, platforms }) => {
                     value={streamingPlatformImage}
                     onChange={setStreamingPlatformImage} />
                 <QaplaTextField
-                    required
                     label='Foto de patrocinador'
                     variant='outlined'
                     type='text'

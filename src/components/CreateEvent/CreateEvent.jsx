@@ -47,6 +47,7 @@ const CreateEvent = ({ games, platforms }) => {
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
     const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
+    const [gradientColors, setGradientColors] = useState({ primary: '', secondary: '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
     const [isMatchesEvent, setIsMatchesEvent] = useState(true);
@@ -104,6 +105,7 @@ const CreateEvent = ({ games, platforms }) => {
                 tipoLogro: game,
                 descriptions,
                 description: descriptions['es'], // <- Temporary field, remove it later
+                gradientColors,
                 streamingPlatformImage,
                 streamerGameData,
                 streamerName,
@@ -403,6 +405,10 @@ const CreateEvent = ({ games, platforms }) => {
         setStreamerGameData({});
     }
 
+    const setGradient = (position, value) => {
+        setGradientColors({ ...gradientColors, [position]: value });
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <form onSubmit={saveEventOnDatabase}>
@@ -458,6 +464,25 @@ const CreateEvent = ({ games, platforms }) => {
                                         onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
                                 </Grid>
                             ))}
+                        </Grid>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Colores del evento (app card)
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            {Object.keys(gradientColors).map((positionKey) => (
+                                <Grid item md={3} lg={4} key={`Gradient-${positionKey}`}>
+                                    <QaplaTextField
+                                        key={`${positionKey}`}
+                                        label={`${positionKey} Gradient`}
+                                        variant='outlined'
+                                        value={gradientColors[positionKey] || ''}
+                                        onChange={(value) => setGradient(positionKey, value)} />
+                                </Grid>
+                            ))}
+                            <br/>
                         </Grid>
                         <Typography
                             variant='h5'
@@ -738,7 +763,6 @@ const CreateEvent = ({ games, platforms }) => {
                             </Grid>
                             <Grid md={4}>
                                 <QaplaTextField
-                                    required
                                     label='Foto de patrocinador'
                                     variant='outlined'
                                     type='text'
