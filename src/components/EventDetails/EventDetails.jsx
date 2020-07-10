@@ -55,6 +55,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const [streamerChannelLink, setStreamerChannelLink] = useState(events[eventId].streamerChannelLink ? events[eventId].streamerChannelLink : '');
     const [streamerPhoto, setStreamerPhoto] = useState(events[eventId].streamerPhoto ? events[eventId].streamerPhoto : '');
     const [streamingPlatformImage, setStreamingPlatformImage] = useState(events[eventId].streamingPlatformImage ? events[eventId].streamingPlatformImage : '');
+    const [sponsorImage, setSponsorImage] = useState(events[eventId].sponsorImage ? events[eventId].sponsorImage : '');
+    const [gradientColors, setGradientColors] = useState(events[eventId].gradientColors ? events[eventId].gradientColors : { primary: '', secondary: '' });
     const [backgroundImage, setBackgroundImage] = useState(events[eventId].backgroundImage ? events[eventId].backgroundImage : '');
     const [descriptionsTitle, setDescriptionsTitle] = useState(events[eventId].descriptionsTitle ? events[eventId].descriptionsTitle : {});
     const [appStringPrizes, setAppStringPrizes] = useState(events[eventId].appStringPrizes ? events[eventId].appStringPrizes : {});
@@ -64,6 +66,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const [isMatchesEvent, setIsMatchesEvent] = useState(events[eventId].isMatchesEvent ? events[eventId].isMatchesEvent : false);
     const [acceptAllUsers, setAcceptAllUsers] = useState(events[eventId].acceptAllUsers ? events[eventId].acceptAllUsers : false);
     const [participantNumber, setParticipantNumber] = useState(events[eventId].participantNumber ? events[eventId].participantNumber : 0);
+    const [featured, setFeatured] = useState(events[eventId].featured ? events[eventId].featured : false);
 
     const history = useHistory();
 
@@ -84,6 +87,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 streamerChannelLink,
                 streamerPhoto,
                 streamingPlatformImage,
+                sponsorImage,
+                gradientColors,
                 backgroundImage,
                 descriptionsTitle,
                 appStringPrizes,
@@ -92,7 +97,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 eventEntry,
                 isMatchesEvent,
                 acceptAllUsers,
-                participantNumber
+                participantNumber,
+                featured
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -104,6 +110,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setPlatform(platform ? platform : '');
             setGame(tipoLogro ? tipoLogro : '');
             setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
+            setGradientColors(gradientColors ? gradientColors : { primary: '', secondary: '' });
             setPrizes(prices ? prices : {});
             setEventLinks(eventLinks ? eventLinks : []);
             setActive(active ? active : false);
@@ -111,6 +118,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
             setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
             setStreamingPlatformImage(streamingPlatformImage ? streamingPlatformImage : '');
+            setSponsorImage(sponsorImage ? sponsorImage : '');
             setBackgroundImage(backgroundImage ? backgroundImage : '');
             setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
             setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
@@ -120,6 +128,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
             setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
             setParticipantNumber(participantNumber ? participantNumber : 0);
+            setFeatured(featured ? featured : false);
         }
     }, [events]);
 
@@ -180,7 +189,9 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             tipoLogro: game,
             descriptions,
             description: descriptions['es'], // <- Temporary field, remove it later
+            gradientColors,
             streamingPlatformImage,
+            sponsorImage,
             streamerName,
             streamerChannelLink,
             streamerPhoto,
@@ -192,7 +203,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             eventEntry: eventEntry ? parseInt(eventEntry) : 0,
             isMatchesEvent,
             acceptAllUsers,
-            participantNumber
+            participantNumber,
+            featured
         };
 
         if (eventDuplicated) {
@@ -494,6 +506,10 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
         setStreamerGameData({});
     }
 
+    const setGradient = (position, value) => {
+        setGradientColors({ ...gradientColors, [position]: value });
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -560,6 +576,25 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                             <br/>
                         </Grid>
                     ))}
+                </Grid>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Colores del evento (app card)
+                </Typography>
+                <br/>
+                <Grid container>
+                    {Object.keys(gradientColors).map((positionKey) => (
+                        <Grid item md={4} key={`Gradient-${positionKey}`}>
+                            <QaplaTextField
+                                key={`${positionKey}`}
+                                label={`${positionKey} Gradient`}
+                                variant='outlined'
+                                value={gradientColors[positionKey] || ''}
+                                onChange={(value) => setGradient(positionKey, value)} />
+                        </Grid>
+                    ))}
+                    <br/>
                 </Grid>
                 <Typography
                     variant='h5'
@@ -792,7 +827,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 <Typography
                     variant='h5'
                     className={styles.ItalicFont}>
-                    Fotos y links del evento
+                    Fotos, multimedia y links del evento
                 </Typography>
                 <br/>
                 <QaplaTextField
@@ -813,6 +848,12 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                     type='text'
                     value={streamingPlatformImage}
                     onChange={setStreamingPlatformImage} />
+                <QaplaTextField
+                    label='Foto de patrocinador'
+                    variant='outlined'
+                    type='text'
+                    value={sponsorImage}
+                    onChange={setSponsorImage} />
                 <QaplaTextField
                     label='Discord Link'
                     variant='outlined'
@@ -862,6 +903,14 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                         control={<Radio />}
                         label='Revisar solicitudes' />
                 </RadioGroup>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Información adicional
+                </Typography>
+                <FormControlLabel
+                    control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
+                    label='Evento destacado' />
                 <br/>
                 <div className={styles.MarginTop16}>
                     {/**

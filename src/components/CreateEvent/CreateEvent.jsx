@@ -46,6 +46,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [discordLink, setDiscordLink] = useState('');
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
+    const [gradientColors, setGradientColors] = useState({ primary: '', secondary: '' });
     const [descriptions, setDescriptions] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
@@ -54,6 +55,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [streamerChannelLink, setStreamerChannelLink] = useState('');
     const [streamerPhoto, setStreamerPhoto] = useState('');
     const [streamingPlatformImage, setStreamingPlatformImage] = useState('');
+    const [sponsorImage, setSponsorImage] = useState('');
     const [backgroundImage, setBackgroundImage] = useState('');
     const [descriptionsTitle, setDescriptionsTitle] = useState({});
     const [appStringPrizes, setAppStringPrizes] = useState({});
@@ -62,6 +64,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [eventEntry, setEventEntry] = useState(0);
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
+    const [featured, setFeatured] = useState(false);
     const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
     const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
     const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
@@ -106,6 +109,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             tipoLogro: game,
             descriptions,
             description: descriptions['es'], // <- Temporary field, remove it later
+            gradientColors,
             streamingPlatformImage,
             streamerGameData,
             streamerName,
@@ -118,7 +122,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             eventEntry: parseInt(eventEntry),
             isMatchesEvent,
             acceptAllUsers,
-            participantNumber
+            participantNumber,
+            featured,
+            sponsorImage
         };
 
         if (template) {
@@ -424,6 +430,10 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         setStreamerGameData({});
     }
 
+    const setGradient = (position, value) => {
+        setGradientColors({ ...gradientColors, [position]: value });
+    }
+
     /**
      * Update the selected template (also all the fields in the template)
      * @param {string} selectedTemplate Key of the selected template
@@ -448,15 +458,18 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             streamerChannelLink,
             streamerPhoto,
             streamingPlatformImage,
+            sponsorImage,
             backgroundImage,
             descriptionsTitle,
+            gradientColors,
             appStringPrizes,
             instructionsToParticipate,
             streamerGameData,
             eventEntry,
             isMatchesEvent,
             acceptAllUsers,
-            participantNumber
+            participantNumber,
+            featured
         } = template;
         setTitle(title ? title : { 'es': '', 'en': '' });
         if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -474,8 +487,10 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
         setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
         setStreamingPlatformImage(streamingPlatformImage ? streamingPlatformImage : '');
+        setSponsorImage(sponsorImage ? sponsorImage : '');
         setBackgroundImage(backgroundImage ? backgroundImage : '');
         setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
+        setGradientColors(gradientColors ? gradientColors : { primary: '', secondary: '' });
         setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
         setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
         setStreamerGameData(streamerGameData ? streamerGameData : {});
@@ -483,6 +498,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
         setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
         setParticipantNumber(participantNumber ? participantNumber : 0);
+        setFeatured(featured ? featured : false);
     }
 
     /**
@@ -614,6 +630,25 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                         onChange={(value) => setDescriptionByLanguage(availableLanguage, value)} />
                                 </Grid>
                             ))}
+                        </Grid>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Colores del evento (app card)
+                        </Typography>
+                        <br/>
+                        <Grid container>
+                            {Object.keys(gradientColors).map((positionKey) => (
+                                <Grid item md={3} lg={4} key={`Gradient-${positionKey}`}>
+                                    <QaplaTextField
+                                        key={`${positionKey}`}
+                                        label={`${positionKey} Gradient`}
+                                        variant='outlined'
+                                        value={gradientColors[positionKey] || ''}
+                                        onChange={(value) => setGradient(positionKey, value)} />
+                                </Grid>
+                            ))}
+                            <br/>
                         </Grid>
                         <Typography
                             variant='h5'
@@ -859,11 +894,11 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                         <Typography
                             variant='h5'
                             className={styles.ItalicFont}>
-                            Fotos y links del evento
+                            Fotos, multimedia y links del evento
                         </Typography>
                         <br/>
                         <Grid container>
-                            <Grid md={12}>
+                            <Grid md={4}>
                                 <QaplaTextField
                                     required
                                     label='Foto de streamer'
@@ -881,6 +916,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                     value={backgroundImage}
                                     onChange={setBackgroundImage} />
                             </Grid>
+                        </Grid>
+                        <Grid container>
                             <Grid md={4}>
                                 <QaplaTextField
                                     required
@@ -889,6 +926,14 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                     type='text'
                                     value={streamingPlatformImage}
                                     onChange={setStreamingPlatformImage} />
+                            </Grid>
+                            <Grid md={4}>
+                                <QaplaTextField
+                                    label='Foto de patrocinador'
+                                    variant='outlined'
+                                    type='text'
+                                    value={sponsorImage}
+                                    onChange={setSponsorImage} />
                             </Grid>
                         </Grid>
                         <Grid container>
@@ -941,6 +986,14 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 control={<Radio />}
                                 label='Revisar solicitudes' />
                         </RadioGroup>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Información adicional
+                        </Typography>
+                        <FormControlLabel
+                            control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
+                            label='Destacar evento' />
                         <br/>
                         {eventLinks.length > 0 &&
                             <Typography
