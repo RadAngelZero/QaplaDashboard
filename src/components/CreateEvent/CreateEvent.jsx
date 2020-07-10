@@ -13,7 +13,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { createEvent, updateEvent } from '../../services/database';
+import { createEvent, updateEvent, saveEventTemplate, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
 
@@ -38,7 +38,7 @@ const fixedPrizesValues = {
     }
 };
 
-const CreateEvent = ({ games, platforms }) => {
+const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [date, setDate] = useState();
@@ -46,8 +46,8 @@ const CreateEvent = ({ games, platforms }) => {
     const [discordLink, setDiscordLink] = useState('');
     const [platform, setPlatform] = useState('');
     const [game, setGame] = useState('');
-    const [descriptions, setDescription] = useState({ 'es': '', 'en': '' });
     const [gradientColors, setGradientColors] = useState({ primary: '', secondary: '' });
+    const [descriptions, setDescriptions] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
     const [isMatchesEvent, setIsMatchesEvent] = useState(true);
@@ -65,6 +65,10 @@ const CreateEvent = ({ games, platforms }) => {
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
     const [featured, setFeatured] = useState(false);
+    const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
+    const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
+    const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
     const history = useHistory();
 
     /**
@@ -87,64 +91,78 @@ const CreateEvent = ({ games, platforms }) => {
         const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
         const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
-        createEvent({
-                title: titles,
-                titulo: titles['es'], // <- Temporary field, remove it later
-                dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-                hourUTC: `${UTCHour}:${UTCMinutes}`,
-                tiempoLimite: `${day}-${month}-${year}`,
-                hour,
-                discordLink,
-                platform,
-                prices: prizes,
-                game,
-                /**
-                 * At this point we use the tipoLogro field for the game, in the future we must change it
-                 * for the game field
-                 */
-                tipoLogro: game,
-                descriptions,
-                description: descriptions['es'], // <- Temporary field, remove it later
-                gradientColors,
-                streamingPlatformImage,
-                streamerGameData,
-                streamerName,
-                streamerChannelLink,
-                streamerPhoto,
-                backgroundImage,
-                descriptionsTitle,
-                appStringPrizes,
-                instructionsToParticipate,
-                eventEntry: parseInt(eventEntry),
-                isMatchesEvent,
-                acceptAllUsers,
-                participantNumber,
-                featured,
-                sponsorImage
-            },
-            async (error, key) => {
+        const eventData = {
+            title: titles,
+            titulo: titles['es'], // <- Temporary field, remove it later
+            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
+            hourUTC: `${UTCHour}:${UTCMinutes}`,
+            tiempoLimite: `${day}-${month}-${year}`,
+            hour,
+            discordLink,
+            platform,
+            prices: prizes,
+            game,
+            /**
+             * At this point we use the tipoLogro field for the game, in the future we must change it
+             * for the game field
+             */
+            tipoLogro: game,
+            descriptions,
+            description: descriptions['es'], // <- Temporary field, remove it later
+            gradientColors,
+            streamingPlatformImage,
+            streamerGameData,
+            streamerName,
+            streamerChannelLink,
+            streamerPhoto,
+            backgroundImage,
+            descriptionsTitle,
+            appStringPrizes,
+            instructionsToParticipate,
+            eventEntry: parseInt(eventEntry),
+            isMatchesEvent,
+            acceptAllUsers,
+            participantNumber,
+            featured,
+            sponsorImage
+        };
+
+        if (template) {
+            saveEventTemplate(user.uid, eventData, isPrivateTemplate, (error) => {
                 if (error) {
-                    console.error(error);
-                    alert('Hubo un problema al crear el evento');
-                    return;
+                    alert('Error al guardar la plantilla');
+                    return console.error(error);
                 }
 
-                const links = {};
+                alert('Plantilla guardada correctamente');
+                history.push('/');
+            });
+        } else {
+            createEvent(eventData,
+                async (error, key) => {
+                    if (error) {
+                        console.error(error);
+                        alert('Hubo un problema al crear el evento');
+                        return;
+                    }
 
-                /**
-                 * We create one link for every language we support
-                 */
-                for (let i = 0; i < Object.keys(Languages).length; i++) {
-                    const language = Object.keys(Languages)[i];
-                    links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
+                    const links = {};
+
+                    /**
+                     * We create one link for every language we support
+                     */
+                    for (let i = 0; i < Object.keys(Languages).length; i++) {
+                        const language = Object.keys(Languages)[i];
+                        links[language] = await createEventInvitationDeepLink(key, titles[language], descriptions[language], backgroundImage);
+                    }
+
+                    setEventLinks(links);
+                    updateEvent(key, { eventLinks: links });
+                    alert('Evento publicado exitosamente');
+                    history.push('');
                 }
-
-                setEventLinks(links);
-                updateEvent(key, { eventLinks: links });
-                alert('Evento publicado exitosamente');
-                history.push('');
-            }
-        );
+            );
+        }
     }
 
     /**
@@ -162,7 +180,7 @@ const CreateEvent = ({ games, platforms }) => {
      * @param {string} value Value of the description
      */
     const setDescriptionByLanguage = (language, value) => {
-        setDescription({ ...descriptions, [language]: value });
+        setDescriptions({ ...descriptions, [language]: value });
     }
 
     /**
@@ -370,7 +388,7 @@ const CreateEvent = ({ games, platforms }) => {
                 break;
         }
 
-        if (allRight) {
+        if (allRight || template) {
             setCurrentSection(currentSection + 1);
         } else {
             alert('Revisa que los campos esten llenados de forma correcta');
@@ -409,16 +427,157 @@ const CreateEvent = ({ games, platforms }) => {
         setGradientColors({ ...gradientColors, [position]: value });
     }
 
+    /**
+     * Update the selected template (also all the fields in the template)
+     * @param {string} selectedTemplate Key of the selected template
+     */
+    const setTemplate = (selectedTemplate) => {
+        let template = {};
+        if (selectedTemplate) {
+            template = privateEventsTemplates[selectedTemplate] ? privateEventsTemplates[selectedTemplate] : publicEventsTemplates[selectedTemplate];
+        }
+        setSelectedTemplate(selectedTemplate);
+        const {
+            title,
+            tiempoLimite,
+            hour,
+            discordLink,
+            platform,
+            tipoLogro,
+            descriptions,
+            prices,
+            eventLinks,
+            streamerName,
+            streamerChannelLink,
+            streamerPhoto,
+            streamingPlatformImage,
+            sponsorImage,
+            backgroundImage,
+            descriptionsTitle,
+            gradientColors,
+            appStringPrizes,
+            instructionsToParticipate,
+            streamerGameData,
+            eventEntry,
+            isMatchesEvent,
+            acceptAllUsers,
+            participantNumber,
+            featured
+        } = template;
+        setTitle(title ? title : { 'es': '', 'en': '' });
+        if (tiempoLimite && tiempoLimite.includes('-')) {
+            const [day, month, year] = tiempoLimite.split('-');
+            setDate(`${year}-${month}-${day}`);
+        }
+        setHour(hour ? hour : '');
+        setDiscordLink(discordLink ? discordLink : '');
+        setPlatform(platform ? platform : '');
+        setGame(tipoLogro ? tipoLogro : '');
+        setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
+        setPrizes(prices ? prices : {});
+        setEventLinks(eventLinks ? eventLinks : []);
+        setStreamerName(streamerName ? streamerName : '');
+        setStreamerChannelLink(streamerChannelLink ? streamerChannelLink : '');
+        setStreamerPhoto(streamerPhoto ? streamerPhoto : '');
+        setStreamingPlatformImage(streamingPlatformImage ? streamingPlatformImage : '');
+        setSponsorImage(sponsorImage ? sponsorImage : '');
+        setBackgroundImage(backgroundImage ? backgroundImage : '');
+        setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
+        setGradientColors(gradientColors ? gradientColors : { primary: '', secondary: '' });
+        setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
+        setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
+        setStreamerGameData(streamerGameData ? streamerGameData : {});
+        setEventEntry(eventEntry ? eventEntry : 0);
+        setIsMatchesEvent(isMatchesEvent ? isMatchesEvent : false);
+        setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
+        setParticipantNumber(participantNumber ? participantNumber : 0);
+        setFeatured(featured ? featured : false);
+    }
+
+    /**
+     * Load all the eventes templates (privates and publics)
+     */
+    const loadEventTemplates = async () => {
+        setPublicEventsTemplates(await loadPublicEventTemplates() || {});
+        if (user && user.uid) {
+            setPrivateEventsTemplates(await loadPrivateTemplates(user.uid) || {});
+        }
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <form onSubmit={saveEventOnDatabase}>
                 <Typography
                     variant='h3'
                     className={styles.EventTitle}>
-                    Evento: {titles['es']}
+                    {template ? `Plantilla: ${titles['es']}` : `Evento: ${titles['es']}`}
                 </Typography>
                 {currentSection === 0 &&
                     <>
+                        {!template &&
+                            <>
+                                <Typography
+                                    variant='h5'
+                                    className={styles.ItalicFont}>
+                                    Plantilla (opcional)
+                                </Typography>
+                                <br/>
+                                {publicEventsTemplates || privateEventsTemplates ?
+                                    <QaplaSelect
+                                        label='Plantilla'
+                                        id='Template'
+                                        value={selectedTemplate}
+                                        onChange={setTemplate}>
+                                        <option aria-label='None' value='' />
+                                        {privateEventsTemplates && Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
+                                            <option
+                                                key={privateTemplateKey}
+                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].title['es']}</option>
+                                        ))}
+                                        {privateEventsTemplates && Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
+                                            <option
+                                                key={publicTemplateKey}
+                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].title['es']}</option>
+                                        ))}
+                                    </QaplaSelect>
+                                    :
+                                    <Button
+                                        variant='contained'
+                                        color='secondary'
+                                        disabled={user === null || (typeof user !== 'object' && Object.keys(user).length <= 0)}
+                                        onClick={loadEventTemplates}>
+                                        Cargar plantillas
+                                    </Button>
+                                }
+                                <br/>
+                                <br/>
+                            </>
+                        }
+                        {template && user && user.admin &&
+                            <>
+                                <Typography
+                                    variant='h5'
+                                    className={styles.ItalicFont}>
+                                    Tipo de plantilla
+                                </Typography>
+                                <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
+                                    <Grid container>
+                                        <Grid item md={3}>
+                                            <FormControlLabel
+                                                value={true}
+                                                control={<Radio />}
+                                                label='Plantilla Privada' />
+                                        </Grid>
+                                        <Grid item md={3}>
+                                            <FormControlLabel
+                                                value={false}
+                                                control={<Radio />}
+                                                label='Plantilla publica' />
+                                        </Grid>
+                                    </Grid>
+                                </RadioGroup>
+                            </>
+                        }
                         <Typography
                             variant='h5'
                             className={styles.ItalicFont}>
@@ -867,7 +1026,7 @@ const CreateEvent = ({ games, platforms }) => {
                             variant='contained'
                             color='primary'
                             type='submit'>
-                                Crear evento
+                                {template ? 'Guardar Plantilla' : 'Crear evento'}
                         </Button>
                     </>
                 </div>

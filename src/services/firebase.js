@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/functions';
+import 'firebase/auth';
 
 //Uncomment for testing
 /* const firebaseTESTConfig = {
@@ -33,3 +34,10 @@ firebase.initializeApp(firebaseConfig);
 
 export const database = firebase.database();
 export const functions = firebase.functions();
+export const auth = firebase.auth();
+
+/**
+ * Auth providers
+ */
+export const FacebookAuthProvider = new firebase.auth.FacebookAuthProvider();
+export const GoogleAuthProvider = new firebase.auth.GoogleAuthProvider();

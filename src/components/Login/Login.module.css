@@ -1,0 +1,32 @@
+@media only screen and (min-width: 992px) {
+    .SocialMediaSignInButton {
+        border-radius: 30px !important;
+        padding: 16px !important;
+        width: 25vw;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .SocialMediaSignInButton {
+        border-radius: 30px !important;
+        padding: 16px !important;
+        width: 40vw;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .SocialMediaSignInButton {
+        border-radius: 30px !important;
+        padding: 16px !important;
+        width: 90vw;
+    }
+}
+
+.FacebookSignInButton {
+    background-color: #364FE2 !important;
+    color: #FFF !important;
+}
+
+.GoogleSignInButton {
+    color: rgba(0, 0, 0, .541) !important;
+}

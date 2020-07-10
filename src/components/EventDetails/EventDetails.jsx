@@ -14,7 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, getEventRanking, closeEvent } from '../../services/database';
+import { deleteEvent, updateEvent, getEventRanking, closeEvent, createEvent } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const fixedPrizesValues = {
@@ -38,7 +38,7 @@ const fixedPrizesValues = {
     }
 };
 
-const EventDetails = ({ events, games, platforms }) => {
+const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => {
     const { eventId } = useParams();
     events[eventId] = events[eventId] ? events[eventId] : {};
     const [active, setActive] = useState(events[eventId].active ? events[eventId].active : false);
@@ -171,53 +171,69 @@ const EventDetails = ({ events, games, platforms }) => {
                 streamerGameDataFiltered[key] = streamerGameData[key];
             });
 
-        updateEvent(
-            eventId,
-            {
-                title: titles,
-                titulo: titles['es'], // <- Temporary field, remove it later
-                dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-                hourUTC: `${UTCHour}:${UTCMinutes}`,
-                tiempoLimite: `${day}-${month}-${year}`,
-                hour,
-                discordLink,
-                platform,
-                prices: prizes,
-                game,
-                /**
-                 * At this point we use the tipoLogro field for the game, in the future we must change it
-                 * for the game field
-                 */
-                tipoLogro: game,
-                descriptions,
-                description: descriptions['es'], // <- Temporary field, remove it later
-                gradientColors,
-                streamingPlatformImage,
-                sponsorImage,
-                streamerName,
-                streamerChannelLink,
-                streamerPhoto,
-                backgroundImage,
-                descriptionsTitle,
-                appStringPrizes,
-                instructionsToParticipate,
-                streamerGameData: streamerGameDataFiltered,
-                eventEntry: eventEntry ? parseInt(eventEntry) : 0,
-                isMatchesEvent,
-                acceptAllUsers,
-                participantNumber,
-                featured
-            },
-            (error) => {
-                if (error) {
-                    console.error(error);
-                    alert('Hubo un problema al actualizar el evento');
-                    return;
-                }
+        const eventData = {
+            title: titles,
+            titulo: titles['es'], // <- Temporary field, remove it later
+            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
+            hourUTC: `${UTCHour}:${UTCMinutes}`,
+            tiempoLimite: `${day}-${month}-${year}`,
+            hour,
+            discordLink,
+            platform,
+            prices: prizes,
+            game,
+            /**
+             * At this point we use the tipoLogro field for the game, in the future we must change it
+             * for the game field
+             */
+            tipoLogro: game,
+            descriptions,
+            description: descriptions['es'], // <- Temporary field, remove it later
+            gradientColors,
+            streamingPlatformImage,
+            sponsorImage,
+            streamerName,
+            streamerChannelLink,
+            streamerPhoto,
+            backgroundImage,
+            descriptionsTitle,
+            appStringPrizes,
+            instructionsToParticipate,
+            streamerGameData: streamerGameDataFiltered,
+            eventEntry: eventEntry ? parseInt(eventEntry) : 0,
+            isMatchesEvent,
+            acceptAllUsers,
+            participantNumber,
+            featured
+        };
 
-                alert('Evento actualizado exitosamente');
-            }
-        );
+        if (eventDuplicated) {
+            createEvent(eventData, (error) => {
+                    if (error) {
+                        console.error(error);
+                        alert('Hubo un problema al actualizar el evento');
+                        return;
+                    }
+
+                    alert('Evento duplicado exitosamente');
+                    history.push('/');
+                }
+            );
+        } else {
+            updateEvent(
+                eventId,
+                eventData,
+                (error) => {
+                    if (error) {
+                        console.error(error);
+                        alert('Hubo un problema al actualizar el evento');
+                        return;
+                    }
+
+                    alert('Evento actualizado exitosamente');
+                }
+            );
+        }
     }
 
     /**
@@ -502,15 +518,17 @@ const EventDetails = ({ events, games, platforms }) => {
                 </Typography>
                 <br/>
                 <Grid container>
-                    <Grid item md={12}>
-                        <QaplaTextField
-                            label='ID del evento'
-                            value={eventId}
-                            inputAdornment={<FileCopyIcon />}
-                            onChange={() => {}}
-                            onPressAdornment={copyEventId}
-                            id='EventIdTextField' />
-                    </Grid>
+                    {!eventDuplicated &&
+                        <Grid item md={12}>
+                            <QaplaTextField
+                                label='ID del evento'
+                                value={eventId}
+                                inputAdornment={<FileCopyIcon />}
+                                onChange={() => {}}
+                                onPressAdornment={copyEventId}
+                                id='EventIdTextField' />
+                        </Grid>
+                    }
                     <Grid item md={12}>
                         <br/>
                         <QaplaTextField
@@ -892,21 +910,23 @@ const EventDetails = ({ events, games, platforms }) => {
                      * MarginRight16 use !important css because without it the margin
                      * is not applied to this button
                      */}
-                    <Button
-                        variant='contained'
-                        color='secondary'
-                        className={styles.MarginRight16}
-                        onClick={removeEventFromDatabase}>
-                        Eliminar
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        className={styles.MarginRight16}
-                        onClick={updateEventOnDatabase}>
-                        Guardar cambios
-                    </Button>
-                    {active &&
+                    {!eventDuplicated &&
+                        <Button
+                            variant='contained'
+                            color='secondary'
+                            className={styles.MarginRight16}
+                            onClick={removeEventFromDatabase}>
+                            Eliminar
+                        </Button>
+                    }
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                className={styles.MarginRight16}
+                                onClick={updateEventOnDatabase}>
+                                {eventDuplicated ? 'Crear Evento' : 'Guardar Cambios'}
+                            </Button>
+                    {!eventDuplicated && active &&
                         <>
                             {isMatchesEvent ?
                                 <>
@@ -933,17 +953,21 @@ const EventDetails = ({ events, games, platforms }) => {
                             }
                         </>
                     }
-                    <Button
-                        variant='contained'
-                        className={styles.MarginRight16}
-                        onClick={goToJoinRequests}>
-                        Ver solicitudes
-                    </Button>
-                    <Button
-                        variant='contained'
-                        onClick={goToEventParticipants}>
-                        Ver participantes
-                    </Button>
+                    {!eventDuplicated &&
+                        <>
+                            <Button
+                                variant='contained'
+                                className={styles.MarginRight16}
+                                onClick={goToJoinRequests}>
+                                Ver solicitudes
+                            </Button>
+                            <Button
+                                variant='contained'
+                                onClick={goToEventParticipants}>
+                                Ver participantes
+                            </Button>
+                        </>
+                    }
                 </div>
             </form>
         </Container>

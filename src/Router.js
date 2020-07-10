@@ -20,15 +20,21 @@ import EventParticipantsList from './components/EventParticipantsList/EventParti
 import {
     loadEventsOrderByDate,
     loadQaplaGames,
-    loadQaplaPlatforms
+    loadQaplaPlatforms,
+    loadUserAdminProfile,
+    loadUserClientProfile
 } from './services/database';
+import { handleUserAuthentication } from './services/auth';
 
 import './App.css';
+import Login from './components/Login/Login';
+import { auth } from './services/firebase';
 
 const Router = () => {
     const [events, setEvents] = useState();
     const [games, setGames] = useState({});
     const [platforms, setPlatforms] = useState({});
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
 
@@ -46,9 +52,23 @@ const Router = () => {
             setPlatforms(await loadQaplaPlatforms());
         }
 
+        function checkIfUserIsAuthenticated() {
+            handleUserAuthentication((user) => {
+                loadUserAdminProfile(user.uid, (userData) => {
+                    setUser({ ...userData, admin: true, uid: user.uid });
+                });
+                loadUserClientProfile(user.uid, (userData) => {
+                    setUser({ ...userData, admin: false, uid: user.uid });
+                });
+            }, () => {
+                setUser(undefined);
+            });
+        }
+
         loadEventsOrderByDate(loadEventsData);
         loadGamesResources();
         loadPlatformsResources();
+        checkIfUserIsAuthenticated();
     }, []);
 
     /**
@@ -68,10 +88,36 @@ const Router = () => {
                 <Toolbar>
                     <Link to='/' className='Nav-Title White-Color'>
                         <Typography variant='h6' style={{ color: '#FFF' }} >
-                                Qapla Dashboard
+                            Qapla Dashboard
                         </Typography>
                     </Link>
-                    <Link to='/event/create' className='White-Color'>
+                    {user === undefined &&
+                        <Link to='/login' className='White-Color'>
+                            <Button
+                                color='inherit'
+                                style={{ color: '#FFF' }}>
+                                Login
+                            </Button>
+                        </Link>
+                    }
+                    {user &&
+                        <>
+                            <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                                <Button
+                                    color='inherit'
+                                    style={{ color: '#FFF' }}>
+                                    Plantillas
+                                </Button>
+                            </Link>
+                            <Button
+                                color='inherit'
+                                style={{ color: '#FFF' }}
+                                onClick={() => auth.signOut()}>
+                                Cerrar sesión
+                            </Button>
+                        </>
+                    }
+                    <Link to='/event/create' className='White-Color Margin-Right'>
                         <Button
                             variant='contained'
                             color='secondary'
@@ -103,7 +149,25 @@ const Router = () => {
                 <Route exact path='/event/create'>
                     <CreateEvent
                         games={games}
-                        platforms={platforms} />
+                        platforms={platforms}
+                        user={user} />
+                </Route>
+                <Route exact path='/user/templates/create'>
+                    <CreateEvent
+                        games={games}
+                        platforms={platforms}
+                        template
+                        user={user} />
+                </Route>
+                <Route exact path='/event/duplicate/:eventId'>
+                    <EventDetails
+                        events={eventsLoaded}
+                        games={games}
+                        platforms={platforms}
+                        eventDuplicated />
+                </Route>
+                <Route exact path='/login'>
+                    <Login user={user} />
                 </Route>
             </Switch>
         </RouterPackage>
