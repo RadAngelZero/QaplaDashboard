@@ -171,6 +171,13 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 streamerGameDataFiltered[key] = streamerGameData[key];
             });
 
+        let gradientColorsFiltered = {};
+        Object.keys(gradientColors)
+            .filter((key) => gradientColors[key] !== '')
+            .forEach((key) => {
+                gradientColorsFiltered[key] = gradientColors[key];
+            });
+
         const eventData = {
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
@@ -189,7 +196,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             tipoLogro: game,
             descriptions,
             description: descriptions['es'], // <- Temporary field, remove it later
-            gradientColors,
+            gradientColors: gradientColorsFiltered,
             streamingPlatformImage,
             sponsorImage,
             streamerName,

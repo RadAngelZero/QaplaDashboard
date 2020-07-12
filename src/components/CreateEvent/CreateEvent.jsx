@@ -91,6 +91,20 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
         const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
+        let streamerGameDataFiltered = {};
+        Object.keys(streamerGameData)
+            .filter((key) => streamerGameData[key] !== '')
+            .forEach((key) => {
+                streamerGameDataFiltered[key] = streamerGameData[key];
+            });
+
+        let gradientColorsFiltered = {};
+        Object.keys(gradientColors)
+            .filter((key) => gradientColors[key] !== '')
+            .forEach((key) => {
+                gradientColorsFiltered[key] = gradientColors[key];
+            });
+
         const eventData = {
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
@@ -109,9 +123,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             tipoLogro: game,
             descriptions,
             description: descriptions['es'], // <- Temporary field, remove it later
-            gradientColors,
+            gradientColors: gradientColorsFiltered,
             streamingPlatformImage,
-            streamerGameData,
+            streamerGameData: streamerGameDataFiltered,
             streamerName,
             streamerChannelLink,
             streamerPhoto,
