@@ -41,6 +41,7 @@ const fixedPrizesValues = {
 const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
+    const [templateName, setTemplateName] = useState('');
     const [date, setDate] = useState();
     const [hour, setHour] = useState();
     const [discordLink, setDiscordLink] = useState('');
@@ -142,6 +143,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         };
 
         if (template) {
+            eventData.templateName = templateName;
             saveEventTemplate(user.uid, eventData, isPrivateTemplate, (error) => {
                 if (error) {
                     alert('Error al guardar la plantilla');
@@ -553,12 +555,12 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                         {privateEventsTemplates && Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
                                             <option
                                                 key={privateTemplateKey}
-                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].title['es']}</option>
+                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].templateName}</option>
                                         ))}
                                         {privateEventsTemplates && Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
                                             <option
                                                 key={publicTemplateKey}
-                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].title['es']}</option>
+                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].templateName}</option>
                                         ))}
                                     </QaplaSelect>
                                     :
@@ -579,8 +581,15 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 <Typography
                                     variant='h5'
                                     className={styles.ItalicFont}>
-                                    Tipo de plantilla
+                                    Datos de la plantilla
                                 </Typography>
+                                <br/>
+                                <QaplaTextField
+                                    required
+                                    variant='outlined'
+                                    label='Nombre de la Plantilla'
+                                    value={templateName}
+                                    onChange={setTemplateName} />
                                 <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
                                     <Grid container>
                                         <Grid item md={3}>
