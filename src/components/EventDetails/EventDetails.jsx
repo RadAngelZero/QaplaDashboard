@@ -172,11 +172,26 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             });
 
         let gradientColorsFiltered = {};
+        let validColors = true;
         Object.keys(gradientColors)
             .filter((key) => gradientColors[key] !== '')
             .forEach((key) => {
-                gradientColorsFiltered[key] = gradientColors[key];
+                if (gradientColors[key].charAt(0) !== '#') {
+                    gradientColorsFiltered[key] = `#${gradientColors[key]}`;
+                } else {
+                    gradientColorsFiltered[key] = gradientColors[key];
+                }
+
+                const validColorRegExp = new RegExp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
+                if (!validColorRegExp.test(gradientColorsFiltered[key])) {
+                    alert('Color de gradiente invalido, verifique antes de continuar');
+                    validColors = false;
+                }
             });
+
+        if (!validColors) {
+            return;
+        }
 
         const eventData = {
             title: titles,
@@ -591,17 +606,22 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 </Typography>
                 <br/>
                 <Grid container>
-                    {Object.keys(gradientColors).map((positionKey) => (
-                        <Grid item md={4} key={`Gradient-${positionKey}`}>
-                            <QaplaTextField
-                                key={`${positionKey}`}
-                                label={`${positionKey} Gradient (Hexadecimal)`}
-                                variant='outlined'
-                                placeholder='#FFFFFF'
-                                value={gradientColors[positionKey] || ''}
-                                onChange={(value) => setGradient(positionKey, value)} />
-                        </Grid>
-                    ))}
+                    <Grid item md={4} key={`Gradient-Primary`}>
+                        <QaplaTextField
+                            label={'Primary Gradient (Hexadecimal)'}
+                            variant='outlined'
+                            placeholder='#FFFFFF'
+                            value={gradientColors['primary'] || ''}
+                            onChange={(value) => setGradient('primary', value)} />
+                    </Grid>
+                    <Grid item md={4} key={`Gradient-Secondary`}>
+                        <QaplaTextField
+                            label={'Secondary Gradient (Hexadecimal)'}
+                            variant='outlined'
+                            placeholder='#FFFFFF'
+                            value={gradientColors['secondary'] || ''}
+                            onChange={(value) => setGradient('secondary', value)} />
+                    </Grid>
                     <br/>
                 </Grid>
                 <Typography
