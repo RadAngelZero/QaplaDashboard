@@ -656,8 +656,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 <Grid item md={3} lg={4} key={`Gradient-${positionKey}`}>
                                     <QaplaTextField
                                         key={`${positionKey}`}
-                                        label={`${positionKey} Gradient`}
+                                        label={`${positionKey} Gradient (Hexadecimal)`}
                                         variant='outlined'
+                                        placeholder='#FFFFFF'
                                         value={gradientColors[positionKey] || ''}
                                         onChange={(value) => setGradient(positionKey, value)} />
                                 </Grid>
