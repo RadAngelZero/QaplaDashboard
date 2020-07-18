@@ -29,6 +29,7 @@ import { handleUserAuthentication } from './services/auth';
 import './App.css';
 import Login from './components/Login/Login';
 import { auth } from './services/firebase';
+import { connectUserToSendBird } from './services/SendBird';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -56,12 +57,15 @@ const Router = () => {
             handleUserAuthentication((user) => {
                 loadUserAdminProfile(user.uid, (userData) => {
                     setUser({ ...userData, admin: true, uid: user.uid });
+                    connectUserToSendBird(user.uid);
                 });
                 loadUserClientProfile(user.uid, (userData) => {
                     setUser({ ...userData, admin: false, uid: user.uid });
+                    connectUserToSendBird(user.uid);
                 });
             }, () => {
                 setUser(undefined);
+                connectUserToSendBird('Admin');
             });
         }
 

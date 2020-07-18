@@ -16,6 +16,7 @@ import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { createEvent, updateEvent, saveEventTemplate, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
+import { createEventChannel } from '../../services/SendBird';
 
 const fixedPrizesValues = {
     0: {},
@@ -181,6 +182,11 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
 
                     setEventLinks(links);
                     updateEvent(key, { eventLinks: links });
+
+                    createEventChannel(eventData.title['en'], eventData.backgroundImage, (eventChat) => {
+                        updateEvent(key, { eventChatUrl: eventChat.url });
+                    });
+
                     alert('Evento publicado exitosamente');
                     history.push('');
                 }
