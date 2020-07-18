@@ -41,6 +41,7 @@ const fixedPrizesValues = {
 const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
+    const [templateName, setTemplateName] = useState('');
     const [date, setDate] = useState();
     const [hour, setHour] = useState();
     const [discordLink, setDiscordLink] = useState('');
@@ -76,20 +77,6 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
      */
     const saveEventOnDatabase = async (e) => {
         e.preventDefault();
-        const [year, month, day] = date.split('-');
-        const [hours, minutes] = hour.split(':');
-        const selectedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
-
-        /**
-         * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
-         * we need it, for example if the day is 2, we need 02, to ensure the length of the dates strings
-         * are always the same
-         * TODO: Refactor, send this to utils.js
-         */
-        const UTCDay = selectedDate.getUTCDate() < 10 ? `0${selectedDate.getUTCDate()}` : selectedDate.getUTCDate();
-        const UTCMonth = selectedDate.getUTCMonth() + 1 < 10 ? `0${selectedDate.getUTCMonth() + 1}` : selectedDate.getUTCMonth() + 1;
-        const UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
-        const UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
 
         let streamerGameDataFiltered = {};
         Object.keys(streamerGameData)
@@ -108,10 +95,6 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         const eventData = {
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
-            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-            hourUTC: `${UTCHour}:${UTCMinutes}`,
-            tiempoLimite: `${day}-${month}-${year}`,
-            hour,
             discordLink,
             platform,
             prices: prizes,
@@ -142,6 +125,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         };
 
         if (template) {
+            eventData.templateName = templateName;
             saveEventTemplate(user.uid, eventData, isPrivateTemplate, (error) => {
                 if (error) {
                     alert('Error al guardar la plantilla');
@@ -152,6 +136,31 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                 history.push('/');
             });
         } else {
+            const [year, month, day] = date.split('-');
+            const [hours, minutes] = hour.split(':');
+            const selectedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+
+            let UTCDay = '';
+            let UTCMonth = '';
+            let UTCHour = '';
+            let UTCMinutes = '';
+
+            /**
+             * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
+             * we need it, for example if the day is 2, we need 02, to ensure the length of the dates strings
+             * are always the same
+             * TODO: Refactor, send this to utils.js
+             */
+            UTCDay = selectedDate.getUTCDate() < 10 ? `0${selectedDate.getUTCDate()}` : selectedDate.getUTCDate();
+            UTCMonth = selectedDate.getUTCMonth() + 1 < 10 ? `0${selectedDate.getUTCMonth() + 1}` : selectedDate.getUTCMonth() + 1;
+            UTCHour = selectedDate.getUTCHours() < 10 ? `0${selectedDate.getUTCHours()}` : selectedDate.getUTCHours();
+            UTCMinutes = selectedDate.getUTCMinutes() < 10 ? `0${selectedDate.getUTCMinutes()}` : selectedDate.getUTCMinutes();
+
+            eventData.dateUTC = template ? '' : `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`;
+            eventData.hourUTC = template ? '' : `${UTCHour}:${UTCMinutes}`;
+            eventData.tiempoLimite = template ? '' : `${day}-${month}-${year}`;
+            eventData.hour = hour;
+
             createEvent(eventData,
                 async (error, key) => {
                     if (error) {
@@ -391,8 +400,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                     !titles['es'] ||
                     !descriptions['en'] ||
                     !descriptions['es'] ||
-                    !date ||
-                    !hour
+                    (template && !templateName) ||
+                    (!template && (!date || !hour))
                     ) {
                     allRight = false;
                 }
@@ -409,7 +418,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                 break;
         }
 
-        if (allRight || template) {
+        if (allRight) {
             setCurrentSection(currentSection + 1);
         } else {
             alert('Revisa que los campos esten llenados de forma correcta');
@@ -531,7 +540,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                 <Typography
                     variant='h3'
                     className={styles.EventTitle}>
-                    {template ? `Plantilla: ${titles['es']}` : `Evento: ${titles['es']}`}
+                    {template ? `Plantilla: ${templateName}` : `Evento: ${titles['es']}`}
                 </Typography>
                 {currentSection === 0 &&
                     <>
@@ -553,12 +562,12 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                         {privateEventsTemplates && Object.keys(privateEventsTemplates).map((privateTemplateKey) => (
                                             <option
                                                 key={privateTemplateKey}
-                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].title['es']}</option>
+                                                value={privateTemplateKey}>{privateEventsTemplates[privateTemplateKey].templateName}</option>
                                         ))}
                                         {privateEventsTemplates && Object.keys(publicEventsTemplates).map((publicTemplateKey) => (
                                             <option
                                                 key={publicTemplateKey}
-                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].title['es']}</option>
+                                                value={publicTemplateKey}>{publicEventsTemplates[publicTemplateKey].templateName}</option>
                                         ))}
                                     </QaplaSelect>
                                     :
@@ -579,8 +588,15 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 <Typography
                                     variant='h5'
                                     className={styles.ItalicFont}>
-                                    Tipo de plantilla
+                                    Datos de la plantilla
                                 </Typography>
+                                <br/>
+                                <QaplaTextField
+                                    required
+                                    variant='outlined'
+                                    label='Nombre de la Plantilla'
+                                    value={templateName}
+                                    onChange={setTemplateName} />
                                 <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
                                     <Grid container>
                                         <Grid item md={3}>
@@ -733,32 +749,36 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                             }
                         </Grid>
                         <br/>
-                        <Typography
-                            variant='h5'
-                            className={styles.ItalicFont}>
-                            Fecha y hora
-                        </Typography>
-                        <br/>
-                        <Grid container>
-                            <Grid item md={3} lg={4}>
-                                <QaplaTextField
-                                    required
-                                    label='Fecha (CST) Año-mes-día'
-                                    variant='outlined'
-                                    type='date'
-                                    value={date}
-                                    onChange={setDate} />
-                            </Grid>
-                            <Grid item md={3} lg={4}>
-                                <QaplaTextField
-                                    required
-                                    label='Hora'
-                                    variant='outlined'
-                                    type='time'
-                                    value={hour}
-                                    onChange={setHour} />
-                            </Grid>
-                        </Grid>
+                        {!template &&
+                            <>
+                                <Typography
+                                    variant='h5'
+                                    className={styles.ItalicFont}>
+                                    Fecha y hora
+                                </Typography>
+                                <br/>
+                                <Grid container>
+                                    <Grid item md={3} lg={4}>
+                                        <QaplaTextField
+                                            required={!template}
+                                            label='Fecha (CST) Año-mes-día'
+                                            variant='outlined'
+                                            type='date'
+                                            value={date}
+                                            onChange={setDate} />
+                                    </Grid>
+                                    <Grid item md={3} lg={4}>
+                                        <QaplaTextField
+                                            required={!template}
+                                            label='Hora'
+                                            variant='outlined'
+                                            type='time'
+                                            value={hour}
+                                            onChange={setHour} />
+                                    </Grid>
+                                </Grid>
+                            </>
+                        }
                         <br/>
                     </>
                 }
