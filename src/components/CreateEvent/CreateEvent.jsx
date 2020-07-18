@@ -86,12 +86,27 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                 streamerGameDataFiltered[key] = streamerGameData[key];
             });
 
-        let gradientColorsFiltered = {};
-        Object.keys(gradientColors)
-            .filter((key) => gradientColors[key] !== '')
-            .forEach((key) => {
-                gradientColorsFiltered[key] = gradientColors[key];
-            });
+            let gradientColorsFiltered = {};
+            let validColors = true;
+            Object.keys(gradientColors)
+                .filter((key) => gradientColors[key] !== '')
+                .forEach((key) => {
+                    if (gradientColors[key].charAt(0) !== '#') {
+                        gradientColorsFiltered[key] = `#${gradientColors[key]}`;
+                    } else {
+                        gradientColorsFiltered[key] = gradientColors[key];
+                    }
+
+                    const validColorRegExp = new RegExp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
+                    if (!validColorRegExp.test(gradientColorsFiltered[key])) {
+                        alert('Color de gradiente invalido, verifique antes de continuar');
+                        validColors = false;
+                    }
+                });
+
+            if (!validColors) {
+                return;
+            }
 
         const eventData = {
             title: titles,
@@ -678,8 +693,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 <Grid item md={3} lg={4} key={`Gradient-${positionKey}`}>
                                     <QaplaTextField
                                         key={`${positionKey}`}
-                                        label={`${positionKey} Gradient`}
+                                        label={`${positionKey} Gradient (Hexadecimal)`}
                                         variant='outlined'
+                                        placeholder='#FFFFFF'
                                         value={gradientColors[positionKey] || ''}
                                         onChange={(value) => setGradient(positionKey, value)} />
                                 </Grid>
