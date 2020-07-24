@@ -131,6 +131,7 @@ const AssignPrizesForEvent = ({ events }) => {
                     open={openApproveDialog}
                     users={users}
                     eventId={eventId}
+                    eventChatUrl={events[eventId] ? events[eventId].eventChatUrl : ''}
                     onClose={() => setOpenApproveDialog(false)} />
             </Grid>
         </Container>

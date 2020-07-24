@@ -67,6 +67,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const [acceptAllUsers, setAcceptAllUsers] = useState(events[eventId].acceptAllUsers ? events[eventId].acceptAllUsers : false);
     const [participantNumber, setParticipantNumber] = useState(events[eventId].participantNumber ? events[eventId].participantNumber : 0);
     const [featured, setFeatured] = useState(events[eventId].featured ? events[eventId].featured : false);
+    const [eventChatUrl, setEventChatUrl] = useState(events[eventId].eventChatUrl ? events[eventId].eventChatUrl : false);
 
     const history = useHistory();
 
@@ -98,7 +99,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 isMatchesEvent,
                 acceptAllUsers,
                 participantNumber,
-                featured
+                featured,
+                eventChatUrl
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -129,6 +131,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
             setParticipantNumber(participantNumber ? participantNumber : 0);
             setFeatured(featured ? featured : false);
+            setEventChatUrl(eventChatUrl ? eventChatUrl : '');
         }
     }, [events]);
 
@@ -467,7 +470,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
      * Finish an event of matches
      */
     const finishEvent = () => {
-        closeEvent(eventId);
+        closeEvent(eventId, eventChatUrl);
     }
     /**
      * Send the user to the assign prizes page
