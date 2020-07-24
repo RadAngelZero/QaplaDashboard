@@ -17,7 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import styles from './ApproveQoinsDistributionDialog.module.css';
 import { uploadEventResults } from '../../services/database';
 
-const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId }) => {
+const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId, eventChatUrl }) => {
     const [userFields, setUserFields] = useState([]);
     const hidedFields = ['__rowNum__', 'Qapla ID'];
 
@@ -36,7 +36,7 @@ const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId }) => {
         // Create a valid object for the uploadEventResults function
         .map((user) => ({ uid: user['Qapla ID'], place: user.Place }));
 
-        await uploadEventResults(eventId, usersToAssignQoins);
+        await uploadEventResults(eventId, usersToAssignQoins, eventChatUrl);
 
         onClose();
     }

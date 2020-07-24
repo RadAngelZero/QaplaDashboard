@@ -1,4 +1,5 @@
 import { database } from './firebase';
+import { deleteEventChannel } from './SendBird';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -143,9 +144,17 @@ export async function loadQaplaPlatforms() {
  * Close the given event, must be an event of matches, this action
  * trigger the distribuite qoins cloud function
  * @param {string} eventId Event identifier on database
+ * @param {string} eventChannelUrl Chat channel of the event
  */
-export function closeEvent(eventId) {
-    eventsRef.child(eventId).update({ active: false });
+export function closeEvent(eventId, eventChannelUrl) {
+    eventsRef.child(eventId).update({ active: false }, (error) => {
+        if (error) {
+            alert(error.message);
+            return;
+        }
+
+        deleteEventChannel(eventId, eventChannelUrl);
+    });
 }
 
 /**
@@ -174,9 +183,11 @@ export async function distributeQoinsToMultipleUsers(transactionArray) {
 /**
  * Upload the results of an event to the EventParticipants node and close the event after
  * so the qoins are distributed by a cloud function
+ * @param {string} eventId Event identifier on database
  * @param {Array} placesArray Array with the participants data (uid and place at least)
+ * @param {string} eventChannelUrl Chat channel of the event
  */
-export async function uploadEventResults(eventId, placesArray) {
+export async function uploadEventResults(eventId, placesArray, eventChannelUrl) {
     let updateEventPoints = {};
     placesArray.sort((a, b) => parseInt(a.place) - parseInt(b.place))
     .forEach((participant, index) => {
@@ -186,7 +197,7 @@ export async function uploadEventResults(eventId, placesArray) {
     });
     await eventsParticipantsRef.child(eventId).update(updateEventPoints);
 
-    closeEvent(eventId);
+    closeEvent(eventId, eventChannelUrl);
 }
 
 /**
