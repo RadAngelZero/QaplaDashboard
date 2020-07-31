@@ -14,6 +14,7 @@ const transactionsRef = database.ref('/Transactions');
 const eventTemplates = database.ref('/EventsTemplates');
 const eventPrivateTemplates = eventTemplates.child('Private');
 const eventPublicTemplates = eventTemplates.child('Public');
+const userDonationsRef = database.ref('/UserDonations');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -411,4 +412,24 @@ export async function loadPublicEventTemplates() {
  */
 export async function loadPrivateTemplates(uid) {
     return (await eventPrivateTemplates.child(uid).once('value')).val();
+}
+
+/**
+ * User donations
+ */
+
+/**
+ * Put a listener on the UserDonations database node
+ * @param {callback} loadDonations Handles the donations information
+ */
+export function loadUsersDonations(loadDonations) {
+    userDonationsRef.orderByChild('completed').equalTo(false).on('value', loadDonations);
+}
+
+/**
+ * Mark as completed a UserDonations base on the given id
+ * @param {string} donationId Donation identifier
+ */
+export async function completeUserDonation(donationId) {
+    userDonationsRef.child(donationId).update({ completed: true });
 }

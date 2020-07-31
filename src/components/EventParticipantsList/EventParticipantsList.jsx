@@ -7,9 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 import { getEventParticipants, removeEventParticipant, getUserLanguage, addQoinsToUser } from '../../services/database';
-import { Button } from '@material-ui/core';
 import { notificateUser } from '../../services/functions';
 
 const EventParticipantsList = ({ events }) => {

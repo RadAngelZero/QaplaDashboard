@@ -30,6 +30,7 @@ import './App.css';
 import Login from './components/Login/Login';
 import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
+import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -113,6 +114,15 @@ const Router = () => {
                                     Plantillas
                                 </Button>
                             </Link>
+                            {user.admin &&
+                                <Link to='/donations' className='White-Color Margin-Right'>
+                                    <Button
+                                        color='inherit'
+                                        style={{ color: '#FFF' }}>
+                                        Donaciones
+                                    </Button>
+                                </Link>
+                            }
                             <Button
                                 color='inherit'
                                 style={{ color: '#FFF' }}
@@ -169,6 +179,9 @@ const Router = () => {
                         games={games}
                         platforms={platforms}
                         eventDuplicated />
+                </Route>
+                <Route exact path='/donations'>
+                    <DonationsRequests user={user} />
                 </Route>
                 <Route exact path='/login'>
                     <Login user={user} />
