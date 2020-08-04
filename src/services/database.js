@@ -400,6 +400,21 @@ export function saveEventTemplate(uid, eventData, privateTemplate, onComplete) {
 }
 
 /**
+ * Updates an event template on the database
+ * @param {string | null} authorUid User identifier or null if public template
+ * @param {string} templateId Event identfier
+ * @param {object} templateData Template data to update
+ * @param {callback} onComplete Function called after update event template on database
+ */
+export function updateEventTemplate(authorUid, templateId, templateData, onComplete) {
+    if (authorUid) {
+        eventPrivateTemplates.child(authorUid).child(templateId).update(templateData, onComplete);
+    } else {
+        eventPublicTemplates.child(templateId).update(templateData, onComplete);
+    }
+}
+
+/**
  * Loads all the public event templates
  */
 export async function loadPublicEventTemplates() {

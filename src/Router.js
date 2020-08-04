@@ -9,6 +9,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import EventsList from './components/EventsList/EventsList';
 import EventDetails from './components/EventDetails/EventDetails';
@@ -37,6 +39,7 @@ const Router = () => {
     const [games, setGames] = useState({});
     const [platforms, setPlatforms] = useState({});
     const [user, setUser] = useState(null);
+    const [menu, setMenu] = useState(null);
 
     useEffect(() => {
 
@@ -85,6 +88,10 @@ const Router = () => {
         }
     }
 
+    const closeMenu = () => {
+        setMenu(null);
+    }
+
     const eventsLoaded = events ? events : {};
 
     return (
@@ -107,13 +114,26 @@ const Router = () => {
                     }
                     {user &&
                         <>
-                            <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                            <>
                                 <Button
                                     color='inherit'
-                                    style={{ color: '#FFF' }}>
+                                    style={{ color: '#FFF' }}
+                                    className='White-Color Margin-Right'
+                                    onClick={(e) => setMenu(e.currentTarget)} >
                                     Plantillas
                                 </Button>
-                            </Link>
+                                <Menu
+                                    anchorEl={menu}
+                                    open={Boolean(menu)}
+                                    onClose={closeMenu}>
+                                    <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Crear</MenuItem>
+                                    </Link>
+                                    <Link to='/user/templates/edit' className='White-Color Margin-Right'>
+                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Editar</MenuItem>
+                                    </Link>
+                                </Menu>
+                            </>
                             {user.admin &&
                                 <Link to='/donations' className='White-Color Margin-Right'>
                                     <Button
@@ -171,6 +191,13 @@ const Router = () => {
                         games={games}
                         platforms={platforms}
                         template
+                        user={user} />
+                </Route>
+                <Route exact path='/user/templates/edit'>
+                    <CreateEvent
+                        games={games}
+                        platforms={platforms}
+                        editTemplate
                         user={user} />
                 </Route>
                 <Route exact path='/event/duplicate/:eventId'>
