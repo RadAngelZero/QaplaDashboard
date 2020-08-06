@@ -11,10 +11,11 @@ import { functions } from './firebase';
  * @param {boolean} onlyData True if the message is an only data message, false for push notification
  */
 export async function notificateUser(uid, token, title, body, payload = {}, extraData = {}, onlyData = false) {
-    const notificateUser = functions.httpsCallable('notificateUser');
+    const notificate = functions.httpsCallable('notificateUser');
 
     try {
-        return await notificateUser({ uid, token, title, body, payload, extraData, onlyData });
+        console.log(uid, token, title, body, payload = {}, extraData = {}, onlyData = false);
+        return await notificate({ uid, token, title, body, payload, extraData, onlyData });
     } catch (error) {
         console.log(error);
     }
