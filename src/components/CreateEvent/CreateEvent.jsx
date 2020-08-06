@@ -67,6 +67,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
     const [acceptAllUsers, setAcceptAllUsers] = useState(true);
     const [participantNumber, setParticipantNumber] = useState(0);
     const [featured, setFeatured] = useState(false);
+    const [experience, setExperience] = useState(0);
     const [isPrivateTemplate, setIsPrivateTemplate] = useState(true);
     const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
     const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
@@ -137,7 +138,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             acceptAllUsers,
             participantNumber,
             featured,
-            sponsorImage
+            sponsorImage,
+            experience: parseInt(experience)
         };
 
         if (template) {
@@ -1050,6 +1052,13 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                         <FormControlLabel
                             control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
                             label='Destacar evento' />
+                        <br/>
+                        <br/>
+                        <QaplaTextField
+                            label='Experiencia a repartir'
+                            type='number'
+                            value={experience}
+                            onChange={(experience) => experience >= 0 && setExperience(experience)} />
                         <br/>
                         {eventLinks.length > 0 &&
                             <Typography
