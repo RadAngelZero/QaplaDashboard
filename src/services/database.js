@@ -15,6 +15,7 @@ const eventTemplates = database.ref('/EventsTemplates');
 const eventPrivateTemplates = eventTemplates.child('Private');
 const eventPublicTemplates = eventTemplates.child('Public');
 const userDonationsRef = database.ref('/UserDonations');
+const donationsHistoryRef = database.ref('/DonationsHistory');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -220,6 +221,10 @@ async function getUserQoins(uid) {
  */
 export async function getUserLanguage(uid) {
     return (await usersRef.child(uid).child('language').once('value')).val();
+}
+
+export async function getUserToken(uid) {
+    return await usersRef.child(uid).child('token').once('value');
 }
 
 /**
@@ -442,9 +447,21 @@ export function loadUsersDonations(loadDonations) {
 }
 
 /**
- * Mark as completed a UserDonations base on the given id
+ * Mark as completed a user donation in both request (UserDonations) and history (DonationsHistory) nodes
+ * @param {string} uid User identifier
  * @param {string} donationId Donation identifier
  */
-export async function completeUserDonation(donationId) {
-    userDonationsRef.child(donationId).update({ completed: true });
+export async function completeUserDonation(uid, donationId) {
+    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
+    await userDonationsRef.child(donationId).update({ completed: true });
+}
+
+/**
+ * Mark as canceled a user donation in both request (UserDonations) and history (DonationsHistory) nodes
+ * @param {string} uid User identifier
+ * @param {string} donationId Donation identifier
+ */
+export async function cancelUserDonation(uid, donationId) {
+    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'rejected' });
+    await userDonationsRef.child(donationId).update({ completed: true });
 }
