@@ -13,7 +13,13 @@ import Radio from '@material-ui/core/Radio';
 import styles from './CreateEvent.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { createEvent, updateEvent, saveEventTemplate, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
+import { createEvent,
+    updateEvent,
+    saveEventTemplate,
+    loadPublicEventTemplates,
+    loadPrivateTemplates,
+    updateEventTemplate
+} from '../../services/database';
 import Languages from '../../utilities/Languages';
 import { createEventInvitationDeepLink } from '../../services/links';
 import { createEventChannel } from '../../services/SendBird';
@@ -39,7 +45,7 @@ const fixedPrizesValues = {
     }
 };
 
-const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
+const CreateEvent = ({ games, platforms, template = false, user = {}, editTemplate = false }) => {
     const [currentSection, setCurrentSection] = useState(0);
     const [titles, setTitle] = useState({ 'es': '', 'en': '' });
     const [templateName, setTemplateName] = useState('');
@@ -140,7 +146,18 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             sponsorImage
         };
 
-        if (template) {
+        if (editTemplate) {
+            eventData.templateName = templateName;
+            updateEventTemplate(isPrivateTemplate ? user.uid : null, selectedTemplate, eventData, (error) => {
+                if (error) {
+                    alert('Error al actualizat la plantilla');
+                    return console.error(error);
+                }
+
+                alert('Plantilla actualizada correctamente');
+                history.push('/');
+            });
+        } else if (template) {
             eventData.templateName = templateName;
             saveEventTemplate(user.uid, eventData, isPrivateTemplate, (error) => {
                 if (error) {
@@ -422,7 +439,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                     !descriptions['en'] ||
                     !descriptions['es'] ||
                     (template && !templateName) ||
-                    (!template && (!date || !hour))
+                    (!template && (!date || !hour)) &&
+                    !editTemplate
                     ) {
                     allRight = false;
                 }
@@ -513,7 +531,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
             isMatchesEvent,
             acceptAllUsers,
             participantNumber,
-            featured
+            featured,
+            templateName
         } = template;
         setTitle(title ? title : { 'es': '', 'en': '' });
         if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -543,6 +562,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
         setAcceptAllUsers(acceptAllUsers ? acceptAllUsers : false);
         setParticipantNumber(participantNumber ? participantNumber : 0);
         setFeatured(featured ? featured : false);
+        setIsPrivateTemplate(privateEventsTemplates[selectedTemplate] ? true : false);
+        setTemplateName(templateName ? templateName : '');
     }
 
     /**
@@ -561,17 +582,25 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                 <Typography
                     variant='h3'
                     className={styles.EventTitle}>
-                    {template ? `Plantilla: ${templateName}` : `Evento: ${titles['es']}`}
+                    {template ? `Plantilla: ${templateName}` : editTemplate ? `Plantilla: ${templateName}` : `Evento: ${titles['es']}`}
                 </Typography>
                 {currentSection === 0 &&
                     <>
                         {!template &&
                             <>
-                                <Typography
-                                    variant='h5'
-                                    className={styles.ItalicFont}>
-                                    Plantilla (opcional)
-                                </Typography>
+                                {editTemplate ?
+                                    <Typography
+                                        variant='h5'
+                                        className={styles.ItalicFont}>
+                                        Plantilla a editar
+                                    </Typography>
+                                    :
+                                    <Typography
+                                        variant='h5'
+                                        className={styles.ItalicFont}>
+                                        Plantilla (opcional)
+                                    </Typography>
+                                }
                                 <br/>
                                 {publicEventsTemplates || privateEventsTemplates ?
                                     <QaplaSelect
@@ -604,7 +633,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                 <br/>
                             </>
                         }
-                        {template && user && user.admin &&
+                        {(template || editTemplate) && user && user.admin &&
                             <>
                                 <Typography
                                     variant='h5'
@@ -618,22 +647,24 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                                     label='Nombre de la Plantilla'
                                     value={templateName}
                                     onChange={setTemplateName} />
-                                <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
-                                    <Grid container>
-                                        <Grid item md={3}>
-                                            <FormControlLabel
-                                                value={true}
-                                                control={<Radio />}
-                                                label='Plantilla Privada' />
+                                {template &&
+                                    <RadioGroup value={isPrivateTemplate} onChange={() => setIsPrivateTemplate(!isPrivateTemplate)}>
+                                        <Grid container>
+                                            <Grid item md={3}>
+                                                <FormControlLabel
+                                                    value={true}
+                                                    control={<Radio />}
+                                                    label='Plantilla Privada' />
+                                            </Grid>
+                                            <Grid item md={3}>
+                                                <FormControlLabel
+                                                    value={false}
+                                                    control={<Radio />}
+                                                    label='Plantilla publica' />
+                                            </Grid>
                                         </Grid>
-                                        <Grid item md={3}>
-                                            <FormControlLabel
-                                                value={false}
-                                                control={<Radio />}
-                                                label='Plantilla publica' />
-                                        </Grid>
-                                    </Grid>
-                                </RadioGroup>
+                                    </RadioGroup>
+                                }
                             </>
                         }
                         <Typography
@@ -1089,7 +1120,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {} }) => {
                             variant='contained'
                             color='primary'
                             type='submit'>
-                                {template ? 'Guardar Plantilla' : 'Crear evento'}
+                                {template ? 'Guardar Plantilla' : editTemplate ? 'Actualizar Plantilla' : 'Crear evento'}
                         </Button>
                     </>
                 </div>
