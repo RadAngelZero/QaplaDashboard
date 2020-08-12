@@ -32,9 +32,9 @@ const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId, eventCh
     const distributeQoins = async () => {
         const usersToAssignQoins = users
         // Filter users with no Place
-        .filter((user) => user.Place)
+        .filter((user) => { if(user.Place || user.Experience) return user; })
         // Create a valid object for the uploadEventResults function
-        .map((user) => ({ uid: user['Qapla ID'], place: user.Place }));
+        .map((user) => ({ uid: user['Qapla ID'], place: user.Place, experience: user.Experience }));
 
         await uploadEventResults(eventId, usersToAssignQoins, eventChatUrl);
 
@@ -72,10 +72,10 @@ const ApproveQoinsDistributionDialog = ({ open, onClose, users, eventId, eventCh
                     <TableBody>
                     {users.map((user) => (
                         <TableRow key={user['Qapla ID']}>
-                            {user.Place && userFields.map((userField) => (
+                            {(user.Place || user.Experience) && userFields.map((userField) => (
                                 <React.Fragment key={`${userField}-${user['Qapla ID']}`}>
                                     {hidedFields.indexOf(userField) === -1 &&
-                                        <TableCell align='center'>{user[userField]}</TableCell>
+                                        <TableCell align='center'>{user[userField] || 'N/A'}</TableCell>
                                     }
                                 </React.Fragment>
                             ))}

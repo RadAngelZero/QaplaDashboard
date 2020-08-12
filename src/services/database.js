@@ -191,11 +191,13 @@ export async function distributeQoinsToMultipleUsers(transactionArray) {
  */
 export async function uploadEventResults(eventId, placesArray, eventChannelUrl) {
     let updateEventPoints = {};
-    placesArray.sort((a, b) => parseInt(a.place) - parseInt(b.place))
-    .forEach((participant, index) => {
-        updateEventPoints[`/${participant.uid}/matchesPlayed`] = placesArray.length;
-        updateEventPoints[`/${participant.uid}/victories`] = placesArray.length - index;
-        updateEventPoints[`/${participant.uid}/priceQaploins`] = ((placesArray.length - index) * 3) + index;
+    placesArray.forEach((participant, index) => {
+        if (participant.place) {
+            updateEventPoints[`/${participant.uid}/matchesPlayed`] = placesArray.length;
+            updateEventPoints[`/${participant.uid}/victories`] = placesArray.length - index;
+            updateEventPoints[`/${participant.uid}/priceQaploins`] = ((placesArray.length - index) * 3) + index;
+        }
+        updateEventPoints[`/${participant.uid}/experience`] = participant.experience;
     });
     await eventsParticipantsRef.child(eventId).update(updateEventPoints);
 
