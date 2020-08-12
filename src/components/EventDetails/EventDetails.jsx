@@ -68,7 +68,6 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const [participantNumber, setParticipantNumber] = useState(events[eventId].participantNumber ? events[eventId].participantNumber : 0);
     const [featured, setFeatured] = useState(events[eventId].featured ? events[eventId].featured : false);
     const [eventChatUrl, setEventChatUrl] = useState(events[eventId].eventChatUrl ? events[eventId].eventChatUrl : false);
-    const [experience, setExperience] = useState(0);
 
     const history = useHistory();
 
@@ -101,8 +100,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 acceptAllUsers,
                 participantNumber,
                 featured,
-                eventChatUrl,
-                experience
+                eventChatUrl
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             if (tiempoLimite && tiempoLimite.includes('-')) {
@@ -134,7 +132,6 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setParticipantNumber(participantNumber ? participantNumber : 0);
             setFeatured(featured ? featured : false);
             setEventChatUrl(eventChatUrl ? eventChatUrl : '');
-            setExperience(experience ? experience : 0);
         }
     }, [events]);
 
@@ -232,8 +229,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             isMatchesEvent,
             acceptAllUsers,
             participantNumber,
-            featured,
-            experience: parseInt(experience)
+            featured
         };
 
         if (eventDuplicated) {
@@ -946,13 +942,6 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 <FormControlLabel
                     control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
                     label='Evento destacado' />
-                <br/>
-                <br/>
-                <QaplaTextField
-                    label='Experiencia a repartir'
-                    type='number'
-                    value={experience}
-                    onChange={(experience) => experience >= 0 && setExperience(experience)} />
                 <br/>
                 <div className={styles.MarginTop16}>
                     {/**
