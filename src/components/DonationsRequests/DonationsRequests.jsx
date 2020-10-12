@@ -20,8 +20,8 @@ const notifications = {
             en: 'Donation Completed'
         },
         body: {
-            es: 'La donación que solicitaste fue realizada exitosamente',
-            en: 'Your requested donation was succesfully made'
+            es: 'La donación que solicitaste sera realizada en breve',
+            en: 'Your requested donation will be executed shortly'
         }
     },
     canceled: {
@@ -75,7 +75,7 @@ const DonationsRequests = ({ user }) => {
     }
 
     const completeDonation = async (uid, donationId) => {
-        completeUserDonation(uid, donationId);
+        completeUserDonation(uid, donationId, donationsRequests[donationId].Qoins, true);
         const userToken = await getUserToken(uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(uid);
