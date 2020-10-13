@@ -29,6 +29,12 @@ const notifications = {
             es: 'Donación Cancelada',
             en: 'Donation Canceled'
         }
+    },
+    customMessage: {
+        title: {
+            es: 'Sobre tu Donación',
+            en: 'About your Donation'
+        }
     }
 };
 
@@ -93,6 +99,19 @@ const DonationsRequests = ({ user }) => {
         }
     }
 
+    const sendMessageToUser = async (uid) => {
+        const userToken = await getUserToken(uid);
+        if (userToken.exists()) {
+            const userLanguage = await getUserLanguage(uid);
+            const reason = prompt(`Razon de la cancelación en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
+            if (reason) {
+                notificateUser(uid, userToken.val(), notifications.customMessage.title[userLanguage || 'es'], reason);
+            } else {
+                alert('Información insuficiente para enviar la notificación');
+            }
+        }
+    }
+
     return (
         <TableContainer component={Paper}>
             <Table stickyHeader>
@@ -131,13 +150,21 @@ const DonationsRequests = ({ user }) => {
                             <TableCell align='center'>
                                 <Button
                                     variant='contained'
+                                    color='secondary'
+                                    style={{ marginRight: '1rem', marginTop: '.5rem' }}
+                                    onClick={() => sendMessageToUser(donationsRequests[donationId].uid)}>
+                                    Enviar mensaje
+                                </Button>
+                                <Button
+                                    variant='contained'
                                     color='primary'
-                                    style={{ marginRight: '1rem' }}
+                                    style={{ marginRight: '1rem', marginTop: '.5rem' }}
                                     onClick={() => completeDonation(donationsRequests[donationId].uid, donationId)}>
                                     Realizada
                                 </Button>
                                 <Button
                                     variant='contained'
+                                    style={{ marginTop: '.5rem' }}
                                     onClick={() => cancelDonation(donationsRequests[donationId].uid, donationId)}>
                                     Cancelar
                                 </Button>
