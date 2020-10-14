@@ -103,7 +103,7 @@ const DonationsRequests = ({ user }) => {
         const userToken = await getUserToken(uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(uid);
-            const reason = prompt(`Razon de la cancelación en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
+            const reason = prompt(`Mensaje para el usuario en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
             if (reason) {
                 notificateUser(uid, userToken.val(), notifications.customMessage.title[userLanguage || 'es'], reason);
             } else {
