@@ -16,6 +16,8 @@ const eventPrivateTemplates = eventTemplates.child('Private');
 const eventPublicTemplates = eventTemplates.child('Public');
 const userDonationsRef = database.ref('/UserDonations');
 const donationsHistoryRef = database.ref('/DonationsHistory');
+const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
+const DonationsCostsRef = database.ref('/DonationsCosts');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -197,7 +199,9 @@ export async function uploadEventResults(eventId, placesArray, eventChannelUrl) 
             updateEventPoints[`/${participant.uid}/victories`] = placesArray.length - index;
             updateEventPoints[`/${participant.uid}/priceQaploins`] = ((placesArray.length - index) * 3) + index;
         }
-        updateEventPoints[`/${participant.uid}/experience`] = participant.experience;
+        if (participant.experience) {
+            updateEventPoints[`/${participant.uid}/experience`] = participant.experience;
+        }
     });
     await eventsParticipantsRef.child(eventId).update(updateEventPoints);
 
@@ -452,10 +456,47 @@ export function loadUsersDonations(loadDonations) {
  * Mark as completed a user donation in both request (UserDonations) and history (DonationsHistory) nodes
  * @param {string} uid User identifier
  * @param {string} donationId Donation identifier
+ * @param {number} qoinsDonated Number of qoins donated
+ * @param {boolean} isBitDonation True if the donation was in bits, false for stars
  */
-export async function completeUserDonation(uid, donationId) {
+export async function completeUserDonation(uid, donationId, qoinsDonated, isBitDonation) {
     await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
     await userDonationsRef.child(donationId).update({ completed: true });
+
+    const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
+    const eCoinValue = qoinsDonated * (await getDonationsCosts()).val();
+
+    const rewardProgress = await usersRewardsProgressRef.child(uid).once('value');
+    let tensInPoints = Math.floor(pointsToAdd / 10);
+
+    if (!rewardProgress.exists()) {
+        const currentPoints = pointsToAdd - tensInPoints * 10;
+        const donations = {
+            bits: isBitDonation ? eCoinValue : 0,
+            stars: !isBitDonation ? eCoinValue : 0,
+        };
+
+        await usersRewardsProgressRef.child(uid).update({
+            currentPoints,
+            donations,
+            lifes: tensInPoints,
+            rewardsReedemed: 0
+        });
+    } else {
+        let currentPoints = rewardProgress.val().currentPoints + pointsToAdd;
+        tensInPoints = Math.floor(currentPoints / 10);
+        currentPoints -= tensInPoints * 10;
+        const donations = {
+            bits: isBitDonation ? rewardProgress.val().donations.bits + eCoinValue : rewardProgress.val().donations.bits,
+            stars: !isBitDonation ? rewardProgress.val().donations.stars + eCoinValue : rewardProgress.val().donations.stars,
+        };
+
+        await usersRewardsProgressRef.child(uid).update({
+            currentPoints,
+            lifes: rewardProgress.val().lifes + tensInPoints,
+            donations
+        });
+    }
 }
 
 /**
@@ -466,4 +507,22 @@ export async function completeUserDonation(uid, donationId) {
 export async function cancelUserDonation(uid, donationId) {
     await donationsHistoryRef.child(uid).child(donationId).update({ status: 'rejected' });
     await userDonationsRef.child(donationId).update({ completed: true });
+}
+
+/**
+ * Donations costs
+ */
+
+/**
+ * Get the cost (in Qoins) of the eCoins available to donate
+ */
+export async function getDonationsCosts() {
+    return await DonationsCostsRef.child('ECoinToQoinRatio').once('value');
+}
+
+/**
+ * Get the base of Qoins considered in the ECoin To Qoin equation
+ */
+export async function getDonationQoinsBase() {
+    return await DonationsCostsRef.child('QoinsBase').once('value');
 }

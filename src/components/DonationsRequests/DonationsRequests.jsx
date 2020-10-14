@@ -20,14 +20,20 @@ const notifications = {
             en: 'Donation Completed'
         },
         body: {
-            es: 'La donación que solicitaste fue realizada exitosamente',
-            en: 'Your requested donation was succesfully made'
+            es: 'La donación que solicitaste sera realizada en breve',
+            en: 'Your requested donation will be executed shortly'
         }
     },
     canceled: {
         title: {
             es: 'Donación Cancelada',
             en: 'Donation Canceled'
+        }
+    },
+    customMessage: {
+        title: {
+            es: 'Sobre tu Donación',
+            en: 'About your Donation'
         }
     }
 };
@@ -75,7 +81,7 @@ const DonationsRequests = ({ user }) => {
     }
 
     const completeDonation = async (uid, donationId) => {
-        completeUserDonation(uid, donationId);
+        completeUserDonation(uid, donationId, donationsRequests[donationId].Qoins, true);
         const userToken = await getUserToken(uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(uid);
@@ -90,6 +96,19 @@ const DonationsRequests = ({ user }) => {
             const userLanguage = await getUserLanguage(uid);
             const reason = prompt(`Razon de la cancelación en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
             notificateUser(uid, userToken.val(), notifications.canceled.title[userLanguage || 'es'], reason);
+        }
+    }
+
+    const sendMessageToUser = async (uid) => {
+        const userToken = await getUserToken(uid);
+        if (userToken.exists()) {
+            const userLanguage = await getUserLanguage(uid);
+            const reason = prompt(`Mensaje para el usuario en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
+            if (reason) {
+                notificateUser(uid, userToken.val(), notifications.customMessage.title[userLanguage || 'es'], reason);
+            } else {
+                alert('Información insuficiente para enviar la notificación');
+            }
         }
     }
 
@@ -131,13 +150,21 @@ const DonationsRequests = ({ user }) => {
                             <TableCell align='center'>
                                 <Button
                                     variant='contained'
+                                    color='secondary'
+                                    style={{ marginRight: '1rem', marginTop: '.5rem' }}
+                                    onClick={() => sendMessageToUser(donationsRequests[donationId].uid)}>
+                                    Enviar mensaje
+                                </Button>
+                                <Button
+                                    variant='contained'
                                     color='primary'
-                                    style={{ marginRight: '1rem' }}
+                                    style={{ marginRight: '1rem', marginTop: '.5rem' }}
                                     onClick={() => completeDonation(donationsRequests[donationId].uid, donationId)}>
                                     Realizada
                                 </Button>
                                 <Button
                                     variant='contained'
+                                    style={{ marginTop: '.5rem' }}
                                     onClick={() => cancelDonation(donationsRequests[donationId].uid, donationId)}>
                                     Cancelar
                                 </Button>

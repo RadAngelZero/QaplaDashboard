@@ -14,7 +14,6 @@ export async function notificateUser(uid, token, title, body, payload = {}, extr
     const notificate = functions.httpsCallable('notificateUser');
 
     try {
-        console.log(uid, token, title, body, payload = {}, extraData = {}, onlyData = false);
         return await notificate({ uid, token, title, body, payload, extraData, onlyData });
     } catch (error) {
         console.log(error);
