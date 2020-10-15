@@ -461,7 +461,7 @@ export function loadUsersDonations(loadDonations) {
  */
 export async function completeUserDonation(uid, donationId, qoinsDonated, isBitDonation) {
     await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
-    await userDonationsRef.child(donationId).update({ completed: true });
+    await userDonationsRef.child(donationId).remove();
 
     const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
     const eCoinValue = qoinsDonated * (await getDonationsCosts()).val();
@@ -506,7 +506,7 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, isBitD
  */
 export async function cancelUserDonation(uid, donationId) {
     await donationsHistoryRef.child(uid).child(donationId).update({ status: 'rejected' });
-    await userDonationsRef.child(donationId).update({ completed: true });
+    await userDonationsRef.child(donationId).remove();
 }
 
 /**
