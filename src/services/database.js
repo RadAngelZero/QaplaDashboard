@@ -541,7 +541,7 @@ export async function distributeExperienceToUsers(experienceArray) {
     let updateUserExperience = {};
     for (let i = 0; i < experienceArray.length; i++) {
         const user = experienceArray[i];
-        updateUserExperience[`/Users/${user.uid}/qaplaExperience`] = await getUserQaplaExperience(user.uid) + user.experience;
+        updateUserExperience[`/Users/${user.uid}/qaplaLevel`] = await getUserQaplaLevel(user.uid) + user.experience;
         updateUserExperience[`/DonationsLeaderBoard/${user.uid}/totalDonations`] = await getUserLeaderboardExperience(user.uid) + user.experience;
     }
 
@@ -549,11 +549,11 @@ export async function distributeExperienceToUsers(experienceArray) {
 }
 
 /**
- * Return the amount of experience in the qaplaExperience node on the user profile
+ * Return the amount of experience in the qaplaLevel node on the user profile
  * @param {string} uid User identifier
  */
-export async function getUserQaplaExperience(uid) {
-    const userExperience = await usersRef.child(uid).child('qaplaExperience').once('value');
+export async function getUserQaplaLevel(uid) {
+    const userExperience = await usersRef.child(uid).child('qaplaLevel').once('value');
     return userExperience.exists() ? userExperience.val() : 0;
 }
 
