@@ -18,6 +18,7 @@ const userDonationsRef = database.ref('/UserDonations');
 const donationsHistoryRef = database.ref('/DonationsHistory');
 const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
 const DonationsCostsRef = database.ref('/DonationsCosts');
+const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -206,6 +207,10 @@ export async function uploadEventResults(eventId, placesArray, eventChannelUrl) 
     await eventsParticipantsRef.child(eventId).update(updateEventPoints);
 
     closeEvent(eventId, eventChannelUrl);
+}
+
+async function getUserUserName(uid) {
+    return await usersRef.child(uid).child('userName').once('value');
 }
 
 /**
@@ -525,4 +530,48 @@ export async function getDonationsCosts() {
  */
 export async function getDonationQoinsBase() {
     return await DonationsCostsRef.child('QoinsBase').once('value');
+}
+
+/**
+ * Distribute the specified ammount of experience to the given users+
+ * @param {Array} experienceArray Object with uid and experience to give
+ * @example distributeExperienceToUsers([{ uid: 'advdf', experience: 20 }, { uid: 'nciodsn', experience: 50 }]);
+ */
+export async function distributeExperienceToUsers(experienceArray) {
+    let updateUserExperience = {};
+    for (let i = 0; i < experienceArray.length; i++) {
+        const user = experienceArray[i];
+        updateUserExperience[`/Users/${user.uid}/qaplaLevel`] = await getUserQaplaLevel(user.uid) + user.experience;
+        updateUserExperience[`/DonationsLeaderBoard/${user.uid}/totalDonations`] = await getUserLeaderboardExperience(user.uid) + user.experience;
+    }
+
+    await database.ref('/').update(updateUserExperience);
+}
+
+/**
+ * Return the amount of experience in the qaplaLevel node on the user profile
+ * @param {string} uid User identifier
+ */
+export async function getUserQaplaLevel(uid) {
+    const userExperience = await usersRef.child(uid).child('qaplaLevel').once('value');
+    return userExperience.exists() ? userExperience.val() : 0;
+}
+
+/**
+ * Return the amount of experience (totalDonations node) on the donations leaderboard user node
+ * If the node does not exist it creates the node and returns 0
+ * @param {string} uid User identifier
+ */
+export async function getUserLeaderboardExperience(uid) {
+    const leaderboardExperience = await DonationsLeaderBoardRef.child(uid).child('totalDonations').once('value');
+    if (!leaderboardExperience.exists()) {
+        await DonationsLeaderBoardRef.child(uid).update({
+            totalDonations: 0,
+            userName: (await getUserUserName(uid)).val()
+        });
+
+        return 0;
+    }
+
+    return leaderboardExperience.val();
 }
