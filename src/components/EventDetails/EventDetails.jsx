@@ -472,10 +472,16 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const finishEvent = () => {
         closeEvent(eventId, eventChatUrl);
     }
+
     /**
      * Send the user to the assign prizes page
      */
     const goToEventPrizes = () => history.push(`/event/prizes/${eventId}`);
+
+    /**
+     * Send the user to the assign prizes page
+     */
+    const goToExperiencePrizes = () => history.push(`/event/experience/${eventId}`);
 
     /**
      * Save the EventId on the user clipboard
@@ -982,12 +988,20 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                                     </Button>
                                 </>
                                 :
-                                <Button
-                                    variant='contained'
-                                    className={styles.MarginRight16}
-                                    onClick={goToEventPrizes}>
-                                    Repartir premios
-                                </Button>
+                                <>
+                                    <Button
+                                        variant='contained'
+                                        className={styles.MarginRight16}
+                                        onClick={goToEventPrizes}>
+                                        Repartir premios
+                                    </Button>
+                                    <Button
+                                        variant='contained'
+                                        className={styles.MarginRight16}
+                                        onClick={goToExperiencePrizes}>
+                                        Repartir Experiencia
+                                    </Button>
+                                </>
                             }
                         </>
                     }

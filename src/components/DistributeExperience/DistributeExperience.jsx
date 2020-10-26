@@ -11,6 +11,7 @@ import * as xlsx from 'xlsx';
 
 import styles from './DistributeExperience.module.css';
 import ApproveExperienceDistributionDialog from '../ApproveExperienceDistributionDialog/ApproveExperienceDistributionDialog';
+import { getEventParticipantsOnce } from '../../services/database';
 
 const DistributeExperience = () => {
     const [ users, setUsers ] = useState([]);
@@ -44,6 +45,7 @@ const DistributeExperience = () => {
 
                         workBook.SheetNames.forEach((sheetName) => {
                             xlsx.utils.sheet_to_json(workBook.Sheets[sheetName])
+                            .sort((a, b) => b['Experience'] - a['Experience'])
                             .forEach((row) => {
                                 usersArray.push(row);
                             });
@@ -67,14 +69,29 @@ const DistributeExperience = () => {
      * Create an excel file for the user to download the template
      */
     const generateParticipantFormat = async () => {
-        const templateData = [
-            {
-                Uid: null,
-                Experience: null
-            }
-        ];
+        const participants = await getEventParticipantsOnce(eventId);
 
-        const dataToWrite = xlsx.utils.json_to_sheet(templateData);
+        const participantsData = Object.keys(participants).map((participant) => {
+            const { email, userName } = participants[participant];
+            delete participants[participant].eventEntry;
+            delete participants[participant].timeStamp;
+            delete participants[participant].token;
+            delete participants[participant].matchesPlayed;
+            delete participants[participant].priceQaploins;
+            delete participants[participant].victories;
+            delete participants[participant].firebaseUserIdentifier;
+            delete participants[participant].email;
+            delete participants[participant].userName;
+            return {
+                'Qapla ID': participant,
+                Email: email,
+                UserName: userName,
+                ...participants[participant],
+                Experience: 0
+            }
+        });
+
+        const dataToWrite = xlsx.utils.json_to_sheet(participantsData);
 
         let newWorkBook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(newWorkBook, dataToWrite, 'Experience');

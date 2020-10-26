@@ -31,7 +31,7 @@ const ApproveExperienceDistributionDialog = ({ open, onClose, users }) => {
         const usersToAssignExperience = users
         .map((user) => ({ uid: user['Uid'], experience: user.Experience }));
 
-        distributeExperienceToUsers(usersToAssignExperience);
+        await distributeExperienceToUsers(usersToAssignExperience);
 
         onClose();
     }
@@ -67,7 +67,7 @@ const ApproveExperienceDistributionDialog = ({ open, onClose, users }) => {
                     <TableBody>
                     {users.map((user) => (
                         <TableRow key={user['Qapla ID']}>
-                            {(user.Place || user.Experience) && userFields.map((userField) => (
+                            {(user.Experience) && userFields.map((userField) => (
                                 <React.Fragment key={`${userField}-${user['Qapla ID']}`}>
                                     {hidedFields.indexOf(userField) === -1 &&
                                         <TableCell align='center'>{user[userField] || 'N/A'}</TableCell>

@@ -200,9 +200,6 @@ export async function uploadEventResults(eventId, placesArray, eventChannelUrl) 
             updateEventPoints[`/${participant.uid}/victories`] = placesArray.length - index;
             updateEventPoints[`/${participant.uid}/priceQaploins`] = ((placesArray.length - index) * 3) + index;
         }
-        if (participant.experience) {
-            updateEventPoints[`/${participant.uid}/experience`] = participant.experience;
-        }
     });
     await eventsParticipantsRef.child(eventId).update(updateEventPoints);
 

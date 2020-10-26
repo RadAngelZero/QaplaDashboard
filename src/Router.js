@@ -144,15 +144,6 @@ const Router = () => {
                                     </Button>
                                 </Link>
                             }
-                            {user.admin &&
-                                <Link to='/experience' className='White-Color Margin-Right'>
-                                    <Button
-                                        color='inherit'
-                                        style={{ color: '#FFF' }}>
-                                        Experiencia
-                                    </Button>
-                                </Link>
-                            }
                             <Button
                                 color='inherit'
                                 style={{ color: '#FFF' }}
@@ -220,7 +211,7 @@ const Router = () => {
                 <Route exact path='/donations'>
                     <DonationsRequests user={user} />
                 </Route>
-                <Route exact path='/experience'>
+                <Route exact path='/event/experience/:eventId'>
                     <DistributeExperience user={user} />
                 </Route>
                 <Route exact path='/login'>
