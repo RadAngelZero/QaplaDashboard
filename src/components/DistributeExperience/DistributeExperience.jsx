@@ -71,31 +71,35 @@ const DistributeExperience = () => {
     const generateParticipantFormat = async () => {
         const participants = await getEventParticipantsOnce(eventId);
 
-        const participantsData = Object.keys(participants).map((participant) => {
-            const { email, userName } = participants[participant];
-            delete participants[participant].eventEntry;
-            delete participants[participant].timeStamp;
-            delete participants[participant].token;
-            delete participants[participant].matchesPlayed;
-            delete participants[participant].priceQaploins;
-            delete participants[participant].victories;
-            delete participants[participant].firebaseUserIdentifier;
-            delete participants[participant].email;
-            delete participants[participant].userName;
-            return {
-                'Qapla ID': participant,
-                Email: email,
-                UserName: userName,
-                ...participants[participant],
-                Experience: 0
-            }
-        });
+        console.log(participants);
 
-        const dataToWrite = xlsx.utils.json_to_sheet(participantsData);
+        if (participants) {
+            const participantsData = Object.keys(participants).map((participant) => {
+                const { email, userName } = participants[participant];
+                delete participants[participant].eventEntry;
+                delete participants[participant].timeStamp;
+                delete participants[participant].token;
+                delete participants[participant].matchesPlayed;
+                delete participants[participant].priceQaploins;
+                delete participants[participant].victories;
+                delete participants[participant].firebaseUserIdentifier;
+                delete participants[participant].email;
+                delete participants[participant].userName;
+                return {
+                    'Qapla ID': participant,
+                    Email: email,
+                    UserName: userName,
+                    ...participants[participant],
+                    Experience: 0
+                }
+            });
 
-        let newWorkBook = xlsx.utils.book_new();
-        xlsx.utils.book_append_sheet(newWorkBook, dataToWrite, 'Experience');
-        xlsx.writeFile(newWorkBook, 'ExperienceTemplate.xlsx');
+            const dataToWrite = xlsx.utils.json_to_sheet(participantsData);
+
+            let newWorkBook = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(newWorkBook, dataToWrite, 'Experience');
+            xlsx.writeFile(newWorkBook, 'ExperienceTemplate.xlsx');
+        }
     }
 
     return (
