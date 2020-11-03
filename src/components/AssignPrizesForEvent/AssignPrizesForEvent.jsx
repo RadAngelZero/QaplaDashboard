@@ -89,8 +89,7 @@ const AssignPrizesForEvent = ({ events }) => {
                 Email: email,
                 UserName: userName,
                 ...participants[participant],
-                Place: null,
-                Experience: 0
+                Place: null
             }
         });
 
