@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 
 import { loadUsersDonations, completeUserDonation, cancelUserDonation, getUserToken, getUserLanguage } from '../../services/database';
 import { notificateUser } from '../../services/functions';
+import ChooseDonationCurrencyDialog from '../ChooseDonationCurrencyDialog/ChooseDonationCurrencyDialog';
 
 const hidedFields = ['uid', 'completed'];
 
@@ -41,6 +42,8 @@ const notifications = {
 const DonationsRequests = ({ user }) => {
     const [donationsRequests, setDonationsRequests] = useState({});
     const [donationFields, setDonationFields] = useState([]);
+    const [openDonationCurrencyDialog, setOpenDonationCurrencyDialog] = useState(false);
+    const [selectedDonation, setSelectedDonation] = useState({});
 
     useEffect(() => {
         if (user && user.admin) {
@@ -80,12 +83,17 @@ const DonationsRequests = ({ user }) => {
         }
     }
 
-    const completeDonation = async (uid, donationId) => {
-        completeUserDonation(uid, donationId, donationsRequests[donationId].Qoins, true);
-        const userToken = await getUserToken(uid);
+    const approveDonation = (donationId) => {
+        setSelectedDonation({ ...donationsRequests[donationId], donationId});
+        setOpenDonationCurrencyDialog(true);
+    }
+
+    const completeDonation = async (donationInfo, donationType) => {
+        completeUserDonation(donationInfo.uid, donationInfo.donationId, parseInt(donationInfo.Qoins), donationType);
+        const userToken = await getUserToken(donationInfo.uid);
         if (userToken.exists()) {
-            const userLanguage = await getUserLanguage(uid);
-            notificateUser(uid, userToken.val(), notifications.completed.title[userLanguage || 'es'], notifications.completed.body[userLanguage || 'es']);
+            const userLanguage = await getUserLanguage(donationInfo.uid);
+            notificateUser(donationInfo.uid, userToken.val(), notifications.completed.title[userLanguage || 'es'], notifications.completed.body[userLanguage || 'es']);
         }
     }
 
@@ -159,7 +167,7 @@ const DonationsRequests = ({ user }) => {
                                     variant='contained'
                                     color='primary'
                                     style={{ marginRight: '1rem', marginTop: '.5rem' }}
-                                    onClick={() => completeDonation(donationsRequests[donationId].uid, donationId)}>
+                                    onClick={() => approveDonation(donationId)}>
                                     Realizada
                                 </Button>
                                 <Button
@@ -173,6 +181,11 @@ const DonationsRequests = ({ user }) => {
                     ))}
                 </TableBody>
             </Table>
+            <ChooseDonationCurrencyDialog
+                open={openDonationCurrencyDialog}
+                closeDialog={() => setOpenDonationCurrencyDialog(false)}
+                completeDonation={completeDonation}
+                donationInfo={selectedDonation} />
         </TableContainer>
     );
 }
