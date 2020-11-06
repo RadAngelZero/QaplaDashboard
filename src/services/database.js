@@ -486,7 +486,7 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
         currentPoints -= tensInPoints * 10;
         const donations = {
             ...rewardProgress.val().donations,
-            [donationType]: rewardProgress.val().donations[donationType] + eCoinValue
+            [donationType]:  (rewardProgress.val().donations[donationType] ? rewardProgress.val().donations[donationType] : 0) + eCoinValue
         };
 
         await usersRewardsProgressRef.child(uid).update({
