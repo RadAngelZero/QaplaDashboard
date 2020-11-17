@@ -45,6 +45,7 @@ const DistributeExperience = () => {
 
                         workBook.SheetNames.forEach((sheetName) => {
                             xlsx.utils.sheet_to_json(workBook.Sheets[sheetName])
+                            .filter((user) => user.Experience)
                             .sort((a, b) => b['Experience'] - a['Experience'])
                             .forEach((row) => {
                                 usersArray.push(row);
@@ -70,8 +71,6 @@ const DistributeExperience = () => {
      */
     const generateParticipantFormat = async () => {
         const participants = await getEventParticipantsOnce(eventId);
-
-        console.log(participants);
 
         if (participants) {
             const participantsData = Object.keys(participants).map((participant) => {
