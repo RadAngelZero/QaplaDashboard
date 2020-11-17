@@ -995,16 +995,16 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                                         onClick={goToEventPrizes}>
                                         Repartir premios
                                     </Button>
-                                    <Button
-                                        variant='contained'
-                                        className={styles.MarginRight16}
-                                        onClick={goToExperiencePrizes}>
-                                        Repartir Experiencia
-                                    </Button>
                                 </>
                             }
                         </>
                     }
+                    <Button
+                        variant='contained'
+                        className={styles.MarginRight16}
+                        onClick={goToExperiencePrizes}>
+                        Repartir Experiencia
+                    </Button>
                     {!eventDuplicated &&
                         <>
                             <Button

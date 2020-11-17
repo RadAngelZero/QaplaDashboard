@@ -1,5 +1,6 @@
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
+import { distributeLeaderboardExperience } from './functions';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -459,12 +460,9 @@ export function loadUsersDonations(loadDonations) {
  * @param {string} uid User identifier
  * @param {string} donationId Donation identifier
  * @param {number} qoinsDonated Number of qoins donated
- * @param {boolean} isBitDonation True if the donation was in bits, false for stars
+ * @param {string} donationType Name of the currency
  */
-export async function completeUserDonation(uid, donationId, qoinsDonated, isBitDonation) {
-    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
-    await userDonationsRef.child(donationId).remove();
-
+export async function completeUserDonation(uid, donationId, qoinsDonated, donationType) {
     const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
     const eCoinValue = qoinsDonated * (await getDonationsCosts()).val();
 
@@ -474,8 +472,7 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, isBitD
     if (!rewardProgress.exists()) {
         const currentPoints = pointsToAdd - tensInPoints * 10;
         const donations = {
-            bits: isBitDonation ? eCoinValue : 0,
-            stars: !isBitDonation ? eCoinValue : 0,
+            [donationType]:  eCoinValue
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -489,8 +486,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, isBitD
         tensInPoints = Math.floor(currentPoints / 10);
         currentPoints -= tensInPoints * 10;
         const donations = {
-            bits: isBitDonation ? rewardProgress.val().donations.bits + eCoinValue : rewardProgress.val().donations.bits,
-            stars: !isBitDonation ? rewardProgress.val().donations.stars + eCoinValue : rewardProgress.val().donations.stars,
+            ...rewardProgress.val().donations,
+            [donationType]:  (rewardProgress.val().donations[donationType] ? rewardProgress.val().donations[donationType] : 0) + eCoinValue
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -499,6 +496,9 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, isBitD
             donations
         });
     }
+
+    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
+    await userDonationsRef.child(donationId).remove();
 }
 
 /**
@@ -535,14 +535,7 @@ export async function getDonationQoinsBase() {
  * @example distributeExperienceToUsers([{ uid: 'advdf', experience: 20 }, { uid: 'nciodsn', experience: 50 }]);
  */
 export async function distributeExperienceToUsers(experienceArray) {
-    let updateUserExperience = {};
-    for (let i = 0; i < experienceArray.length; i++) {
-        const user = experienceArray[i];
-        updateUserExperience[`/Users/${user.uid}/qaplaLevel`] = await getUserQaplaLevel(user.uid) + user.experience;
-        updateUserExperience[`/DonationsLeaderBoard/${user.uid}/totalDonations`] = await getUserLeaderboardExperience(user.uid) + user.experience;
-    }
-
-    await database.ref('/').update(updateUserExperience);
+    distributeLeaderboardExperience(experienceArray);
 }
 
 /**
