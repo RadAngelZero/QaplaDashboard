@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import styles from './Login.module.css';
 import { ReactComponent as FacebookIcon } from './../../assets/facebook_round.svg';
 import { ReactComponent as GoogleIcon } from './../../assets/google-logo.svg';
-import { signInWithFacebook, signInWithGoogle } from '../../services/auth';
+import { signInWithFacebook, signInWithGoogle, signInWithTwitch } from '../../services/auth';
 
 const Login = ({ user }) => {
     const history = useHistory();
@@ -63,6 +63,16 @@ const Login = ({ user }) => {
                             className={[styles.SocialMediaSignInButton, styles.GoogleSignInButton]}
                             onClick={authWithGoogle}>
                             Inicia sesion con Google
+                        </Button>
+                    </Grid>
+                    <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                        <Button
+                            variant='contained'
+                            style={{ backgroundColor: '#EEDD77' }}
+                            startIcon={<GoogleIcon />}
+                            className={[styles.SocialMediaSignInButton, styles.GoogleSignInButton]}
+                            onClick={signInWithTwitch}>
+                            Inicia sesion con Twitch
                         </Button>
                     </Grid>
                 </Grid>

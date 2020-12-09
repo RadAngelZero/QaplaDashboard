@@ -51,3 +51,18 @@ export async function distributeLeaderboardExperience(experienceArray) {
         console.log(error);
     }
 }
+
+/**
+ * Call the twitchAuthentication cloud function to generate user and token of the new
+ * qapla-twitch user
+ * @param {string} uid User identifier
+ * @param {string} displayName Username on twitch
+ */
+export async function createUserWithTwitch(uid, displayName) {
+    const authWithTwitch = functions.httpsCallable('twitchAuthentication');
+    try {
+        return await authWithTwitch({ uid, displayName });
+    } catch (error) {
+        console.log(error);
+    }
+}
