@@ -56,7 +56,7 @@ function LoginWithTwitch() {
         `client_id=${TWITCH_CLIENT_ID}&` +
         `redirect_uri=${redirectUri}&` +
         `response_type=code&` +
-        `scope=user:read:email`;
+        `scope=user:read:email%20user:edit%20bits:read%20user:edit%20channel:read:subscriptions%20channel:manage:redemptions`;
     return new Promise((resolve, reject) => {
       const authWindow = window.open(
             uri,
