@@ -548,6 +548,10 @@ export async function getUserQaplaLevel(uid) {
 }
 
 /**
+ * Leaderboard
+ */
+
+/**
  * Return the amount of experience (totalDonations node) on the donations leaderboard user node
  * If the node does not exist it creates the node and returns 0
  * @param {string} uid User identifier
@@ -564,4 +568,35 @@ export async function getUserLeaderboardExperience(uid) {
     }
 
     return leaderboardExperience.val();
+}
+
+/**
+ * Returns all the users of the leaderboard
+ */
+export async function getLeaderboard() {
+    return await (await DonationsLeaderBoardRef.orderByChild('totalDonations').limitToLast(100).once('value')).val();
+}
+
+/**
+ * Reset the leaderboard and give prizes to users
+ */
+export async function resetLeaderboard(users) {
+    const donations = (await DonationsLeaderBoardRef.once('value')).val();
+
+    let updateLeaderboard = {};
+    Object.keys(donations).map((uid) => {
+        updateLeaderboard[`${uid}/`] = { ...donations[uid], totalDonations: 0 };
+    });
+
+    DonationsLeaderBoardRef.update(updateLeaderboard);
+
+    users.map((user) => {
+        usersRef.child(user.uid).child('credits').transaction((qoins) => {
+            if (qoins !== null) {
+                return qoins + user.qoins;
+            }
+
+            return qoins;
+        });
+    });
 }
