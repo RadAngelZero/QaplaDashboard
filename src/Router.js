@@ -35,6 +35,7 @@ import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
 import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
+import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -149,6 +150,15 @@ const Router = () => {
                                                 </Button>
                                             </Link>
                                         }
+                                        {user.admin &&
+                                            <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}>
+                                                    Crear Invitación
+                                                </Button>
+                                            </Link>
+                                        }
                                         <Button
                                             color='inherit'
                                             style={{ color: '#FFF' }}
@@ -223,6 +233,9 @@ const Router = () => {
                                     </Route>
                                     <Route exact path='/login'>
                                         <Login user={user} />
+                                    </Route>
+                                    <Route exact path='/create/invitation'>
+                                        <CreateInvitation user={user} />
                                     </Route>
                                 </>
                                 :

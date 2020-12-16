@@ -20,6 +20,7 @@ const donationsHistoryRef = database.ref('/DonationsHistory');
 const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
 const DonationsCostsRef = database.ref('/DonationsCosts');
 const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
+const InvitationCodeRef = database.ref('/InvitationCode');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -564,4 +565,20 @@ export async function getUserLeaderboardExperience(uid) {
     }
 
     return leaderboardExperience.val();
+}
+
+/**
+ * Check if the invitation code exists
+ * @param {string} invitationCode Random invitation code
+ */
+export async function invitationCodeExists(invitationCode) {
+    return (await InvitationCodeRef.child(invitationCode).once('value')).exists();
+}
+
+/**
+ * Save the invitation code in the database
+ * @param {string} invitationCode Invitation code
+ */
+export async function saveInvitationCode(invitationCode) {
+    InvitationCodeRef.child(invitationCode).set(true);
 }
