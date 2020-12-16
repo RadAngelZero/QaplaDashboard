@@ -238,7 +238,13 @@ const Router = () => {
                 :
                     <RouterPackage>
                         <Switch>
-                            <Login user={user} />
+                            <Route exact path='/admin/login'>
+                                <Login user={user} />
+                            </Route>
+                            <Route exact path='/'>
+                                <h1>No admin</h1>
+                            </Route>
+                            <Redirect from='*' to='/' />
                         </Switch>
                     </RouterPackage>
                 }
