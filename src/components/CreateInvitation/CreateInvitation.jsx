@@ -3,8 +3,6 @@ import { Container, Grid, Button } from '@material-ui/core';
 import { getRandomString } from '../../utils/utils';
 import { invitationCodeExists, saveInvitationCode } from '../../services/database';
 
-
-
 const CreateInvitation = () => {
     const [invitationCode, setInvitationCode] = useState('');
 
