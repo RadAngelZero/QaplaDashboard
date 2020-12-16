@@ -21,7 +21,7 @@ const CreateInvitation = () => {
     }
 
     /**
-     * Save the EventId on the user clipboard
+     * Save the invitation code on the user clipboard
      */
     const copyInvitationCode = () => {
         if (invitationCode !== '') {
