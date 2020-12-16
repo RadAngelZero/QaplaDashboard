@@ -58,10 +58,10 @@ export async function distributeLeaderboardExperience(experienceArray) {
  * @param {string} uid User identifier
  * @param {string} displayName Username on twitch
  */
-export async function createUserWithTwitch(uid, displayName) {
+export async function createUserWithTwitch(uid, displayName, login, photoUrl, email) {
     const authWithTwitch = functions.httpsCallable('twitchAuthentication');
     try {
-        return await authWithTwitch({ uid, displayName });
+        return await authWithTwitch({ uid, displayName, login, photoUrl, email });
     } catch (error) {
         console.log(error);
     }

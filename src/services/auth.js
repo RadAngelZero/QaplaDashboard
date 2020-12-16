@@ -97,7 +97,7 @@ async function createTwitchUser(code) {
         const resultData = await result.json()
         let user = await getTwitchUserData(resultData.access_token);
         user.id = `${user.id}-${user.display_name}`
-        const userToken = (await createUserWithTwitch(user.id, user.display_name)).data;
+        const userToken = (await createUserWithTwitch(user.id, user.display_name, user.login, user.profile_image_url, user.email)).data;
         auth.signInWithCustomToken(userToken);
     } catch (err) {
         console.error(err);
