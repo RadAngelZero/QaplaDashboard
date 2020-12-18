@@ -36,6 +36,7 @@ import { connectUserToSendBird } from './services/SendBird';
 import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
 import CreateInvitation from './components/CreateInvitation/CreateInvitation';
+import InviteCode from './components/InviteCode/InviteCode';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -255,7 +256,7 @@ const Router = () => {
                                 <Login user={user} />
                             </Route>
                             <Route exact path='/'>
-                                <h1>No admin</h1>
+                                <InviteCode />
                             </Route>
                             <Redirect from='*' to='/' />
                         </Switch>
