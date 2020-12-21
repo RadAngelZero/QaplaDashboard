@@ -35,6 +35,8 @@ import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
 import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
+import CreateInvitation from './components/CreateInvitation/CreateInvitation';
+import InviteCode from './components/InviteCode/InviteCode';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -149,6 +151,15 @@ const Router = () => {
                                                 </Button>
                                             </Link>
                                         }
+                                        {user.admin &&
+                                            <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}>
+                                                    Crear Invitación
+                                                </Button>
+                                            </Link>
+                                        }
                                         <Button
                                             color='inherit'
                                             style={{ color: '#FFF' }}
@@ -224,6 +235,9 @@ const Router = () => {
                                     <Route exact path='/login'>
                                         <Login user={user} />
                                     </Route>
+                                    <Route exact path='/create/invitation'>
+                                        <CreateInvitation user={user} />
+                                    </Route>
                                 </>
                                 :
                                 <>
@@ -242,7 +256,7 @@ const Router = () => {
                                 <Login user={user} />
                             </Route>
                             <Route exact path='/'>
-                                <h1>No admin</h1>
+                                <InviteCode />
                             </Route>
                             <Redirect from='*' to='/' />
                         </Switch>
