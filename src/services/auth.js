@@ -94,7 +94,7 @@ async function createTwitchUser(code) {
             `grant_type=authorization_code&` +
             `redirect_uri=http://localhost:3000`, { method: 'POST' });
 
-        const resultData = await result.json()
+        const resultData = await result.json();
         let user = await getTwitchUserData(resultData.access_token);
         user.id = `${user.id}-${user.display_name}`
         const userToken = (await createUserWithTwitch(user.id, user.display_name, user.login, user.profile_image_url, user.email)).data;

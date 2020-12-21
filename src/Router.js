@@ -35,6 +35,7 @@ import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
 import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
+import Leaderboard from './components/Leaderboard/Leaderboard';
 import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 import InviteCode from './components/InviteCode/InviteCode';
 
@@ -152,6 +153,15 @@ const Router = () => {
                                             </Link>
                                         }
                                         {user.admin &&
+                                            <Link to='/leaderboard' className='White-Color Margin-Right'>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}>
+                                                    Leaderboard
+                                                </Button>
+                                            </Link>
+                                        }
+                                        {user.admin &&
                                             <Link to='/create/invitation' className='White-Color Margin-Right'>
                                                 <Button
                                                     color='inherit'
@@ -237,6 +247,9 @@ const Router = () => {
                                     </Route>
                                     <Route exact path='/create/invitation'>
                                         <CreateInvitation user={user} />
+                                    </Route>
+                                    <Route exact path='/leaderboard'>
+                                        <Leaderboard user={user} />
                                     </Route>
                                 </>
                                 :
