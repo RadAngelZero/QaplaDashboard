@@ -3,7 +3,8 @@ import {
     BrowserRouter as RouterPackage,
     Switch,
     Route,
-    Link
+    Link,
+    Redirect
 } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -34,6 +35,8 @@ import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
 import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
+import CreateInvitation from './components/CreateInvitation/CreateInvitation';
+import InviteCode from './components/InviteCode/InviteCode';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -148,6 +151,15 @@ const Router = () => {
                                                 </Button>
                                             </Link>
                                         }
+                                        {user.admin &&
+                                            <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}>
+                                                    Crear Invitación
+                                                </Button>
+                                            </Link>
+                                        }
                                         <Button
                                             color='inherit'
                                             style={{ color: '#FFF' }}
@@ -167,66 +179,86 @@ const Router = () => {
                             </Toolbar>
                         </AppBar>
                         <Switch>
-                            <Route exact path='/'>
-                                <EventsList events={eventsLoaded} />
-                            </Route>
-                            <Route exact path='/event/prizes/:eventId'>
-                                <AssignPrizesForEvent events={eventsLoaded} />
-                            </Route>
-                            <Route exact path='/event/details/:eventId'>
-                                <EventDetails
-                                    events={eventsLoaded}
-                                    games={games}
-                                    platforms={platforms} />
-                            </Route>
-                            <Route exact path='/event/requests/:eventId'>
-                                <JoinToEventRequest events={eventsLoaded} />
-                            </Route>
-                            <Route exact path='/event/participants/:eventId'>
-                                <EventParticipantsList events={eventsLoaded} />
-                            </Route>
-                            <Route exact path='/event/create'>
-                                <CreateEvent
-                                    games={games}
-                                    platforms={platforms}
-                                    user={user} />
-                            </Route>
-                            <Route exact path='/user/templates/create'>
-                                <CreateEvent
-                                    games={games}
-                                    platforms={platforms}
-                                    template
-                                    user={user} />
-                            </Route>
-                            <Route exact path='/user/templates/edit'>
-                                <CreateEvent
-                                    games={games}
-                                    platforms={platforms}
-                                    editTemplate
-                                    user={user} />
-                            </Route>
-                            <Route exact path='/event/duplicate/:eventId'>
-                                <EventDetails
-                                    events={eventsLoaded}
-                                    games={games}
-                                    platforms={platforms}
-                                    eventDuplicated />
-                            </Route>
-                            <Route exact path='/donations'>
-                                <DonationsRequests user={user} />
-                            </Route>
-                            <Route exact path='/event/experience/:eventId'>
-                                <DistributeExperience user={user} />
-                            </Route>
-                            <Route exact path='/login'>
-                                <Login user={user} />
-                            </Route>
+                            {user.admin ?
+                                <>
+                                    <Route exact path='/'>
+                                        <EventsList events={eventsLoaded} />
+                                    </Route>
+                                    <Route exact path='/event/prizes/:eventId'>
+                                        <AssignPrizesForEvent events={eventsLoaded} />
+                                    </Route>
+                                    <Route exact path='/event/details/:eventId'>
+                                        <EventDetails
+                                            events={eventsLoaded}
+                                            games={games}
+                                            platforms={platforms} />
+                                    </Route>
+                                    <Route exact path='/event/requests/:eventId'>
+                                        <JoinToEventRequest events={eventsLoaded} />
+                                    </Route>
+                                    <Route exact path='/event/participants/:eventId'>
+                                        <EventParticipantsList events={eventsLoaded} />
+                                    </Route>
+                                    <Route exact path='/event/create'>
+                                        <CreateEvent
+                                            games={games}
+                                            platforms={platforms}
+                                            user={user} />
+                                    </Route>
+                                    <Route exact path='/user/templates/create'>
+                                        <CreateEvent
+                                            games={games}
+                                            platforms={platforms}
+                                            template
+                                            user={user} />
+                                    </Route>
+                                    <Route exact path='/user/templates/edit'>
+                                        <CreateEvent
+                                            games={games}
+                                            platforms={platforms}
+                                            editTemplate
+                                            user={user} />
+                                    </Route>
+                                    <Route exact path='/event/duplicate/:eventId'>
+                                        <EventDetails
+                                            events={eventsLoaded}
+                                            games={games}
+                                            platforms={platforms}
+                                            eventDuplicated />
+                                    </Route>
+                                    <Route exact path='/donations'>
+                                        <DonationsRequests user={user} />
+                                    </Route>
+                                    <Route exact path='/event/experience/:eventId'>
+                                        <DistributeExperience user={user} />
+                                    </Route>
+                                    <Route exact path='/login'>
+                                        <Login user={user} />
+                                    </Route>
+                                    <Route exact path='/create/invitation'>
+                                        <CreateInvitation user={user} />
+                                    </Route>
+                                </>
+                                :
+                                <>
+                                    <Route exact path='/'>
+                                        <h1>No eres admin</h1>
+                                    </Route>
+                                    <Redirect from='*' to='/' />
+                                </>
+                            }
                         </Switch>
                     </RouterPackage>
                 :
                     <RouterPackage>
                         <Switch>
-                            <Login user={user} />
+                            <Route exact path='/admin/login'>
+                                <Login user={user} />
+                            </Route>
+                            <Route exact path='/'>
+                                <InviteCode />
+                            </Route>
+                            <Redirect from='*' to='/' />
                         </Switch>
                     </RouterPackage>
                 }
