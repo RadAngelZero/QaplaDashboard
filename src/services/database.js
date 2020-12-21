@@ -572,7 +572,11 @@ export async function getUserLeaderboardExperience(uid) {
  * @param {string} invitationCode Random invitation code
  */
 export async function invitationCodeExists(invitationCode) {
-    return (await InvitationCodeRef.child(invitationCode).once('value')).exists();
+    if (invitationCode) {
+        return (await InvitationCodeRef.child(invitationCode).once('value')).exists();
+    }
+
+    return false;
 }
 
 /**
