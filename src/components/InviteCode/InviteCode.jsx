@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
     Grid,
-    AppBar,
-    Toolbar,
     Button,
-    Link,
     makeStyles,
     InputBase
 } from '@material-ui/core';
@@ -12,6 +10,7 @@ import {
 import styles from './InviteCode.module.css';
 import RoomGame from './../../assets/room-game.png';
 import { invitationCodeExists } from '../../services/database';
+import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -22,35 +21,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const InviteCode = () => {
+    const history = useHistory();
+
     const [invitationCode, setInvitationCode] = useState('');
     const classes = useStyles();
 
-    const continueToSignUp = async () => {
+    const continueToSignUp = async (e) => {
+        e.preventDefault();
         if (await invitationCodeExists(invitationCode)) {
-            return console.log('Continue');
+            return history.push(`/signin/${invitationCode}`)
         }
 
         return console.log('No Continue');
     }
 
     return (
-        <Grid container className={styles.container} alignItems='center' justify='center'>
-            <AppBar className={styles.appBar}>
-                <Toolbar>
-                    <div style={{ flexGrow: 1 }}></div>
-                    <p className={styles.alreadyAUser}>
-                        Already a user?
-                    </p>
-                    <Link to='/' className={`Margin-Right ${styles.buttonContainer}`}>
-                        <Button
-                            variant='outlined'
-                            color='#5F75EE'
-                            className={styles.button}>
-                            Sign in
-                        </Button>
-                    </Link>
-                </Toolbar>
-            </AppBar>
+        <StreamerDashboardContainer>
             <Grid item md='4' style={{
                     backgroundImage: `url(${RoomGame})`,
                     backgroundRepeat: 'no-repeat',
@@ -66,23 +52,26 @@ const InviteCode = () => {
                     <p className={styles.instruction}>
                         Enter your invitation code to continue to sign up
                     </p>
-                    <InputBase
-                        variant='outlined'
-                        label='Invite Code'
-                        className={[classes.margin, styles.inviteCodeInput]}
-                        fullWidth
-                        placeholder='Invite Code'
-                        value={invitationCode}
-                        onChange={(e) => setInvitationCode(e.target.value)} />
-                    <Button variant='contained'
-                        className={styles.continueButton}
-                        onClick={continueToSignUp}>
-                        Continue
-                    </Button>
+                    <form onSubmit={continueToSignUp}>
+                        <InputBase
+                            variant='outlined'
+                            label='Invite Code'
+                            className={[classes.margin, styles.inviteCodeInput]}
+                            fullWidth
+                            placeholder='Invite Code'
+                            value={invitationCode}
+                            onChange={(e) => setInvitationCode(e.target.value)}
+                            onSubmit={() => continueToSignUp} />
+                        <Button variant='contained'
+                            className={styles.continueButton}
+                            type='submit'>
+                            Continue
+                        </Button>
+                    </form>
                 </div>
             </Grid>
             <Grid item md='3' />
-        </Grid>
+        </StreamerDashboardContainer>
     );
 }
 
