@@ -21,6 +21,7 @@ const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
 const DonationsCostsRef = database.ref('/DonationsCosts');
 const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 const InvitationCodeRef = database.ref('/InvitationCode');
+const userStreamersRef = database.ref('/UserStreamer');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -345,7 +346,10 @@ export function addQoinsToUser(uid, qoinsToAdd) {
  * @param {string} uid User identifier
  */
  export async function isDashboardUser(uid) {
-    return (await dashboardUsersAdmin.child(uid).once('value')).exists() || (await dashboardUsersClient.child(uid).once('value')).exists();
+    const adminUser = (await dashboardUsersAdmin.child(uid).once('value')).exists() || (await dashboardUsersClient.child(uid).once('value')).exists();
+    const streamerUser = (await userStreamersRef.child(uid).once('value')).exists();
+
+    return adminUser || streamerUser;
  }
 
 /**
@@ -357,6 +361,16 @@ export function loadUserAdminProfile(uid, dataHandler) {
     dashboardUsersAdmin.child(uid).on('value', (adminData) => {
         if (adminData.exists()) {
             dataHandler(adminData.val());
+        } else {
+            removeUserAdminListener(uid);
+        }
+    });
+}
+
+export function loadStreamerProfile(uid, dataHandler) {
+    userStreamersRef.child(uid).on('value', (streamerData) => {
+        if (streamerData.exists()) {
+            dataHandler(streamerData.val());
         } else {
             removeUserAdminListener(uid);
         }
@@ -620,4 +634,13 @@ export async function invitationCodeExists(invitationCode) {
  */
 export async function saveInvitationCode(invitationCode) {
     InvitationCodeRef.child(invitationCode).set(true);
+}
+
+export async function streamerProfileExists(uid) {
+    return (await userStreamersRef.child(uid).once('value')).exists();
+}
+
+export async function createStreamerProfile(uid, userData, inviteCode) {
+    InvitationCodeRef.child(inviteCode).remove();
+    return await userStreamersRef.child(uid).update(userData);
 }

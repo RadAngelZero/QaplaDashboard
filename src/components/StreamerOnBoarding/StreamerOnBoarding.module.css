@@ -1,0 +1,54 @@
+.container {
+    min-height: 100vh;
+}
+
+.welcome {
+    font-weight: bold;
+    color: #FFF;
+    letter-spacing: -1px;
+    font-size: 40px;
+    text-align: center;
+}
+
+.card {
+    background-color: #141833 !important;
+    border-radius: 2rem !important;
+}
+
+.playerWrapper {
+    position: relative;
+    border-radius: 20px;
+    padding: .5rem;
+}
+
+.player {
+    border-radius: 10%;
+    overflow: hidden;
+}
+
+.formContainer {
+    margin-top: 3rem;
+}
+
+.inviteCodeInput {
+    font-weight: bold !important;
+    background-color: #141833;
+    border-radius: .5rem;
+    color: #FFF !important;
+    margin-right: 8;
+    font-size: 14px;
+}
+
+.continueButton {
+    margin-top: 1rem !important;
+    border: 3px solid #5F75EE !important;
+    border-radius: 1rem !important;
+    font-size: 12px !important;
+    color: #5C71E6 !important;
+    text-align: center !important;
+    text-transform: none !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    padding-top: .7rem !important;
+    padding-bottom: .7rem !important;
+}

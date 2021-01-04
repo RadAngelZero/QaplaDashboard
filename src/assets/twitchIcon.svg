@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="26px" viewBox="0 0 22 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>twitch-glitch</title>
+    <g id="Sign-up---Sign-in" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Sign-Up---Twitch---Desktop" transform="translate(-816.000000, -499.000000)">
+            <g id="Invite-Code" transform="translate(789.000000, 371.000000)">
+                <g id="Content" transform="translate(0.000000, 97.000000)">
+                    <g id="button/primary" transform="translate(0.000000, 16.000000)">
+                        <g id="twitch-glitch" transform="translate(27.000000, 15.000000)">
+                            <polygon id="Fill-1" fill="#FFFFFF" points="20.0118844 11.8254889 16.3735733 15.4638 12.7342844 15.4638 9.55112889 18.6474444 9.55112889 15.4638 5.45717333 15.4638 5.45717333 1.8194 20.0118844 1.8194"></polygon>
+                            <path d="M4.54813333,0 L1.11910481e-13,4.54813333 L1.11910481e-13,20.9215111 L5.45746667,20.9215111 L5.45746667,25.4696444 L10.0060889,20.9215111 L13.6444,20.9215111 L21.8308444,12.7350667 L21.8308444,0 L4.54813333,0 Z M5.45746667,1.81915556 L20.0121778,1.81915556 L20.0121778,11.8252444 L16.3733778,15.4635556 L12.7345778,15.4635556 L9.55093333,18.6476889 L9.55093333,15.4635556 L5.45746667,15.4635556 L5.45746667,1.81915556 Z" id="Fill-2" fill="#090410"></path>
+                            <polygon id="Fill-3" fill="#090410" points="15.4634089 10.4609511 17.2830533 10.4609511 17.2830533 5.00299556 15.4634089 5.00299556"></polygon>
+                            <polygon id="Fill-4" fill="#090410" points="10.4606089 10.4609511 12.2802533 10.4609511 12.2802533 5.00299556 10.4606089 5.00299556"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
