@@ -62,10 +62,6 @@ const EventsList = ({ events }) => {
             const [bDay, bMonth, bYear] = getDateElementsAsNumber(b.dateUTC);
             const [bHour, bMinute] = getHourElementsAsNumber(b.hourUTC);
 
-            if (aMonth > bMonth) {
-                return 1;
-            }
-
             const aEventDate = new Date(Date.UTC(aYear, aMonth - 1, aDay, aHour, aMinute));
             const bEventDate = new Date(Date.UTC(bYear, bMonth - 1, bDay, bHour, bMinute));
 
