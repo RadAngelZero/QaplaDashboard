@@ -108,199 +108,192 @@ const Router = () => {
     const eventsLoaded = events ? events : {};
 
     return (
-        <>
-            {user !== null &&
-            <>
-                {user ?
-                    <RouterPackage>
+        <RouterPackage>
+            <Switch>
+                {!user ?
+                    <>
+                        <Route exact path='/admin/login'>
+                            <Login user={user} />
+                        </Route>
+                        <Route exact path='/'>
+                            <InviteCode />
+                        </Route>
+                        <Route path='/signin/:inviteCode'>
+                            <StreamersSignin />
+                        </Route>
+                        <Route path='/signin'>
+                            <StreamersSignin />
+                        </Route>
+                        <Route path='/welcome'>
+                            <StreamerOnBoarding user={user} />
+                        </Route>
+                        <Route path='/profile'>
+                            <StreamerOnBoarding user={user} />
+                        </Route>
+                    </>
+                    :
+                    <>
                         {user.streamer &&
-                            <Switch>
+                            <>
                                 <Route path='/welcome'>
                                     <StreamerOnBoarding user={user} />
                                 </Route>
                                 <Route path='/profile'>
                                     <StreamerOnBoarding user={user} />
                                 </Route>
-                            </Switch>
+                            </>
                         }
                         {user.admin &&
-                            <>
-                                <AppBar position='static'>
-                                    <Toolbar>
-                                        <Link to='/' className='Nav-Title White-Color'>
-                                            <Typography variant='h6' style={{ color: '#FFF' }} >
-                                                Qapla Dashboard
-                                            </Typography>
+                        <>
+                            <AppBar position='static'>
+                                <Toolbar>
+                                    <Link to='/' className='Nav-Title White-Color'>
+                                        <Typography variant='h6' style={{ color: '#FFF' }} >
+                                            Qapla Dashboard
+                                        </Typography>
+                                    </Link>
+                                    {user === undefined &&
+                                        <Link to='/login' className='White-Color'>
+                                            <Button
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}>
+                                                Login
+                                            </Button>
                                         </Link>
-                                        {user === undefined &&
-                                            <Link to='/login' className='White-Color'>
-                                                <Button
-                                                    color='inherit'
-                                                    style={{ color: '#FFF' }}>
-                                                    Login
-                                                </Button>
-                                            </Link>
-                                        }
-                                        {user &&
+                                    }
+                                    {user &&
+                                        <>
                                             <>
-                                                <>
-                                                    <Button
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}
-                                                        className='White-Color Margin-Right'
-                                                        onClick={(e) => setMenu(e.currentTarget)} >
-                                                        Plantillas
-                                                    </Button>
-                                                    <Menu
-                                                        anchorEl={menu}
-                                                        open={Boolean(menu)}
-                                                        onClose={closeMenu}>
-                                                        <Link to='/user/templates/create' className='White-Color Margin-Right'>
-                                                            <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Crear</MenuItem>
-                                                        </Link>
-                                                        <Link to='/user/templates/edit' className='White-Color Margin-Right'>
-                                                            <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Editar</MenuItem>
-                                                        </Link>
-                                                    </Menu>
-                                                </>
-                                                {user.admin &&
-                                                    <Link to='/donations' className='White-Color Margin-Right'>
-                                                        <Button
-                                                            color='inherit'
-                                                            style={{ color: '#FFF' }}>
-                                                            Donaciones
-                                                        </Button>
-                                                    </Link>
-                                                }
-                                                {user.admin &&
-                                                    <Link to='/leaderboard' className='White-Color Margin-Right'>
-                                                        <Button
-                                                            color='inherit'
-                                                            style={{ color: '#FFF' }}>
-                                                            Leaderboard
-                                                        </Button>
-                                                    </Link>
-                                                }
-                                                {user.admin &&
-                                                    <Link to='/create/invitation' className='White-Color Margin-Right'>
-                                                        <Button
-                                                            color='inherit'
-                                                            style={{ color: '#FFF' }}>
-                                                            Crear Invitación
-                                                        </Button>
-                                                    </Link>
-                                                }
                                                 <Button
                                                     color='inherit'
                                                     style={{ color: '#FFF' }}
-                                                    onClick={() => auth.signOut()}>
-                                                    Cerrar sesión
+                                                    className='White-Color Margin-Right'
+                                                    onClick={(e) => setMenu(e.currentTarget)} >
+                                                    Plantillas
                                                 </Button>
+                                                <Menu
+                                                    anchorEl={menu}
+                                                    open={Boolean(menu)}
+                                                    onClose={closeMenu}>
+                                                    <Link to='/user/templates/create' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Crear</MenuItem>
+                                                    </Link>
+                                                    <Link to='/user/templates/edit' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Editar</MenuItem>
+                                                    </Link>
+                                                </Menu>
                                             </>
-                                        }
-                                        <Link to='/event/create' className='White-Color Margin-Right'>
+                                            {user.admin &&
+                                                <Link to='/donations' className='White-Color Margin-Right'>
+                                                    <Button
+                                                        color='inherit'
+                                                        style={{ color: '#FFF' }}>
+                                                        Donaciones
+                                                    </Button>
+                                                </Link>
+                                            }
+                                            {user.admin &&
+                                                <Link to='/leaderboard' className='White-Color Margin-Right'>
+                                                    <Button
+                                                        color='inherit'
+                                                        style={{ color: '#FFF' }}>
+                                                        Leaderboard
+                                                    </Button>
+                                                </Link>
+                                            }
+                                            {user.admin &&
+                                                <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                    <Button
+                                                        color='inherit'
+                                                        style={{ color: '#FFF' }}>
+                                                        Crear Invitación
+                                                    </Button>
+                                                </Link>
+                                            }
                                             <Button
-                                                variant='contained'
-                                                color='secondary'
-                                                style={{ color: '#FFF' }}>
-                                                Crear evento
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}
+                                                onClick={() => auth.signOut()}>
+                                                Cerrar sesión
                                             </Button>
-                                        </Link>
-                                    </Toolbar>
-                                </AppBar>
-                                <Switch>
-                                    <Route exact path='/'>
-                                        <EventsList events={eventsLoaded} />
-                                    </Route>
-                                    <Route exact path='/event/prizes/:eventId'>
-                                        <AssignPrizesForEvent events={eventsLoaded} />
-                                    </Route>
-                                    <Route exact path='/event/details/:eventId'>
-                                        <EventDetails
-                                            events={eventsLoaded}
-                                            games={games}
-                                            platforms={platforms} />
-                                    </Route>
-                                    <Route exact path='/event/requests/:eventId'>
-                                        <JoinToEventRequest events={eventsLoaded} />
-                                    </Route>
-                                    <Route exact path='/event/participants/:eventId'>
-                                        <EventParticipantsList events={eventsLoaded} />
-                                    </Route>
-                                    <Route exact path='/event/create'>
-                                        <CreateEvent
-                                            games={games}
-                                            platforms={platforms}
-                                            user={user} />
-                                    </Route>
-                                    <Route exact path='/user/templates/create'>
-                                        <CreateEvent
-                                            games={games}
-                                            platforms={platforms}
-                                            template
-                                            user={user} />
-                                    </Route>
-                                    <Route exact path='/user/templates/edit'>
-                                        <CreateEvent
-                                            games={games}
-                                            platforms={platforms}
-                                            editTemplate
-                                            user={user} />
-                                    </Route>
-                                    <Route exact path='/event/duplicate/:eventId'>
-                                        <EventDetails
-                                            events={eventsLoaded}
-                                            games={games}
-                                            platforms={platforms}
-                                            eventDuplicated />
-                                    </Route>
-                                    <Route exact path='/donations'>
-                                        <DonationsRequests user={user} />
-                                    </Route>
-                                    <Route exact path='/event/experience/:eventId'>
-                                        <DistributeExperience user={user} />
-                                    </Route>
-                                    <Route exact path='/login'>
-                                        <Login user={user} />
-                                    </Route>
-                                    <Route exact path='/create/invitation'>
-                                        <CreateInvitation user={user} />
-                                    </Route>
-                                    <Route exact path='/leaderboard'>
-                                        <Leaderboard user={user} />
-                                    </Route>
-                            </Switch>
-                            </>
-                        }
-                    </RouterPackage>
-                :
-                    <RouterPackage>
-                        <Switch>
-                            <Route exact path='/admin/login'>
-                                <Login user={user} />
-                            </Route>
-                            <Route exact path='/'>
-                                <InviteCode />
-                            </Route>
-                            <Route path='/signin/:inviteCode'>
-                                <StreamersSignin />
-                            </Route>
-                            <Route path='/signin'>
-                                <StreamersSignin />
-                            </Route>
-                            <Route path='/welcome'>
-                                <StreamerOnBoarding user={user} />
-                            </Route>
-                            <Route path='/profile'>
-                                <StreamerOnBoarding user={user} />
-                            </Route>
-                            <Redirect from='*' to='/' />
-                        </Switch>
-                    </RouterPackage>
+                                        </>
+                                    }
+                                    <Link to='/event/create' className='White-Color Margin-Right'>
+                                        <Button
+                                            variant='contained'
+                                            color='secondary'
+                                            style={{ color: '#FFF' }}>
+                                            Crear evento
+                                        </Button>
+                                    </Link>
+                                </Toolbar>
+                            </AppBar>
+                                <Route exact path='/'>
+                                    <EventsList events={eventsLoaded} />
+                                </Route>
+                                <Route exact path='/event/prizes/:eventId'>
+                                    <AssignPrizesForEvent events={eventsLoaded} />
+                                </Route>
+                                <Route exact path='/event/details/:eventId'>
+                                    <EventDetails
+                                        events={eventsLoaded}
+                                        games={games}
+                                        platforms={platforms} />
+                                </Route>
+                                <Route exact path='/event/requests/:eventId'>
+                                    <JoinToEventRequest events={eventsLoaded} />
+                                </Route>
+                                <Route exact path='/event/participants/:eventId'>
+                                    <EventParticipantsList events={eventsLoaded} />
+                                </Route>
+                                <Route exact path='/event/create'>
+                                    <CreateEvent
+                                        games={games}
+                                        platforms={platforms}
+                                        user={user} />
+                                </Route>
+                                <Route exact path='/user/templates/create'>
+                                    <CreateEvent
+                                        games={games}
+                                        platforms={platforms}
+                                        template
+                                        user={user} />
+                                </Route>
+                                <Route exact path='/user/templates/edit'>
+                                    <CreateEvent
+                                        games={games}
+                                        platforms={platforms}
+                                        editTemplate
+                                        user={user} />
+                                </Route>
+                                <Route exact path='/event/duplicate/:eventId'>
+                                    <EventDetails
+                                        events={eventsLoaded}
+                                        games={games}
+                                        platforms={platforms}
+                                        eventDuplicated />
+                                </Route>
+                                <Route exact path='/donations'>
+                                    <DonationsRequests user={user} />
+                                </Route>
+                                <Route exact path='/event/experience/:eventId'>
+                                    <DistributeExperience user={user} />
+                                </Route>
+                                <Route exact path='/login'>
+                                    <Login user={user} />
+                                </Route>
+                                <Route exact path='/create/invitation'>
+                                    <CreateInvitation user={user} />
+                                </Route>
+                                <Route exact path='/leaderboard'>
+                                    <Leaderboard user={user} />
+                                </Route>
+                        </>
+                    }
+                    </>
                 }
-            </>
-        }
-        </>
+            </Switch>
+        </RouterPackage>
     );
 }
 
