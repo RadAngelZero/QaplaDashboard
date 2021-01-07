@@ -41,6 +41,7 @@ import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 import InviteCode from './components/InviteCode/InviteCode';
 import StreamersSignin from './components/StreamersSignin/StreamersSignin';
 import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoarding';
+import StreamerSideBar from './components/StreamerSideBar/StreamerSideBar';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -122,13 +123,7 @@ const Router = () => {
                             <StreamersSignin />
                         </Route>
                         <Route path='/signin'>
-                            <StreamersSignin />
-                        </Route>
-                        <Route path='/welcome'>
-                            <StreamerOnBoarding user={user} />
-                        </Route>
-                        <Route path='/profile'>
-                            <StreamerOnBoarding user={user} />
+                            <StreamersSignin user={user} />
                         </Route>
                     </>
                     :
@@ -139,7 +134,7 @@ const Router = () => {
                                     <StreamerOnBoarding user={user} />
                                 </Route>
                                 <Route path='/profile'>
-                                    <StreamerOnBoarding user={user} />
+                                    <StreamerSideBar user={user} />
                                 </Route>
                             </>
                         }
