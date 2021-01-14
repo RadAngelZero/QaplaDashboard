@@ -42,6 +42,7 @@ import InviteCode from './components/InviteCode/InviteCode';
 import StreamersSignin from './components/StreamersSignin/StreamersSignin';
 import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoarding';
 import StreamerProfile from './components/StreamerProfile/StreamerProfile';
+import NewStream from './components/NewStream/NewStream';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -134,6 +135,9 @@ const Router = () => {
                                 </Route>
                                 <Route path='/profile'>
                                     <StreamerProfile user={user} />
+                                </Route>
+                                <Route path='/create/stream'>
+                                    <NewStream user={user} />
                                 </Route>
                                 <Redirect from='*' to='/profile' />
                             </>
