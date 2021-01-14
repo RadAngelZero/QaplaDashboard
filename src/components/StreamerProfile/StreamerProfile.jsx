@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Avatar, Grid, Button, Card, Menu, MenuItem, CardContent, Box, IconButton, CardMedia } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 
 import styles from './StreamerProfile.module.css';
 import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
@@ -31,6 +32,7 @@ const StreamerProfile = ({ user }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const classes = useStyles();
+    const history = useHistory();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -40,7 +42,7 @@ const StreamerProfile = ({ user }) => {
         setAnchorEl(null);
       };
 
-    console.log(user);
+    const createStream = () => history.push('/create/stream');
 
     return (
         <StreamerDashboardContainer user={user}>
@@ -94,7 +96,9 @@ const StreamerProfile = ({ user }) => {
                                 </h1>
                                 <CardContent>
                                     <Box display='flex' justifyContent='center'>
-                                        <IconButton className={styles.createButton}>
+                                        <IconButton
+                                            onClick={createStream}
+                                            className={styles.createButton}>
                                             <AddIcon />
                                         </IconButton>
                                     </Box>
@@ -103,10 +107,17 @@ const StreamerProfile = ({ user }) => {
                         </Grid>
                         <Grid item md={3}>
                             <Card className={styles.eventCard}>
-                                <CardMedia
-                                    component='img'
-                                    height='160'
-                                    image='https://rocketleague.media.zestyio.com/rl_platform_keyart_2019.f1cb27a519bdb5b6ed34049a5b86e317.jpg' />
+                                <div style={{ overflow: 'hidden' }}>
+                                    <img
+                                        src='https://rocketleague.media.zestyio.com/rl_platform_keyart_2019.f1cb27a519bdb5b6ed34049a5b86e317.jpg'
+                                        height='160'
+                                        style={{
+                                            objectFit: 'cover',
+                                            backgroundSize: 'cover',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }} />
+                                </div>
                                 <CardContent className={styles.eventCardContent}>
                                     <p className={styles.eventCardTitle}>
                                         Rocket Champions League

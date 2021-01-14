@@ -4,8 +4,7 @@ import {
     AppBar,
     Toolbar,
     Link,
-    Button,
-    Container
+    Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
@@ -16,7 +15,7 @@ import StreamerSideBar from '../StreamerSideBar/StreamerSideBar';
 const useStyles = makeStyles((theme) => ({
     content: {
         flexGrow: 1,
-        paddingLeft: theme.spacing(12) + 1,
+        paddingLeft: theme.spacing(4) + 1,
         paddingTop: theme.spacing(4) + 1,
     }
 }));
