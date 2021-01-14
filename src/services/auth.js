@@ -14,8 +14,8 @@ export function handleUserAuthentication(callbackForAuthenticatedUser, callbackF
             if (await isDashboardUser(user.uid)) {
                 await callbackForAuthenticatedUser(user);
             } else {
-                /* auth.signOut();
-                alert('Usuario no autorizado, habla con el staff de Qapla para que autorizen tu cuenta'); */
+                auth.signOut();
+                alert('Usuario no autorizado, habla con el staff de Qapla para que autorizen tu cuenta');
             }
         } else {
             await callbackForUserNotAuthenticated();
