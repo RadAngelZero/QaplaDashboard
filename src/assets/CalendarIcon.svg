@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Calendar</title>
+    <g id="Dashboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dashboard--Main-Screen---Desktop--Copy" transform="translate(-451.000000, -727.000000)" fill="#FFFFFF">
+            <g id="Event-Card" transform="translate(424.000000, 430.000000)">
+                <g id="Date" transform="translate(27.000000, 297.000000)">
+                    <g id="Calendar">
+                        <g>
+                            <path d="M4,1 C4,0.44772 4.44772,0 5,0 C5.55228,0 6,0.44772 6,1 L6,2 L14,2 L14,1 C14,0.44772 14.4477,0 15,0 C15.5523,0 16,0.44772 16,1 L16,2 L17,2 C18.6569,2 20,3.34315 20,5 L20,17 C20,18.6569 18.6569,20 17,20 L3,20 C1.34315,20 0,18.6569 0,17 L0,5 C0,3.34315 1.34315,2 3,2 L4,2 L4,1 Z" id="Path" opacity="0.25"></path>
+                            <path d="M8,10 C7.44772,10 7,10.4477 7,11 C7,11.5523 7.44772,12 8,12 L15,12 C15.5523,12 16,11.5523 16,11 C16,10.4477 15.5523,10 15,10 L8,10 Z M5,14 C4.44772,14 4,14.4477 4,15 C4,15.5523 4.44772,16 5,16 L11,16 C11.5523,16 12,15.5523 12,15 C12,14.4477 11.5523,14 11,14 L5,14 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
