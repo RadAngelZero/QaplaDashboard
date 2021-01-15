@@ -133,13 +133,12 @@ const Router = () => {
                                 <Route path='/welcome'>
                                     <StreamerOnBoarding user={user} />
                                 </Route>
+                                <Route path='/create'>
+                                    <NewStream user={user} />
+                                </Route>
                                 <Route path='/profile'>
                                     <StreamerProfile user={user} />
                                 </Route>
-                                <Route path='/create/stream'>
-                                    <NewStream user={user} />
-                                </Route>
-                                <Redirect from='*' to='/profile' />
                             </>
                         }
                         {user.admin &&
