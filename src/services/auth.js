@@ -14,8 +14,8 @@ export function handleUserAuthentication(callbackForAuthenticatedUser, callbackF
             if (await isDashboardUser(user.uid)) {
                 await callbackForAuthenticatedUser(user);
             } else {
-                auth.signOut();
-                alert('Usuario no autorizado, habla con el staff de Qapla para que autorizen tu cuenta');
+                /* auth.signOut();
+                alert('Usuario no autorizado, habla con el staff de Qapla para que autorizen tu cuenta'); */
             }
         } else {
             await callbackForUserNotAuthenticated();
@@ -96,11 +96,13 @@ async function createTwitchUser(code) {
 
         const resultData = await result.json();
         let user = await getTwitchUserData(resultData.access_token);
-        user.id = `${user.id}-${user.display_name}`
+        const twitchId = user.id;
+        user.id = `${user.id}-${user.display_name}`;
         const userToken = (await createUserWithTwitch(user.id, user.display_name, user.login, user.profile_image_url, user.email)).data;
         const userResult = {
             firebaseAuthUser: await auth.signInWithCustomToken(userToken),
             userData: {
+                id: twitchId,
                 uid: user.id,
                 displayName: user.display_name,
                 login: user.login,

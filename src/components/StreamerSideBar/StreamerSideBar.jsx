@@ -2,7 +2,6 @@ import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
 import { ReactComponent as EventsIcon } from './../../assets/EventIcon.svg';
 import { ReactComponent as CommunityIcon } from './../../assets/CommunityIcon.svg';
 import { ReactComponent as AnalyticsIcon } from './../../assets/AnalyticsIcon.svg';
@@ -28,33 +27,32 @@ const StreamerSideBar = ({ user }) => {
     const classes = useStyles();
 
     return (
-        <StreamerDashboardContainer user={user}>
-            <Drawer
-                className={[classes.drawer, classes.drawerClose]}
-                classes={{ paper: classes.drawerClose }}
-                variant='permanent'>
-                <List style={{ marginTop: '1rem' }}>
-                    <ListItem>
-                        <ListItemIcon><EventsIcon height={32} width={32} /></ListItemIcon>
-                    </ListItem>
-                    <ListItem style={{ marginTop: '.5rem' }}>
-                        <ListItemIcon><CommunityIcon height={32} width={32} /></ListItemIcon>
-                    </ListItem>
-                    <ListItem style={{ marginTop: '.5rem' }}>
-                        <ListItemIcon><AnalyticsIcon height={32} width={32} /></ListItemIcon>
-                    </ListItem>
-                </List>
-                <div style={{ flexGrow: 1 }} />
-                <List>
-                    <ListItem style={{ marginTop: '.5rem' }}>
-                        <ListItemIcon><CogIcon height={32} width={32} /></ListItemIcon>
-                    </ListItem>
-                    <ListItem style={{ marginTop: '.5rem' }}>
-                        <ListItemIcon><QaplaLogo height={32} width={32} /></ListItemIcon>
-                    </ListItem>
-                </List>
-            </Drawer>
-        </StreamerDashboardContainer>
+        <Drawer
+            className={[classes.drawer, classes.drawerClose]}
+            classes={{ paper: classes.drawerClose }}
+            variant='permanent'
+            anchor='left'>
+            <List style={{ marginTop: '1rem' }}>
+                <ListItem>
+                    <ListItemIcon><EventsIcon height={32} width={32} /></ListItemIcon>
+                </ListItem>
+                <ListItem style={{ marginTop: '.5rem' }}>
+                    <ListItemIcon><CommunityIcon height={32} width={32} /></ListItemIcon>
+                </ListItem>
+                <ListItem style={{ marginTop: '.5rem' }}>
+                    <ListItemIcon><AnalyticsIcon height={32} width={32} /></ListItemIcon>
+                </ListItem>
+            </List>
+            <div style={{ flexGrow: 1 }} />
+            <List>
+                <ListItem style={{ marginTop: '.5rem' }}>
+                    <ListItemIcon><CogIcon height={32} width={32} /></ListItemIcon>
+                </ListItem>
+                <ListItem style={{ marginTop: '.5rem' }}>
+                    <ListItemIcon><QaplaLogo height={32} width={32} /></ListItemIcon>
+                </ListItem>
+            </List>
+        </Drawer>
     );
 }
 

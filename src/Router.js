@@ -41,7 +41,8 @@ import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 import InviteCode from './components/InviteCode/InviteCode';
 import StreamersSignin from './components/StreamersSignin/StreamersSignin';
 import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoarding';
-import StreamerSideBar from './components/StreamerSideBar/StreamerSideBar';
+import StreamerProfile from './components/StreamerProfile/StreamerProfile';
+import NewStream from './components/NewStream/NewStream';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -51,7 +52,6 @@ const Router = () => {
     const [menu, setMenu] = useState(null);
 
     useEffect(() => {
-
 
         /**
          * Load and save all the games on the state
@@ -133,8 +133,11 @@ const Router = () => {
                                 <Route path='/welcome'>
                                     <StreamerOnBoarding user={user} />
                                 </Route>
+                                <Route path='/create'>
+                                    <NewStream user={user} />
+                                </Route>
                                 <Route path='/profile'>
-                                    <StreamerSideBar user={user} />
+                                    <StreamerProfile user={user} />
                                 </Route>
                             </>
                         }

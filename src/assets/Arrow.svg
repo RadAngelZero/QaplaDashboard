@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="8px" viewBox="0 0 14 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Arrrow Copy</title>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="dropdown/medium" transform="translate(-198.000000, -24.000000)" stroke="#FFFFFF" stroke-width="2">
+            <polyline id="Arrrow-Copy" transform="translate(205.000000, 28.000000) rotate(-270.000000) translate(-205.000000, -28.000000) " points="202 22 208 28 202 34"></polyline>
+        </g>
+    </g>
+</svg>
