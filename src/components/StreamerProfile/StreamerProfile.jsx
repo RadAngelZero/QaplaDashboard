@@ -42,7 +42,7 @@ const StreamerProfile = ({ user }) => {
         setAnchorEl(null);
       };
 
-    const createStream = () => history.push('/create/stream');
+    const createStream = () => history.push('/create');
 
     return (
         <StreamerDashboardContainer user={user}>
