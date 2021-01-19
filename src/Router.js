@@ -3,8 +3,7 @@ import {
     BrowserRouter as RouterPackage,
     Switch,
     Route,
-    Link,
-    Redirect
+    Link
 } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Helmet } from 'react-helmet';
 
 import EventsList from './components/EventsList/EventsList';
 import EventDetails from './components/EventDetails/EventDetails';
@@ -43,6 +43,7 @@ import StreamersSignin from './components/StreamersSignin/StreamersSignin';
 import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoarding';
 import StreamerProfile from './components/StreamerProfile/StreamerProfile';
 import NewStream from './components/NewStream/NewStream';
+import EventSent from './components/EventSent/EventSent';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -130,6 +131,9 @@ const Router = () => {
                     <>
                         {user.streamer &&
                             <>
+                                <Helmet>
+                                    <title>Streamer Dashboard</title>
+                                </Helmet>
                                 <Route path='/welcome'>
                                     <StreamerOnBoarding user={user} />
                                 </Route>
@@ -138,6 +142,9 @@ const Router = () => {
                                 </Route>
                                 <Route path='/profile'>
                                     <StreamerProfile user={user} />
+                                </Route>
+                                <Route path='/success'>
+                                    <EventSent user={user} />
                                 </Route>
                             </>
                         }
