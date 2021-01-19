@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, Grid, Button, Card, Menu, MenuItem, CardContent, Box, IconButton, CardMedia } from '@material-ui/core';
+import { Avatar, Grid, Button, Card, Menu, MenuItem, CardContent, Box, IconButton } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
