@@ -13,6 +13,12 @@ import styles from './StreamerDashboardContainer.module.css';
 import StreamerSideBar from '../StreamerSideBar/StreamerSideBar';
 
 const useStyles = makeStyles((theme) => ({
+    gridContainer: {
+        width: '100%',
+        display: 'flex',
+        boxSizing: 'border-box',
+        flexWrap: 'nowrap'
+    },
     content: {
         flexGrow: 1,
         paddingLeft: theme.spacing(4) + 1,
@@ -25,7 +31,7 @@ const StreamerDashboardContainer = ({ children, user }) => {
     const classes = useStyles();
 
     return (
-        <Grid container className={styles.container} alignItems={user ? 'flex-start' : 'center'} justify={user ? 'flex-start' : 'center'}>
+        <Grid container className={[classes.gridContainer, styles.container]} alignItems={user ? 'flex-start' : 'center'} justify={user ? 'flex-start' : 'center'}>
             {!user ?
                 <>
                     <AppBar className={styles.appBar}>

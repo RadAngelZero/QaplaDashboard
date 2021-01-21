@@ -44,6 +44,8 @@ const StreamerProfile = ({ user }) => {
 
     const createStream = () => history.push('/create');
 
+    const streamDetails = () => history.push('/edit/Nio928nje');
+
     return (
         <StreamerDashboardContainer user={user}>
             <div className={styles.avatarContainer}>
@@ -106,7 +108,7 @@ const StreamerProfile = ({ user }) => {
                             </Card>
                         </Grid>
                         <Grid item md={3}>
-                            <Card className={styles.eventCard}>
+                            <Card className={styles.eventCard} onClick={streamDetails}>
                                 <div style={{ overflow: 'hidden' }}>
                                     <img
                                         src='https://rocketleague.media.zestyio.com/rl_platform_keyart_2019.f1cb27a519bdb5b6ed34049a5b86e317.jpg'
