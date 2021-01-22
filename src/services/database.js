@@ -7,7 +7,7 @@ const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests
 const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
-const usersRef = database.ref('/Users');
+export const usersRef = database.ref('/Users');
 const dashboardUsersRef = database.ref('/DashboardUsers');
 const dashboardUsersAdmin = dashboardUsersRef.child('Admins');
 const dashboardUsersClient = dashboardUsersRef.child('Clients');
@@ -19,7 +19,7 @@ const userDonationsRef = database.ref('/UserDonations');
 const donationsHistoryRef = database.ref('/DonationsHistory');
 const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
 const DonationsCostsRef = database.ref('/DonationsCosts');
-const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
+export const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -532,7 +532,7 @@ export async function getDonationQoinsBase() {
 /**
  * Distribute the specified ammount of experience to the given users+
  * @param {Array} experienceArray Object with uid and experience to give
- * @example distributeExperienceToUsers([{ uid: 'advdf', experience: 20 }, { uid: 'nciodsn', experience: 50 }]);
+ * @example distributeExperienceToUsers([{ uid: 'advdf', userName: 'inde', experience: 20 }, { uid: 'nciodsn', userName: 'DHVS', experience: 50 }]);
  */
 export async function distributeExperienceToUsers(experienceArray) {
     distributeLeaderboardExperience(experienceArray);

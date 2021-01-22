@@ -29,7 +29,7 @@ const ApproveExperienceDistributionDialog = ({ open, onClose, users }) => {
 
     const distributeExperience = async () => {
         const usersToAssignExperience = users
-        .map((user) => ({ uid: user['Qapla ID'], experience: user.Experience }));
+        .map((user) => ({ uid: user['Qapla ID'], userName: user.UserName, experience: user.Experience }));
 
         await distributeExperienceToUsers(usersToAssignExperience);
 
