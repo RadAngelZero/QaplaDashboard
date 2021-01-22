@@ -7,7 +7,7 @@ const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests
 const gamesRef = database.ref('/GamesResources');
 const eventsParticipantsRef = database.ref('/EventParticipants');
 const PlatformsRef = database.ref('/PlatformsResources');
-export const usersRef = database.ref('/Users');
+const usersRef = database.ref('/Users');
 const dashboardUsersRef = database.ref('/DashboardUsers');
 const dashboardUsersAdmin = dashboardUsersRef.child('Admins');
 const dashboardUsersClient = dashboardUsersRef.child('Clients');
@@ -19,7 +19,7 @@ const userDonationsRef = database.ref('/UserDonations');
 const donationsHistoryRef = database.ref('/DonationsHistory');
 const usersRewardsProgressRef = database.ref('/UsersRewardsProgress');
 const DonationsCostsRef = database.ref('/DonationsCosts');
-export const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
+const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 
 /**
  * Returns the events ordered by their dateUTC field
