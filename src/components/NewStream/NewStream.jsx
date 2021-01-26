@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeStyles, Grid, Checkbox, FormControlLabel, Radio, RadioGroup, Button } from '@material-ui/core';
+import { makeStyles, Grid, FormControlLabel, Radio, RadioGroup, Button } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 import styles from './NewStream.module.css';
 import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
@@ -26,6 +27,12 @@ const useStyles = makeStyles({
 
 const NewStream = ({ user }) => {
     const classes = useStyles();
+    const history = useHistory();
+
+    const submitEvent = () => {
+        history.push('/success');
+    }
+
     return (
         <StreamerDashboardContainer user={user}>
             <Grid container>
@@ -86,7 +93,9 @@ const NewStream = ({ user }) => {
                             </Grid>
                         </Grid>
                     </RadioGroup>
-                    <Button className={styles.button}>
+                    <Button
+                        className={styles.button}
+                        onClick={submitEvent}>
                         Submit
                     </Button>
                 </Grid>
