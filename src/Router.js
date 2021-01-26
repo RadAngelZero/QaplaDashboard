@@ -44,6 +44,7 @@ import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoardi
 import StreamerProfile from './components/StreamerProfile/StreamerProfile';
 import NewStream from './components/NewStream/NewStream';
 import EventSent from './components/EventSent/EventSent';
+import EditStreamerEvent from './components/EditStreamerEvent/EditStreamerEvent';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -139,6 +140,9 @@ const Router = () => {
                                 </Route>
                                 <Route path='/create'>
                                     <NewStream user={user} />
+                                </Route>
+                                <Route path='/edit/:eventId'>
+                                    <EditStreamerEvent user={user} />
                                 </Route>
                                 <Route path='/profile'>
                                     <StreamerProfile user={user} />
