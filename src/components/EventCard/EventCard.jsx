@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
@@ -13,9 +13,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import styles from './EventCard.module.css';
 
-const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, setSelectedEvent }) => {
+const EventCard = ({ games, setEventToApprove, newEvent = false, eventKey, event, setSelectedEvent }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [title, setTitle] = useState('');
     const history = useHistory();
+
+    useEffect(() => {
+        if (newEvent) {
+            setTitle(`Evento de ${games.allGames[event.game].name}`);
+        }
+    }, []);
 
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -25,7 +32,14 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
         setAnchorEl(null);
     };
 
-    const goToEventDetails = () => history.push(`/event/details/${eventKey}`);
+    const goToEventDetails = () => {
+        if (!newEvent) {
+            history.push(`/event/details/${eventKey}`);
+        } else {
+            setEventToApprove(event);
+            history.push(`/new/event/${eventKey}`);
+        }
+    }
 
     const duplicateEvent = () => history.push(`/event/duplicate/${eventKey}`);
 
@@ -35,10 +49,10 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
                     <div className={styles.EventCardDetailsContainer}>
                         <CardContent className={styles.EventCardDetailsContent}>
                             <Typography component='h5' variant='h5'>
-                                {title}
+                                {event.title && event.title['es'] ? event.title['es'] : title}
                             </Typography>
                             <Typography variant='subtitle1' color='textSecondary'>
-                                {description}
+                                {event.descriptions && event.descriptions['es'] ? event.descriptions['es'] : ''}
                             </Typography>
                         </CardContent>
                     </div>
@@ -51,10 +65,10 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
                         style={{ height: 48, width: 48 }}>
                         <MoreVertIcon />
                     </IconButton>
-                    <Tooltip title={streamerName} style={{ marginTop: 8 }}>
+                    <Tooltip title={event.streamerName} style={{ marginTop: 8 }}>
                         <Avatar
-                            alt={streamerName}
-                            src={streamerPhoto} />
+                            alt={event.streamerName}
+                            src={event.streamerPhoto} />
                     </Tooltip>
                 </div>
                 <Menu
@@ -64,8 +78,12 @@ const EventCard = ({ eventKey, streamerPhoto, streamerName, title, description, 
                     onClose={closeMenu}
                     keepMounted>
                     <MenuItem onClick={goToEventDetails}>Ver detalles</MenuItem>
-                    <MenuItem onClick={() => setSelectedEvent(eventKey)}>Enviar notificación</MenuItem>
-                    <MenuItem onClick={duplicateEvent}>Duplicar</MenuItem>
+                    {!newEvent &&
+                        <>
+                            <MenuItem onClick={() => setSelectedEvent(eventKey)}>Enviar notificación</MenuItem>
+                            <MenuItem onClick={duplicateEvent}>Duplicar</MenuItem>
+                        </>
+                    }
                     <MenuItem disabled>Eliminar</MenuItem>
                 </Menu>
             </Card>

@@ -5,6 +5,7 @@
 .White-Color {
     color: '#FFF';
     text-decoration: none;
+    text-transform: none !important;
 }
 
 .Margin-Right {
