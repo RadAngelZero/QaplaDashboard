@@ -666,6 +666,8 @@ export async function createNewEvent(streamer, game, date, time, streamType, tim
         streamerName: streamer.displayName,
         status: 1,
         streamType: streamType,
-        timestamp: timestamp
+        timestamp: timestamp,
+        twitchChannel: 'https://twitch.tv/' + streamer.login,
+        streamerPhoto: streamer.photoUrl
     })
 }
