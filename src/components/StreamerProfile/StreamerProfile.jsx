@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Grid, Button, Card, Menu, MenuItem, CardContent, Box, IconButton } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
@@ -13,20 +13,20 @@ import { ReactComponent as OptionsIcon } from './../../assets/OptionsIcon.svg';
 
 const StyledMenu = withStyles({
     paper: {
-      backgroundColor: '#141833'
+        backgroundColor: '#141833'
     },
-  })((props) => (
+})((props) => (
     <Menu
-      {...props}
+        {...props}
     />
 ));
 
 const useStyles = makeStyles({
     endIcon: {
-      position: 'absolute',
-      right: '1.5rem'
+        position: 'absolute',
+        right: '1.5rem'
     },
-  });
+});
 
 const StreamerProfile = ({ user }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -36,15 +36,19 @@ const StreamerProfile = ({ user }) => {
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-      };
+    };
 
-      const handleClose = () => {
+    const handleClose = () => {
         setAnchorEl(null);
-      };
+    };
 
     const createStream = () => history.push('/create');
 
     const streamDetails = () => history.push('/edit/Nio928nje');
+
+    useEffect(() => {
+        console.log(user)
+    })
 
     return (
         <StreamerDashboardContainer user={user}>
@@ -81,7 +85,7 @@ const StreamerProfile = ({ user }) => {
                                 keepMounted
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
-                                >
+                            >
                                 <MenuItem onClick={handleClose}>Algo</MenuItem>
                                 <MenuItem onClick={handleClose}>Algo1</MenuItem>
                                 <MenuItem onClick={handleClose}>Algo2</MenuItem>
@@ -94,7 +98,7 @@ const StreamerProfile = ({ user }) => {
                         <Grid item md={3}>
                             <Card className={styles.createEventCard}>
                                 <h1 className={styles.newStream}>
-                                    New <br/> Stream
+                                    New <br /> Stream
                                 </h1>
                                 <CardContent>
                                     <Box display='flex' justifyContent='center'>

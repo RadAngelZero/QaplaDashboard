@@ -119,7 +119,7 @@ const Router = () => {
                             <Login user={user} />
                         </Route>
                         <Route exact path='/'>
-                            <InviteCode />
+                            <InviteCode user={user}/>
                         </Route>
                         <Route path='/signin/:inviteCode'>
                             <StreamersSignin />
@@ -139,10 +139,10 @@ const Router = () => {
                                     <StreamerOnBoarding user={user} />
                                 </Route>
                                 <Route path='/create'>
-                                    <NewStream user={user} />
+                                    <NewStream user={user} games={games}/>
                                 </Route>
                                 <Route path='/edit/:eventId'>
-                                    <EditStreamerEvent user={user} />
+                                    <EditStreamerEvent user={user} games={games}/>
                                 </Route>
                                 <Route path='/profile'>
                                     <StreamerProfile user={user} />

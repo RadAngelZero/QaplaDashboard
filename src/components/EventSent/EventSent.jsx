@@ -8,6 +8,7 @@ import {
     CardContent,
     Button
 } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 import RocketImage from './../../assets/RocketImage.png';
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles({
 
 const EventSent = () => {
     const classes = useStyles();
+    const history = useHistory();
 
     return (
         <Container>
@@ -87,7 +89,8 @@ const EventSent = () => {
                                 <Box display='flex'
                                     justifyContent='center'>
                                     <Button variant='contained'
-                                        className={classes.button}>
+                                        className={classes.button}
+                                        onClick={(e) => {history.push('/profile');}} >
                                         Understood
                                     </Button>
                                 </Box>

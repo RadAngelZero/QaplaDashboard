@@ -22,6 +22,8 @@ const DonationsCostsRef = database.ref('/DonationsCosts');
 const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 const InvitationCodeRef = database.ref('/InvitationCode');
 const userStreamersRef = database.ref('/UserStreamer');
+const StreamersEventsDataRef = database.ref('/StreamersEventsData');
+const StreamsApprovalRef = database.ref('/StreamsApproval');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -643,4 +645,27 @@ export async function streamerProfileExists(uid) {
 export async function createStreamerProfile(uid, userData, inviteCode) {
     InvitationCodeRef.child(inviteCode).remove();
     return await userStreamersRef.child(uid).update(userData);
+}
+
+export async function createNewEvent(streamer, game, date, time, streamType, timestamp) {
+    const event = 
+    await StreamersEventsDataRef.child(streamer.uid).push({
+        date: date,
+        hour: time,
+        game: game,
+        status: 1,
+        streamType: streamType,
+        timestamp: timestamp
+    });
+    
+    return await StreamsApprovalRef.child(event.key).set({
+        date: date,
+        hour: time,
+        game: game,
+        idStreamer: streamer.uid,
+        streamerName: streamer.displayName,
+        status: 1,
+        streamType: streamType,
+        timestamp: timestamp
+    })
 }
