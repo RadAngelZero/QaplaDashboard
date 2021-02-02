@@ -42,6 +42,8 @@ const StreamerSelect = ({ children, label, Icon, value, onChange }) => {
                 {label}
             </InputLabel>
             <NativeSelect
+                onChange={onChange}
+                value={value}
                 IconComponent={Icon}
                 classes={{ icon: classes.icon }}
                 input={<InputBase className={classes.input} />}>

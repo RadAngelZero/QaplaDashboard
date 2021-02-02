@@ -22,6 +22,8 @@ const DonationsCostsRef = database.ref('/DonationsCosts');
 const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 const InvitationCodeRef = database.ref('/InvitationCode');
 const userStreamersRef = database.ref('/UserStreamer');
+const StreamersEventsDataRef = database.ref('/StreamersEventsData');
+const StreamsApprovalRef = database.ref('/StreamsApproval');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -643,4 +645,36 @@ export async function streamerProfileExists(uid) {
 export async function createStreamerProfile(uid, userData, inviteCode) {
     InvitationCodeRef.child(inviteCode).remove();
     return await userStreamersRef.child(uid).update(userData);
+}
+
+/**
+ * Create a stream request in the nodes StreamersEvents and StreamsApproval
+ * @param {object} streamer User object
+ * @param {string} game Selected game for the stream
+ * @param {string} date Date in formar DD/MM/YYYY
+ * @param {string} hour Hour in format hh:mm
+ * @param {string} streamType One of 'exp' or 'tournament'
+ * @param {timestamp} timestamp Timestamp based on the given date and hour
+ */
+export async function createNewStreamRequest(streamer, game, date, hour, streamType, timestamp) {
+    const event = await StreamersEventsDataRef.child(streamer.uid).push({
+        date,
+        hour,
+        game,
+        status: 1,
+        streamType,
+        timestamp
+    });
+
+    return await StreamsApprovalRef.child(event.key).set({
+        date,
+        hour,
+        game,
+        idStreamer: streamer.uid,
+        streamerName: streamer.displayName,
+        streamType,
+        timestamp,
+        streamerChannelLink: 'https://twitch.tv/' + streamer.login,
+        streamerPhoto: streamer.photoUrl
+    });
 }
