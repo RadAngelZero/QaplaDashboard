@@ -40,10 +40,11 @@ const fixedPrizesValues = {
 
 const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const { eventId } = useParams();
+    const dateReference = new Date(event.timestamp ? event.timestamp : 0);
     const [titles, setTitle] = useState(event.title ? event.title : { 'es': '', 'en': '' });
     const [timestamp, setTime] = useState(event.timestamp ? event.timestamp : '');
-    const [date, setDate] = useState(event.date ? event.date : '');
-    const [hour, setHour] = useState(event.hour ? event.hour : '');
+    const [date, setDate] = useState(`${dateReference.getDate() >= 10 ? dateReference.getDate() : `0${dateReference.getDate()}`}-${dateReference.getMonth() + 1 >= 10 ? dateReference.getMonth() + 1 : `0${dateReference.getMonth() + 1}`}-${dateReference.getFullYear()}`);
+    const [hour, setHour] = useState(`${dateReference.getHours() >= 10 ? dateReference.getHours() : `0${dateReference.getHours()}`}:${dateReference.getMinutes() >= 10 ? dateReference.getMinutes() : `0${dateReference.getMinutes()}`}`);
     const [game, setGame] = useState(event.game ? event.game : '');
     const [descriptions, setDescriptions] = useState(event.descriptions ? event.descriptions : { 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState(event.prices ? event.prices : {});
