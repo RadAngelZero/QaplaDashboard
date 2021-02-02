@@ -64,9 +64,9 @@ const NewEventsList = ({ setEventToApprove, games }) => {
             let events = [];
 
             Object.keys(eventsObject)
-            .sort((a, b) => eventsObject[b].time - eventsObject[a].time) // Order array based on timestamp
+            .sort((a, b) => eventsObject[b].timestamp - eventsObject[a].timestamp) // Order array based on timestamp
             .forEach((eventId) => {
-                let date = new Date(eventsObject[eventId].time);
+                let date = new Date(eventsObject[eventId].timestamp);
                 date.setHours(0, 0, 0, 0);
                 const eventSectionTitle = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 

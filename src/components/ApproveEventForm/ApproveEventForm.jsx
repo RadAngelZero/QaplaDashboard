@@ -41,7 +41,7 @@ const fixedPrizesValues = {
 const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const { eventId } = useParams();
     const [titles, setTitle] = useState(event.title ? event.title : { 'es': '', 'en': '' });
-    const [time, setTime] = useState(event.time ? event.time : '');
+    const [timestamp, setTime] = useState(event.timestamp ? event.timestamp : '');
     const [date, setDate] = useState(event.date ? event.date : '');
     const [hour, setHour] = useState(event.hour ? event.hour : '');
     const [game, setGame] = useState(event.game ? event.game : '');
@@ -86,7 +86,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
      */
     const updateEventOnDatabase = () => {
         const [day, month, year] = date.split('-');
-        const selectedDate = new Date(time);
+        const selectedDate = new Date(timestamp);
 
         /**
          * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app
