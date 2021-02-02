@@ -682,3 +682,35 @@ export async function approveStreamRequest(streamId) {
     removeEventToApprove(streamId);
     streamersEventsDataRef.child(streamId).update({ status: 2 });
 }
+
+/**
+ * Create a stream request in the nodes StreamersEvents and StreamsApproval
+ * @param {object} streamer User object
+ * @param {string} game Selected game for the stream
+ * @param {string} date Date in formar DD/MM/YYYY
+ * @param {string} hour Hour in format hh:mm
+ * @param {string} streamType One of 'exp' or 'tournament'
+ * @param {timestamp} timestamp Timestamp based on the given date and hour
+ */
+export async function createNewStreamRequest(streamer, game, date, hour, streamType, timestamp) {
+    const event = await streamersEventsDataRef.child(streamer.uid).push({
+        date,
+        hour,
+        game,
+        status: 1,
+        streamType,
+        timestamp
+    });
+
+    return await streamsApprovalRef.child(event.key).set({
+        date,
+        hour,
+        game,
+        idStreamer: streamer.uid,
+        streamerName: streamer.displayName,
+        streamType,
+        timestamp,
+        streamerChannelLink: 'https://twitch.tv/' + streamer.login,
+        streamerPhoto: streamer.photoUrl
+    });
+}

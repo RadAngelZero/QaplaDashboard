@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
     Grid,
@@ -11,6 +11,7 @@ import styles from './InviteCode.module.css';
 import RoomGame from './../../assets/room-game.png';
 import { invitationCodeExists } from '../../services/database';
 import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
+import { auth } from '../../services/firebase'
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -20,11 +21,17 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const InviteCode = () => {
+const InviteCode = ({user}) => {
     const history = useHistory();
 
     const [invitationCode, setInvitationCode] = useState('');
     const classes = useStyles();
+
+    useEffect(() => {
+        if(auth.currentUser != null) {
+            history.push('/profile');
+        }
+    })
 
     const continueToSignUp = async (e) => {
         e.preventDefault();
