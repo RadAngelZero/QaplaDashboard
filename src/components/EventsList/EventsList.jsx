@@ -29,11 +29,7 @@ const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
                             key={`EventCard-${index}`}
                             setSelectedEvent={setSelectedEventKey}
                             eventKey={event.idLogro}
-                            streamerPhoto={event.streamerPhoto}
-                            streamerName={event.streamerName}
-                            photoUrl={event.photoUrl}
-                            title={event.titulo}
-                            description={event.description}
+                            event={event}
                             onClick={() => console.log('press')} />
                     ))}
                 </Container>

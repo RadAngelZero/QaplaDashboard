@@ -29,7 +29,8 @@ const Login = ({ user }) => {
 
     const authWithGoogle = async () => {
         try {
-            await signInWithGoogle();
+            const user = await signInWithGoogle();
+            console.log(user);
             history.push('/');
         } catch (error) {
             console.error(error);

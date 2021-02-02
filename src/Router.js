@@ -45,6 +45,8 @@ import StreamerProfile from './components/StreamerProfile/StreamerProfile';
 import NewStream from './components/NewStream/NewStream';
 import EventSent from './components/EventSent/EventSent';
 import EditStreamerEvent from './components/EditStreamerEvent/EditStreamerEvent';
+import NewEventsList from './components/NewEventsList/NewEventsList';
+import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -52,6 +54,7 @@ const Router = () => {
     const [platforms, setPlatforms] = useState({});
     const [user, setUser] = useState(null);
     const [menu, setMenu] = useState(null);
+    const [eventToApprove, setEventToApprove] = useState({});
 
     useEffect(() => {
 
@@ -77,10 +80,6 @@ const Router = () => {
                 });
                 loadUserAdminProfile(user.uid, (userData) => {
                     setUser({ ...userData, admin: true, streamer: false, uid: user.uid });
-                    connectUserToSendBird(user.uid);
-                });
-                loadUserClientProfile(user.uid, (userData) => {
-                    setUser({ ...userData, admin: false, streamer: false, uid: user.uid });
                     connectUserToSendBird(user.uid);
                 });
             }, () => {
@@ -192,36 +191,42 @@ const Router = () => {
                                                     </Link>
                                                 </Menu>
                                             </>
-                                            {user.admin &&
                                                 <Link to='/donations' className='White-Color Margin-Right'>
                                                     <Button
+                                                        className='White-Color Margin-Right'
                                                         color='inherit'
                                                         style={{ color: '#FFF' }}>
                                                         Donaciones
                                                     </Button>
                                                 </Link>
-                                            }
-                                            {user.admin &&
                                                 <Link to='/leaderboard' className='White-Color Margin-Right'>
                                                     <Button
+                                                        className='White-Color Margin-Right'
                                                         color='inherit'
                                                         style={{ color: '#FFF' }}>
                                                         Leaderboard
                                                     </Button>
                                                 </Link>
-                                            }
-                                            {user.admin &&
                                                 <Link to='/create/invitation' className='White-Color Margin-Right'>
                                                     <Button
+                                                        className='White-Color Margin-Right'
                                                         color='inherit'
                                                         style={{ color: '#FFF' }}>
                                                         Crear Invitación
                                                     </Button>
                                                 </Link>
-                                            }
+                                                <Link to='/new/events' className='White-Color Margin-Right'>
+                                                    <Button
+                                                        className='White-Color Margin-Right'
+                                                        color='inherit'
+                                                        style={{ color: '#FFF' }}>
+                                                        Nuevos Eventos
+                                                    </Button>
+                                                </Link>
                                             <Button
                                                 color='inherit'
                                                 style={{ color: '#FFF' }}
+                                                className='White-Color Margin-Right'
                                                 onClick={() => auth.signOut()}>
                                                 Cerrar sesión
                                             </Button>
@@ -229,6 +234,7 @@ const Router = () => {
                                     }
                                     <Link to='/event/create' className='White-Color Margin-Right'>
                                         <Button
+                                            className='White-Color Margin-Right'
                                             variant='contained'
                                             color='secondary'
                                             style={{ color: '#FFF' }}>
@@ -287,6 +293,19 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/event/experience/:eventId'>
                                     <DistributeExperience user={user} />
+                                </Route>
+                                <Route exact path='/new/events'>
+                                    <NewEventsList
+                                        user={user}
+                                        setEventToApprove={setEventToApprove}
+                                        games={games} />
+                                </Route>
+                                <Route exact path='/new/event/:eventId'>
+                                    <ApproveEventForm
+                                        event={eventToApprove}
+                                        user={user}
+                                        games={games}
+                                        platforms={platforms} />
                                 </Route>
                                 <Route exact path='/login'>
                                     <Login user={user} />

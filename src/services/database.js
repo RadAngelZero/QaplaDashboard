@@ -22,8 +22,8 @@ const DonationsCostsRef = database.ref('/DonationsCosts');
 const DonationsLeaderBoardRef = database.ref('/DonationsLeaderBoard');
 const InvitationCodeRef = database.ref('/InvitationCode');
 const userStreamersRef = database.ref('/UserStreamer');
-const StreamersEventsDataRef = database.ref('/StreamersEventsData');
-const StreamsApprovalRef = database.ref('/StreamsApproval');
+const streamsApprovalRef = database.ref('/StreamsApproval');
+const streamersEventsDataRef = database.ref('/StreamersEventsData');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -348,7 +348,7 @@ export function addQoinsToUser(uid, qoinsToAdd) {
  * @param {string} uid User identifier
  */
  export async function isDashboardUser(uid) {
-    const adminUser = (await dashboardUsersAdmin.child(uid).once('value')).exists() || (await dashboardUsersClient.child(uid).once('value')).exists();
+    const adminUser = (await dashboardUsersAdmin.child(uid).once('value')).exists();
     const streamerUser = (await userStreamersRef.child(uid).once('value')).exists();
 
     return adminUser || streamerUser;
@@ -359,8 +359,8 @@ export function addQoinsToUser(uid, qoinsToAdd) {
  * @param {string} uid Creator identifier
  * @param {callback} dataHandler Handler for the loaded data
  */
-export function loadUserAdminProfile(uid, dataHandler) {
-    dashboardUsersAdmin.child(uid).on('value', (adminData) => {
+export async function loadUserAdminProfile(uid, dataHandler) {
+    dashboardUsersAdmin.child('d').on('value', (adminData) => {
         if (adminData.exists()) {
             dataHandler(adminData.val());
         } else {
@@ -372,6 +372,7 @@ export function loadUserAdminProfile(uid, dataHandler) {
 export function loadStreamerProfile(uid, dataHandler) {
     userStreamersRef.child(uid).on('value', (streamerData) => {
         if (streamerData.exists()) {
+            console.log('Streamer');
             dataHandler(streamerData.val());
         } else {
             removeUserAdminListener(uid);
@@ -395,6 +396,7 @@ export function removeUserAdminListener(uid) {
 export function loadUserClientProfile(uid, dataHandler) {
     dashboardUsersClient.child(uid).on('value', (clientData) => {
         if (clientData.exists()) {
+            console.log('Client');
             dataHandler(clientData.val());
         } else {
             removeUserClientListener(uid);
@@ -638,13 +640,47 @@ export async function saveInvitationCode(invitationCode) {
     InvitationCodeRef.child(invitationCode).set(true);
 }
 
+/**
+ * Return true if the streamer id exists
+ * @param {string} uid Streamer Identifier
+ */
 export async function streamerProfileExists(uid) {
     return (await userStreamersRef.child(uid).once('value')).exists();
 }
 
+/**
+ * Remove the invitation code and create the profile for the streamer
+ * @param {string} uid User Identifier
+ * @param {object} userData Data to save
+ * @param {string} inviteCode Invitation code used
+ */
 export async function createStreamerProfile(uid, userData, inviteCode) {
     InvitationCodeRef.child(inviteCode).remove();
     return await userStreamersRef.child(uid).update(userData);
+}
+
+/**
+ * Return the streamsApproval node content
+ */
+export async function getStreamsToApprove() {
+    return await streamsApprovalRef.once('value');
+}
+
+/**
+ * Remove stream to approve
+ * @param {string} streamId Stream identifier
+ */
+export async function removeEventToApprove(streamId) {
+    return await streamsApprovalRef.child(streamId).remove();
+}
+
+/**
+ * Remove stream to approve and update streamerreference to approved
+ * @param {string} streamId Stream identifier
+ */
+export async function approveStreamRequest(streamId) {
+    removeEventToApprove(streamId);
+    streamersEventsDataRef.child(streamId).update({ status: 2 });
 }
 
 /**
@@ -657,7 +693,7 @@ export async function createStreamerProfile(uid, userData, inviteCode) {
  * @param {timestamp} timestamp Timestamp based on the given date and hour
  */
 export async function createNewStreamRequest(streamer, game, date, hour, streamType, timestamp) {
-    const event = await StreamersEventsDataRef.child(streamer.uid).push({
+    const event = await streamersEventsDataRef.child(streamer.uid).push({
         date,
         hour,
         game,
@@ -666,7 +702,7 @@ export async function createNewStreamRequest(streamer, game, date, hour, streamT
         timestamp
     });
 
-    return await StreamsApprovalRef.child(event.key).set({
+    return await streamsApprovalRef.child(event.key).set({
         date,
         hour,
         game,
