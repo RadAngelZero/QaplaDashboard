@@ -647,27 +647,34 @@ export async function createStreamerProfile(uid, userData, inviteCode) {
     return await userStreamersRef.child(uid).update(userData);
 }
 
-export async function createNewEvent(streamer, game, date, time, streamType, timestamp) {
-    const event = 
-    await StreamersEventsDataRef.child(streamer.uid).push({
-        date: date,
-        hour: time,
-        game: game,
+/**
+ * Create a stream request in the nodes StreamersEvents and StreamsApproval
+ * @param {object} streamer User object
+ * @param {string} game Selected game for the stream
+ * @param {string} date Date in formar DD/MM/YYYY
+ * @param {string} hour Hour in format hh:mm
+ * @param {string} streamType One of 'exp' or 'tournament'
+ * @param {timestamp} timestamp Timestamp based on the given date and hour
+ */
+export async function createNewStreamRequest(streamer, game, date, hour, streamType, timestamp) {
+    const event = await StreamersEventsDataRef.child(streamer.uid).push({
+        date,
+        hour,
+        game,
         status: 1,
-        streamType: streamType,
-        timestamp: timestamp
+        streamType,
+        timestamp
     });
-    
+
     return await StreamsApprovalRef.child(event.key).set({
-        date: date,
-        hour: time,
-        game: game,
+        date,
+        hour,
+        game,
         idStreamer: streamer.uid,
         streamerName: streamer.displayName,
-        status: 1,
-        streamType: streamType,
-        timestamp: timestamp,
-        twitchChannel: 'https://twitch.tv/' + streamer.login,
+        streamType,
+        timestamp,
+        streamerChannelLink: 'https://twitch.tv/' + streamer.login,
         streamerPhoto: streamer.photoUrl
-    })
+    });
 }

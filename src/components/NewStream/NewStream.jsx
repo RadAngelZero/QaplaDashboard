@@ -3,7 +3,7 @@ import { makeStyles, Grid, FormControlLabel, Radio, RadioGroup, Button, InputAdo
 import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers'
 import { useHistory } from 'react-router-dom';
 import DayJsUtils from '@date-io/dayjs';
-import { createNewEvent } from './../../services/database';
+import { createNewStreamRequest } from './../../services/database';
 
 import styles from './NewStream.module.css';
 import StreamerDashboardContainer from '../StreamerDashboardContainer/StreamerDashboardContainer';
@@ -91,7 +91,7 @@ const NewStream = ({ user, games }) => {
     const history = useHistory();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedGame, setSelectedGame] = useState('aClash');
+    const [selectedGame, setSelectedGame] = useState();
     const [selectedEvent, setSelectedEvent] = useState('exp');
 
     const handleDateChange = (date) => {
@@ -105,14 +105,28 @@ const NewStream = ({ user, games }) => {
     };
 
     const submitEvent = () => {
-        if (selectedDate.$d == undefined) {
-            return
+        if (selectedDate.$d === undefined || !selectedGame) {
+            alert('Verifica que todos los campos hayan sido llenados correctamente');
+            return;
         }
-        let UTCDate = `${selectedDate.$d.getUTCDate()}-${selectedDate.$d.getUTCMonth()}-${selectedDate.$d.getUTCFullYear()}`;
-        let UTCTime = `${selectedDate.$d.getUTCHours()}:${selectedDate.$d.getUTCMinutes()}`;
-        let timestamp = Math.floor(Date.now() / 1000);
-        createNewEvent(user, selectedGame, UTCDate, UTCTime, selectedEvent, timestamp)
 
+        const UTCDay = selectedDate.$d.getUTCDate() < 10 ? `0${selectedDate.$d.getUTCDate()}` : selectedDate.$d.getUTCDate();
+        const UTCMonth = selectedDate.$d.getUTCMonth() + 1 < 10 ? `0${selectedDate.$d.getUTCMonth() + 1}` : selectedDate.$d.getUTCMonth() + 1;
+        let UTCDate = `${UTCDay}-${UTCMonth}-${selectedDate.$d.getUTCFullYear()}`;
+
+        const UTCHour = selectedDate.$d.getUTCHours() < 10 ? `0${selectedDate.$d.getUTCHours()}` : selectedDate.$d.getUTCHours();
+        const UTCMinutes = selectedDate.$d.getUTCMinutes() < 10 ? `0${selectedDate.$d.getUTCMinutes()}` : selectedDate.$d.getUTCMinutes();
+        let UTCTime = `${UTCHour}:${UTCMinutes}`;
+
+        let timestamp = new Date(
+            selectedDate.$d.getFullYear(),
+            selectedDate.$d.getMonth(),
+            selectedDate.$d.getDate(),
+            selectedDate.$d.getHours(),
+            selectedDate.$d.getMinutes()
+        );
+
+        createNewStreamRequest(user, selectedGame, UTCDate, UTCTime, selectedEvent, timestamp.getTime());
         history.push('/success');
     }
 
@@ -128,6 +142,10 @@ const NewStream = ({ user, games }) => {
                         onChange={(game) => handleGameChange(game)}
                         Icon={ArrowIcon}
                         label='Select your game'>
+                        <option style={{
+                                backgroundColor: '#141833',
+                                fontSize: '14px'
+                            }} value={null}></option>
                         {Object.entries(games.allGames).map((game) => {
                             if (!game[1].name.toLowerCase().includes('twitch')) {
                                 return <option style={{
@@ -152,10 +170,10 @@ const NewStream = ({ user, games }) => {
                                     disableToolbar
                                     autoOk
                                     value={selectedDate}
-                                    placeholder="10/10/2021"
+                                    placeholder='10-10-2021'
                                     onChange={date => handleDateChange(date)}
                                     minDate={new Date()}
-                                    format="DD / MM / YY  ddd"
+                                    format='DD-MM-YY  ddd'
                                     keyboardIcon={
                                         <InputAdornment position='end' >
                                             <CalendarIcon />
@@ -182,9 +200,9 @@ const NewStream = ({ user, games }) => {
                                     disableToolbar
                                     autoOk
                                     value={selectedDate}
-                                    placeholder="08:00 AM"
+                                    placeholder='08:00 AM'
                                     onChange={date => setSelectedDate(date)}
-                                    mask="__:__"
+                                    mask='__:__'
                                     keyboardIcon={
                                         <InputAdornment position='end' >
                                             <TimeIcon />
