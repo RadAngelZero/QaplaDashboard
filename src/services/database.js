@@ -360,7 +360,7 @@ export function addQoinsToUser(uid, qoinsToAdd) {
  * @param {callback} dataHandler Handler for the loaded data
  */
 export async function loadUserAdminProfile(uid, dataHandler) {
-    dashboardUsersAdmin.child('d').on('value', (adminData) => {
+    dashboardUsersAdmin.child(uid).on('value', (adminData) => {
         if (adminData.exists()) {
             dataHandler(adminData.val());
         } else {
