@@ -60,7 +60,7 @@ const NewEventsList = ({ setEventToApprove, games }) => {
          * Load, order and save on state the events to show on the list
          */
         async function loadEventsToApprove() {
-            let eventsObject = (await getStreamsToApprove()).val();
+            let eventsObject = (await getStreamsToApprove()).val() || {};
             let events = [];
 
             Object.keys(eventsObject)
