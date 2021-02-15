@@ -66,6 +66,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
     const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const [idStreamer, setIdStreamer] = useState(event.idStreamer);
 
     const history = useHistory();
 
@@ -162,7 +163,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             acceptAllUsers,
             participantNumber,
             featured,
-            idLogro: eventId
+            idLogro: eventId,
+            timestamp
         };
 
         updateEvent(
@@ -175,7 +177,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                     return;
                 }
 
-                approveStreamRequest(eventId);
+                approveStreamRequest(idStreamer, eventId);
                 alert('Evento creado exitosamente');
                 history.push('/');
             }

@@ -678,9 +678,9 @@ export async function removeEventToApprove(streamId) {
  * Remove stream to approve and update streamerreference to approved
  * @param {string} streamId Stream identifier
  */
-export async function approveStreamRequest(streamId) {
+export async function approveStreamRequest(idStreamer, streamId) {
     removeEventToApprove(streamId);
-    streamersEventsDataRef.child(streamId).update({ status: 2 });
+    streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2 });
 }
 
 /**

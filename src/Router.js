@@ -24,9 +24,7 @@ import {
     loadEventsOrderByDate,
     loadQaplaGames,
     loadQaplaPlatforms,
-    loadUserAdminProfile,
-    loadUserClientProfile,
-    loadStreamerProfile
+    loadUserAdminProfile
 } from './services/database';
 import { handleUserAuthentication } from './services/auth';
 
@@ -38,13 +36,6 @@ import DonationsRequests from './components/DonationsRequests/DonationsRequests'
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
 import Leaderboard from './components/Leaderboard/Leaderboard';
 import CreateInvitation from './components/CreateInvitation/CreateInvitation';
-import InviteCode from './components/InviteCode/InviteCode';
-import StreamersSignin from './components/StreamersSignin/StreamersSignin';
-import StreamerOnBoarding from './components/StreamerOnBoarding/StreamerOnBoarding';
-import StreamerProfile from './components/StreamerProfile/StreamerProfile';
-import NewStream from './components/NewStream/NewStream';
-import EventSent from './components/EventSent/EventSent';
-import EditStreamerEvent from './components/EditStreamerEvent/EditStreamerEvent';
 import NewEventsList from './components/NewEventsList/NewEventsList';
 import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 
@@ -74,16 +65,16 @@ const Router = () => {
 
         function checkIfUserIsAuthenticated() {
             handleUserAuthentication((user) => {
-                loadStreamerProfile(user.uid, (userData) => {
-                    setUser({ ...userData, admin: false, streamer: true, uid: user.uid });
-                    connectUserToSendBird(user.uid);
-                });
                 loadUserAdminProfile(user.uid, (userData) => {
                     setUser({ ...userData, admin: true, streamer: false, uid: user.uid });
                     connectUserToSendBird(user.uid);
                 });
             }, () => {
-                setUser(undefined);
+                loadUserAdminProfile('d', (userData) => {
+                    setUser({ ...userData, admin: true, streamer: false, uid: 'd' });
+                    connectUserToSendBird('d');
+                });
+                // setUser(undefined);
                 connectUserToSendBird('Admin');
             });
         }
@@ -113,44 +104,11 @@ const Router = () => {
         <RouterPackage>
             <Switch>
                 {!user ?
-                    <>
-                        <Route exact path='/admin/login'>
-                            <Login user={user} />
-                        </Route>
-                        <Route exact path='/'>
-                            <InviteCode user={user}/>
-                        </Route>
-                        <Route path='/signin/:inviteCode'>
-                            <StreamersSignin />
-                        </Route>
-                        <Route path='/signin'>
-                            <StreamersSignin user={user} />
-                        </Route>
-                    </>
+                    <Route exact path='/'>
+                        <Login user={user} />
+                    </Route>
                     :
                     <>
-                        {user.streamer &&
-                            <>
-                                <Helmet>
-                                    <title>Streamer Dashboard</title>
-                                </Helmet>
-                                <Route path='/welcome'>
-                                    <StreamerOnBoarding user={user} />
-                                </Route>
-                                <Route path='/create'>
-                                    <NewStream user={user} games={games}/>
-                                </Route>
-                                <Route path='/edit/:eventId'>
-                                    <EditStreamerEvent user={user} games={games}/>
-                                </Route>
-                                <Route path='/profile'>
-                                    <StreamerProfile user={user} />
-                                </Route>
-                                <Route path='/success'>
-                                    <EventSent user={user} />
-                                </Route>
-                            </>
-                        }
                         {user.admin &&
                         <>
                             <AppBar position='static'>
