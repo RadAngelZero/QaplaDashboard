@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { loadUsersDonations, completeUserDonation, cancelUserDonation, getUserToken, getUserLanguage } from '../../services/database';
+import { loadUsersDonations, completeUserDonation, cancelUserDonation, getUserToken, getUserLanguage, addQoinsToUser } from '../../services/database';
 import { notificateUser } from '../../services/functions';
 import ChooseDonationCurrencyDialog from '../ChooseDonationCurrencyDialog/ChooseDonationCurrencyDialog';
 
@@ -97,13 +97,16 @@ const DonationsRequests = ({ user }) => {
         }
     }
 
-    const cancelDonation = async (uid, donationId) => {
-        cancelUserDonation(uid, donationId);
+    const cancelDonation = async (uid, donationId, qoins) => {
         const userToken = await getUserToken(uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(uid);
             const reason = prompt(`Razon de la cancelación en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
-            notificateUser(uid, userToken.val(), notifications.canceled.title[userLanguage || 'es'], reason);
+            if (reason) {
+                addQoinsToUser(uid, parseInt(qoins));
+                cancelUserDonation(uid, donationId);
+                notificateUser(uid, userToken.val(), notifications.canceled.title[userLanguage || 'es'], reason);
+            }
         }
     }
 
@@ -173,7 +176,7 @@ const DonationsRequests = ({ user }) => {
                                 <Button
                                     variant='contained'
                                     style={{ marginTop: '.5rem' }}
-                                    onClick={() => cancelDonation(donationsRequests[donationId].uid, donationId)}>
+                                    onClick={() => cancelDonation(donationsRequests[donationId].uid, donationId, donationsRequests[donationId].Qoins)}>
                                     Cancelar
                                 </Button>
                             </TableCell>
