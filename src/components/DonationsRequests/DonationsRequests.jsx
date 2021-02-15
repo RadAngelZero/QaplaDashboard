@@ -98,12 +98,14 @@ const DonationsRequests = ({ user }) => {
     }
 
     const cancelDonation = async (uid, donationId) => {
-        cancelUserDonation(uid, donationId);
         const userToken = await getUserToken(uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(uid);
             const reason = prompt(`Razon de la cancelación en ${userLanguage && userLanguage === 'es' ? 'español' : 'inglés'}`);
             notificateUser(uid, userToken.val(), notifications.canceled.title[userLanguage || 'es'], reason);
+            if (reason) {
+                cancelUserDonation(uid, donationId);
+            }
         }
     }
 

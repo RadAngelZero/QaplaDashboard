@@ -122,7 +122,7 @@ const DistributeExperience = () => {
                                         Arrastra y suelta el documento aquí una vez que asignes la experiencia en excel o
                                         cualquier otro software de hojas de cálculo (debe ser un formato de los siguientes xlsx o xls)
                                         <br />
-                                        También se vale darle click y buscar el archivo en tu computadora
+                                        También es valido dar click y buscar el archivo en tu computadora
                                     </Typography>
                                 }
                             </div>
