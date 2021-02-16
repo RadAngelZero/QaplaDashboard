@@ -38,6 +38,7 @@ import Leaderboard from './components/Leaderboard/Leaderboard';
 import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 import NewEventsList from './components/NewEventsList/NewEventsList';
 import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
+import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -66,15 +67,11 @@ const Router = () => {
         function checkIfUserIsAuthenticated() {
             handleUserAuthentication((user) => {
                 loadUserAdminProfile(user.uid, (userData) => {
-                    setUser({ ...userData, admin: true, streamer: false, uid: user.uid });
+                    setUser({ ...userData, admin: true, uid: user.uid });
                     connectUserToSendBird(user.uid);
                 });
             }, () => {
-                loadUserAdminProfile('d', (userData) => {
-                    setUser({ ...userData, admin: true, streamer: false, uid: 'd' });
-                    connectUserToSendBird('d');
-                });
-                // setUser(undefined);
+                setUser(undefined);
                 connectUserToSendBird('Admin');
             });
         }
@@ -163,6 +160,14 @@ const Router = () => {
                                                         color='inherit'
                                                         style={{ color: '#FFF' }}>
                                                         Leaderboard
+                                                    </Button>
+                                                </Link>
+                                                <Link to='/prizes' className='White-Color Margin-Right'>
+                                                    <Button
+                                                        className='White-Color Margin-Right'
+                                                        color='inherit'
+                                                        style={{ color: '#FFF' }}>
+                                                        Premios
                                                     </Button>
                                                 </Link>
                                                 <Link to='/create/invitation' className='White-Color Margin-Right'>
@@ -273,6 +278,9 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/leaderboard'>
                                     <Leaderboard user={user} />
+                                </Route>
+                                <Route exact path='/prizes'>
+                                    <LeaderboardPrizes user={user} />
                                 </Route>
                         </>
                     }
