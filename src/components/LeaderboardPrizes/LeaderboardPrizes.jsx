@@ -9,9 +9,13 @@ import {
 
 import { loadLeaderboardPrizes, updateLeaderboardPrizes } from '../../services/database';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
-import ContainedButton from '../ContainedButton/ContainedButton';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+    buttonGroup: {
+        '& > *': {
+          margin: theme.spacing(1),
+        }
+    },
     container: {
         marginTop: '1em',
         marginBottom: '1em'
@@ -51,6 +55,28 @@ const LeaderboardPrizes = () => {
         const prizesCopy = [...prizes];
 
         prizesCopy[index].backgroundColors[field] = value;
+
+        setPrizes(prizesCopy);
+    }
+
+    const addPrize = () => {
+        const prizesCopy = [...prizes];
+        prizesCopy.push({
+            title: '',
+            description: '',
+            backgroundImage: '',
+            backgroundColors: {
+                primaryColor: '#',
+                secondaryColor: '#'
+            }
+        });
+
+        setPrizes(prizesCopy);
+    }
+
+    const removePrize = (index) => {
+        const prizesCopy = [...prizes];
+        prizesCopy.splice(index, 1);
 
         setPrizes(prizesCopy);
     }
@@ -125,11 +151,21 @@ const LeaderboardPrizes = () => {
                             value={prize.backgroundImage}
                             onChange={(value) => updatePrize(index, 'backgroundImage', value)} />
                     </Grid>
+                    <Grid item md={3}>
+                        <Button size='large' style={{ marginTop: '2rem' }} variant='contained' onClick={() => removePrize(index)}>
+                            Eliminar Premio
+                        </Button>
+                    </Grid>
                 </Grid>
             ))}
-            <Button size='large' style={{ marginTop: '2rem' }} variant='contained' onClick={save} color='secondary'>
-                Guardar Cambios
-            </Button>
+            <div className={classes.buttonGroup}>
+                <Button size='large' style={{ marginTop: '2rem' }} variant='contained' onClick={addPrize} color='primary'>
+                    Agregar Premio
+                </Button>
+                <Button size='large' style={{ marginTop: '2rem' }} variant='contained' onClick={save} color='secondary'>
+                    Guardar Cambios
+                </Button>
+            </div>
         </Container>
     );
 }

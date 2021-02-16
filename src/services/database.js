@@ -728,5 +728,5 @@ export async function loadLeaderboardPrizes() {
  * @param {array} prizes Prizes array
  */
 export async function updateLeaderboardPrizes(prizes) {
-    return await leaderBoardPrizesRef.update(prizes);
+    return await leaderBoardPrizesRef.set(prizes);
 }
