@@ -24,6 +24,7 @@ const InvitationCodeRef = database.ref('/InvitationCode');
 const userStreamersRef = database.ref('/UserStreamer');
 const streamsApprovalRef = database.ref('/StreamsApproval');
 const streamersEventsDataRef = database.ref('/StreamersEventsData');
+const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -713,4 +714,19 @@ export async function createNewStreamRequest(streamer, game, date, hour, streamT
         streamerChannelLink: 'https://twitch.tv/' + streamer.login,
         streamerPhoto: streamer.photoUrl
     });
+}
+
+/**
+ * Returns all the leaderboard prizes
+ */
+export async function loadLeaderboardPrizes() {
+    return await leaderBoardPrizesRef.once('value');
+}
+
+/**
+ * Update the leaderboard prizes
+ * @param {array} prizes Prizes array
+ */
+export async function updateLeaderboardPrizes(prizes) {
+    return await leaderBoardPrizesRef.set(prizes);
 }
