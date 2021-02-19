@@ -70,11 +70,7 @@ const Router = () => {
                     connectUserToSendBird(user.uid);
                 });
             }, () => {
-                loadUserAdminProfile('d', (userData) => {
-                    setUser({ ...userData, admin: true, streamer: false, uid: 'd' });
-                    connectUserToSendBird('d');
-                });
-                // setUser(undefined);
+                setUser(undefined);
                 connectUserToSendBird('Admin');
             });
         }
