@@ -42,11 +42,11 @@ export async function notificateToTopic(topic, titles, bodys, extraData = {}, on
  * Send a push notification to the given topic
  * @param {Array} experienceArray Array of objects with experience [{ uid: 'ddd', experience: 25  }, { uid: 'df', experience: 50 }]
  */
-export async function distributeLeaderboardExperience(experienceArray) {
+export async function distributeLeaderboardExperience(eventId, experienceArray) {
     const distributeExperience = functions.httpsCallable('distributeLeaderboardExperience');
 
     try {
-        return await distributeExperience({ experienceArray });
+        return await distributeExperience({ eventId, experienceArray });
     } catch (error) {
         console.log(error);
     }

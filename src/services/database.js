@@ -552,10 +552,10 @@ export async function getDonationQoinsBase() {
 /**
  * Distribute the specified ammount of experience to the given users+
  * @param {Array} experienceArray Object with uid and experience to give
- * @example distributeExperienceToUsers([{ uid: 'advdf', userName: 'inde', experience: 20 }, { uid: 'nciodsn', userName: 'DHVS', experience: 50 }]);
+ * @example distributeExperienceToUsers('RocketEvent', [{ uid: 'advdf', userName: 'inde', experience: 20 }, { uid: 'nciodsn', userName: 'DHVS', experience: 50 }]);
  */
-export async function distributeExperienceToUsers(experienceArray) {
-    distributeLeaderboardExperience(experienceArray);
+export async function distributeExperienceToUsers(eventId, experienceArray) {
+    distributeLeaderboardExperience(eventId, experienceArray);
 }
 
 /**

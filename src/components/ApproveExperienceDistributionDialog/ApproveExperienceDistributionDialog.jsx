@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { distributeExperienceToUsers } from '../../services/database';
 
-const ApproveExperienceDistributionDialog = ({ open, onClose, users }) => {
+const ApproveExperienceDistributionDialog = ({ open, onClose, users, eventId }) => {
     const [userFields, setUserFields] = useState([]);
     const hidedFields = ['__rowNum__', 'Qapla ID'];
 
@@ -31,7 +31,7 @@ const ApproveExperienceDistributionDialog = ({ open, onClose, users }) => {
         const usersToAssignExperience = users
         .map((user) => ({ uid: user['Qapla ID'], userName: user.UserName, experience: user.Experience }));
 
-        await distributeExperienceToUsers(usersToAssignExperience);
+        await distributeExperienceToUsers(eventId, usersToAssignExperience);
 
         onClose();
     }
