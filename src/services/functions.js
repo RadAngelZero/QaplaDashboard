@@ -69,3 +69,19 @@ export async function createUserWithTwitch(uid, displayName, login, photoUrl, em
         console.log(error);
     }
 }
+
+/**
+ * Call the onLeaderboardReset cloud function to notificate all users with points
+ * on the leaderboard that it will be reseted
+ * @param {array} usersToNotificate List of users to notificate
+ */
+export async function notificateUsersOnLeaderboardReset(usersToNotificate) {
+    console.log(usersToNotificate);
+    const onLeaderboardReset = functions.httpsCallable('onLeaderboardReset');
+
+    try {
+        return await onLeaderboardReset({ usersToNotificate });
+    } catch (error) {
+        console.log(error);
+    }
+}

@@ -1,6 +1,6 @@
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
-import { distributeLeaderboardExperience } from './functions';
+import { distributeLeaderboardExperience, notificateUsersOnLeaderboardReset } from './functions';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -603,8 +603,13 @@ export async function getLeaderboard() {
 export async function resetLeaderboard(users) {
     const donations = (await DonationsLeaderBoardRef.once('value')).val();
 
+    let usersWithDonations = [];
     let updateLeaderboard = {};
     Object.keys(donations).map((uid) => {
+        if (donations[uid].totalDonations > 0) {
+            usersWithDonations.push({ uid });
+        }
+
         updateLeaderboard[`${uid}/`] = { ...donations[uid], totalDonations: 0 };
     });
 
@@ -619,6 +624,8 @@ export async function resetLeaderboard(users) {
             return qoins;
         });
     });
+
+    notificateUsersOnLeaderboardReset(usersWithDonations);
 }
 
 /**
