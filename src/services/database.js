@@ -613,7 +613,7 @@ export async function resetLeaderboard(users) {
         updateLeaderboard[`${uid}/`] = { ...donations[uid], totalDonations: 0 };
     });
 
-    DonationsLeaderBoardRef.update(updateLeaderboard);
+    await DonationsLeaderBoardRef.update(updateLeaderboard);
 
     users.map((user) => {
         usersRef.child(user.uid).child('credits').transaction((qoins) => {

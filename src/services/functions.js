@@ -76,7 +76,6 @@ export async function createUserWithTwitch(uid, displayName, login, photoUrl, em
  * @param {array} usersToNotificate List of users to notificate
  */
 export async function notificateUsersOnLeaderboardReset(usersToNotificate) {
-    console.log(usersToNotificate);
     const onLeaderboardReset = functions.httpsCallable('onLeaderboardReset');
 
     try {
