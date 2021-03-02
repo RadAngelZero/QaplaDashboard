@@ -42,11 +42,11 @@ export async function notificateToTopic(topic, titles, bodys, extraData = {}, on
  * Send a push notification to the given topic
  * @param {Array} experienceArray Array of objects with experience [{ uid: 'ddd', experience: 25  }, { uid: 'df', experience: 50 }]
  */
-export async function distributeLeaderboardExperience(experienceArray) {
+export async function distributeLeaderboardExperience(eventId, experienceArray) {
     const distributeExperience = functions.httpsCallable('distributeLeaderboardExperience');
 
     try {
-        return await distributeExperience({ experienceArray });
+        return await distributeExperience({ eventId, experienceArray });
     } catch (error) {
         console.log(error);
     }
@@ -65,6 +65,21 @@ export async function createUserWithTwitch(uid, displayName, login, photoUrl, em
     const authWithTwitch = functions.httpsCallable('twitchAuthentication');
     try {
         return await authWithTwitch({ uid, displayName, login, photoUrl, email });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ * Call the onLeaderboardReset cloud function to notificate all users with points
+ * on the leaderboard that it will be reseted
+ * @param {array} usersToNotificate List of users to notificate
+ */
+export async function notificateUsersOnLeaderboardReset(usersToNotificate) {
+    const onLeaderboardReset = functions.httpsCallable('onLeaderboardReset');
+
+    try {
+        return await onLeaderboardReset({ usersToNotificate });
     } catch (error) {
         console.log(error);
     }
