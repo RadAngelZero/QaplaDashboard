@@ -41,12 +41,12 @@ const fixedPrizesValues = {
 const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const { eventId } = useParams();
     const dateReference = new Date(event.timestamp ? event.timestamp : 0);
-    const [titles, setTitle] = useState(event.title ? event.title : { 'es': '', 'en': '' });
+    const [titles, setTitle] = useState((event.optionalData && event.optionalData.title) ? event.optionalData.title : { es: '', en: '' });
     const [timestamp, setTime] = useState(event.timestamp ? event.timestamp : '');
     const [date, setDate] = useState(`${dateReference.getDate() >= 10 ? dateReference.getDate() : `0${dateReference.getDate()}`}-${dateReference.getMonth() + 1 >= 10 ? dateReference.getMonth() + 1 : `0${dateReference.getMonth() + 1}`}-${dateReference.getFullYear()}`);
     const [hour, setHour] = useState(`${dateReference.getHours() >= 10 ? dateReference.getHours() : `0${dateReference.getHours()}`}:${dateReference.getMinutes() >= 10 ? dateReference.getMinutes() : `0${dateReference.getMinutes()}`}`);
     const [game, setGame] = useState(event.game ? event.game : '');
-    const [descriptions, setDescriptions] = useState(event.descriptions ? event.descriptions : { 'es': '', 'en': '' });
+    const [descriptions, setDescriptions] = useState((event.optionalData && event.optionalData.descriptions) ? event.optionalData.descriptions : { es: '', en: '' });
     const [prizes, setPrizes] = useState(event.prices ? event.prices : {});
     const [streamerName, setStreamerName] = useState(event.streamerName ? event.streamerName : '');
     const [streamerChannelLink, setStreamerChannelLink] = useState(event.streamerChannelLink ? event.streamerChannelLink : '');
@@ -55,7 +55,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const [sponsorImage, setSponsorImage] = useState(event.sponsorImage ? event.sponsorImage : '');
     const [gradientColors, setGradientColors] = useState(event.gradientColors ? event.gradientColors : { primary: '', secondary: '' });
     const [backgroundImage, setBackgroundImage] = useState(event.backgroundImage ? event.backgroundImage : '');
-    const [descriptionsTitle, setDescriptionsTitle] = useState(event.descriptionsTitle ? event.descriptionsTitle : {});
+    const [descriptionsTitle, setDescriptionsTitle] = useState((event.optionalData && event.optionalData.descriptionsTitle) ? event.optionalData.descriptionsTitle : { es: '', en: '' });
     const [appStringPrizes, setAppStringPrizes] = useState(event.appStringPrizes ? event.appStringPrizes : {});
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(event.instructionsToParticipate ? event.instructionsToParticipate : {});
     const [streamerGameData, setStreamerGameData] = useState(event.streamerGameData ? event.streamerGameData : {});
@@ -449,12 +449,9 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         }
         setSelectedTemplate(selectedTemplate);
         const {
-            title,
-            descriptions,
             prices,
             sponsorImage,
             backgroundImage,
-            descriptionsTitle,
             gradientColors,
             appStringPrizes,
             instructionsToParticipate,
@@ -464,12 +461,30 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             participantNumber,
             featured,
         } = template;
+
+        const title = {
+            es: titles.es ? titles.es : template.title.es,
+            en: titles.en ? titles.en : template.title.en
+        };
+
         setTitle(title ? title : { 'es': '', 'en': '' });
-        setDescriptions(descriptions ? descriptions : { 'es': '', 'en': '' });
+
+        template.descriptions = {
+            es: descriptions.es ? descriptions.es : template.descriptions.es,
+            en: descriptions.en ? descriptions.en : template.descriptions.en
+        };
+
+        setDescriptions(template.descriptions ? template.descriptions : { 'es': '', 'en': '' });
+
+        template.descriptionsTitle = {
+            es: descriptionsTitle.es ? descriptionsTitle.es : template.descriptionsTitle.es,
+            en: descriptionsTitle.en ? descriptionsTitle.en : template.descriptionsTitle.en
+        };
+
+        setDescriptionsTitle(template.descriptionsTitle ? template.descriptionsTitle : { 'es': '', 'en': '' });
         setPrizes(prices ? prices : {});
         setSponsorImage(sponsorImage ? sponsorImage : '');
         setBackgroundImage(backgroundImage ? backgroundImage : '');
-        setDescriptionsTitle(descriptionsTitle ? descriptionsTitle : {});
         setGradientColors(gradientColors ? gradientColors : { primary: '', secondary: '' });
         setAppStringPrizes(appStringPrizes ? appStringPrizes : {});
         setInstructionsToParticipate(instructionsToParticipate ? instructionsToParticipate : {});
