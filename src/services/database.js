@@ -25,6 +25,7 @@ const userStreamersRef = database.ref('/UserStreamer');
 const streamsApprovalRef = database.ref('/StreamsApproval');
 const streamersEventsDataRef = database.ref('/StreamersEventsData');
 const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
+const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -736,4 +737,18 @@ export async function loadLeaderboardPrizes() {
  */
 export async function updateLeaderboardPrizes(prizes) {
     return await leaderBoardPrizesRef.set(prizes);
+}
+
+/**
+ * Get the number of winners in the current leaderboard season
+ */
+export async function getLeaderboardWinnersNumber() {
+    return await leaderboardWinnersRef.once('value');
+}
+
+/**
+ * Set the number of winners in the current leaderboard season
+ */
+export async function setLeaderboardWinnersNumber(numberOfWinners) {
+    return await leaderboardWinnersRef.set(numberOfWinners);
 }
