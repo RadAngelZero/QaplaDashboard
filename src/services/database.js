@@ -26,6 +26,7 @@ const streamsApprovalRef = database.ref('/StreamsApproval');
 const streamersEventsDataRef = database.ref('/StreamersEventsData');
 const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
 const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
+const qaplaStreamersRef = database.ref('/QaplaStreamers');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -751,4 +752,23 @@ export async function getLeaderboardWinnersNumber() {
  */
 export async function setLeaderboardWinnersNumber(numberOfWinners) {
     return await leaderboardWinnersRef.set(numberOfWinners);
+}
+
+/**
+ * QaplaStreamers
+ */
+
+/**
+ * Get the entire node of QaplaStreamers
+ */
+export async function getQaplaStreamers() {
+    return await qaplaStreamersRef.once('value');
+}
+
+/**
+ * Overwrite the QaplaStreamers node with the given content
+ * @param {object} qaplaStreamers Qapla streamers to save
+ */
+export async function saveQaplaStreamers(qaplaStreamers) {
+    qaplaStreamersRef.set(qaplaStreamers);
 }
