@@ -484,9 +484,8 @@ export function loadUsersDonations(loadDonations) {
  * @param {number} qoinsDonated Number of qoins donated
  * @param {string} donationType Name of the currency
  */
-export async function completeUserDonation(uid, donationId, qoinsDonated, donationType) {
+export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDonated) {
     const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
-    const eCoinValue = qoinsDonated * (await getDonationsCosts()).val();
 
     const rewardProgress = await usersRewardsProgressRef.child(uid).once('value');
     let tensInPoints = Math.floor(pointsToAdd / 10);
@@ -494,7 +493,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
     if (!rewardProgress.exists()) {
         const currentPoints = pointsToAdd - tensInPoints * 10;
         const donations = {
-            [donationType]:  eCoinValue
+            bits:  bitsDonated,
+            qoins: qoinsDonated
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -509,7 +509,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
         currentPoints -= tensInPoints * 10;
         const donations = {
             ...rewardProgress.val().donations,
-            [donationType]:  (rewardProgress.val().donations[donationType] ? rewardProgress.val().donations[donationType] : 0) + eCoinValue
+            bits: (rewardProgress.val().donations.bits ? rewardProgress.val().donations.bits : 0) + bitsDonated,
+            qoins: (rewardProgress.val().donations.qoins ? rewardProgress.val().donations.qoins : 0) + qoinsDonated
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -519,8 +520,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
         });
     }
 
-    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
-    await userDonationsRef.child(donationId).remove();
+    /* await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
+    await userDonationsRef.child(donationId).remove(); */
 }
 
 /**
@@ -771,4 +772,8 @@ export async function getQaplaStreamers() {
  */
 export async function saveQaplaStreamers(qaplaStreamers) {
     qaplaStreamersRef.set(qaplaStreamers);
+}
+
+export async function getQaplaStreamerBitDonationSize(streamerName) {
+    return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
 }
