@@ -774,6 +774,10 @@ export async function saveQaplaStreamers(qaplaStreamers) {
     qaplaStreamersRef.set(qaplaStreamers);
 }
 
+/**
+ * Get the bit donation size of the given streamer
+ * @param {string} streamerName Streamer name
+ */
 export async function getQaplaStreamerBitDonationSize(streamerName) {
     return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
 }
