@@ -520,8 +520,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDo
         });
     }
 
-    /* await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
-    await userDonationsRef.child(donationId).remove(); */
+    await donationsHistoryRef.child(uid).child(donationId).update({ status: 'completed' });
+    await userDonationsRef.child(donationId).remove();
 }
 
 /**
