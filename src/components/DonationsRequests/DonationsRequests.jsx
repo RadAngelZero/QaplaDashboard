@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { loadUsersDonations, completeUserDonation, cancelUserDonation, getUserToken, getUserLanguage, addQoinsToUser } from '../../services/database';
+import { loadUsersDonations, completeUserDonation, cancelUserDonation, getUserToken, getUserLanguage, addQoinsToUser, getQaplaStreamerBitDonationSize } from '../../services/database';
 import { notificateUser } from '../../services/functions';
 import ChooseDonationCurrencyDialog from '../ChooseDonationCurrencyDialog/ChooseDonationCurrencyDialog';
 
@@ -88,8 +88,16 @@ const DonationsRequests = ({ user }) => {
         setOpenDonationCurrencyDialog(true);
     }
 
-    const completeDonation = async (donationInfo, donationType) => {
-        completeUserDonation(donationInfo.uid, donationInfo.donationId, parseInt(donationInfo.Qoins), donationType);
+    const completeDonation = async (donationId) => {
+        const donationInfo = donationsRequests[donationId];
+        let bitsToDonate = await getQaplaStreamerBitDonationSize(donationInfo.StreamerName);
+        if (bitsToDonate.exists()) {
+            bitsToDonate = bitsToDonate.val();
+        } else {
+            bitsToDonate = parseInt(prompt('¿Cuantos bits recibira el usuario por esta donación?'));
+        }
+
+        completeUserDonation(donationInfo.uid, donationId, parseInt(donationInfo.Qoins), bitsToDonate);
         const userToken = await getUserToken(donationInfo.uid);
         if (userToken.exists()) {
             const userLanguage = await getUserLanguage(donationInfo.uid);
@@ -170,7 +178,7 @@ const DonationsRequests = ({ user }) => {
                                     variant='contained'
                                     color='primary'
                                     style={{ marginRight: '1rem', marginTop: '.5rem' }}
-                                    onClick={() => approveDonation(donationId)}>
+                                    onClick={() => completeDonation(donationId)}>
                                     Realizada
                                 </Button>
                                 <Button
