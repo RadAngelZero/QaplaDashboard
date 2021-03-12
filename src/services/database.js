@@ -782,17 +782,3 @@ export async function saveQaplaStreamers(qaplaStreamers) {
 export async function getQaplaStreamerBitDonationSize(streamerName) {
     return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
 }
-
-export async function scriptParaBits() {
-    const rewards = (await usersRewardsProgressRef.once('value')).val();
-    let updatedDonations = {};
-    Object.keys(rewards).map((uid) => {
-        rewards[uid].donations.qoins = rewards[uid].donations.bits / 45 * 200;
-        if (!isNaN(rewards[uid].donations.qoins)) {
-            updatedDonations[uid] = rewards[uid];
-        }
-    });
-
-    // Update the node on the database
-    // /* usersRewardsProgressRef.update(updatedDonations); */
-}

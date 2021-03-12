@@ -11,7 +11,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Helmet } from 'react-helmet';
 
 import EventsList from './components/EventsList/EventsList';
 import EventDetails from './components/EventDetails/EventDetails';
@@ -24,8 +23,7 @@ import {
     loadEventsOrderByDate,
     loadQaplaGames,
     loadQaplaPlatforms,
-    loadUserAdminProfile,
-    scriptParaBits
+    loadUserAdminProfile
 } from './services/database';
 import { handleUserAuthentication } from './services/auth';
 
@@ -80,8 +78,6 @@ const Router = () => {
                 connectUserToSendBird('Admin');
             });
         }
-
-        // scriptParaBits();
 
         loadEventsOrderByDate(loadEventsData);
         loadGamesResources();
