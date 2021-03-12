@@ -750,6 +750,7 @@ export async function getLeaderboardWinnersNumber() {
 
 /**
  * Set the number of winners in the current leaderboard season
+ * @param {number} numberOfWinners Number value to save
  */
 export async function setLeaderboardWinnersNumber(numberOfWinners) {
     return await leaderboardWinnersRef.set(numberOfWinners);
