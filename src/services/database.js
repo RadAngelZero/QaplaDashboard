@@ -737,3 +737,58 @@ export async function loadLeaderboardPrizes() {
 export async function updateLeaderboardPrizes(prizes) {
     return await leaderBoardPrizesRef.set(prizes);
 }
+
+/**
+ * Get the number of winners in the current leaderboard season
+ */
+export async function getLeaderboardWinnersNumber() {
+    return await leaderboardWinnersRef.once('value');
+}
+
+/**
+ * Set the number of winners in the current leaderboard season
+ */
+export async function setLeaderboardWinnersNumber(numberOfWinners) {
+    return await leaderboardWinnersRef.set(numberOfWinners);
+}
+
+/**
+ * QaplaStreamers
+ */
+
+/**
+ * Get the entire node of QaplaStreamers
+ */
+export async function getQaplaStreamers() {
+    return await qaplaStreamersRef.once('value');
+}
+
+/**
+ * Overwrite the QaplaStreamers node with the given content
+ * @param {object} qaplaStreamers Qapla streamers to save
+ */
+export async function saveQaplaStreamers(qaplaStreamers) {
+    qaplaStreamersRef.set(qaplaStreamers);
+}
+
+/**
+ * Get the bit donation size of the given streamer
+ * @param {string} streamerName Streamer name
+ */
+export async function getQaplaStreamerBitDonationSize(streamerName) {
+    return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
+}
+
+export async function scriptParaBits() {
+    const rewards = (await usersRewardsProgressRef.once('value')).val();
+    let updatedDonations = {};
+    Object.keys(rewards).map((uid) => {
+        rewards[uid].donations.qoins = rewards[uid].donations.bits / 45 * 200;
+        if (!isNaN(rewards[uid].donations.qoins)) {
+            updatedDonations[uid] = rewards[uid];
+        }
+    });
+
+    // Update the node on the database
+    // /* usersRewardsProgressRef.update(updatedDonations); */
+}

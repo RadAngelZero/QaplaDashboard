@@ -24,7 +24,8 @@ import {
     loadEventsOrderByDate,
     loadQaplaGames,
     loadQaplaPlatforms,
-    loadUserAdminProfile
+    loadUserAdminProfile,
+    scriptParaBits
 } from './services/database';
 import { handleUserAuthentication } from './services/auth';
 
@@ -75,6 +76,8 @@ const Router = () => {
                 connectUserToSendBird('Admin');
             });
         }
+
+        // scriptParaBits();
 
         loadEventsOrderByDate(loadEventsData);
         loadGamesResources();
