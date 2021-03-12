@@ -40,13 +40,17 @@ import CreateInvitation from './components/CreateInvitation/CreateInvitation';
 import NewEventsList from './components/NewEventsList/NewEventsList';
 import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes';
+import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
+import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 
 const Router = () => {
     const [events, setEvents] = useState();
     const [games, setGames] = useState({});
     const [platforms, setPlatforms] = useState({});
     const [user, setUser] = useState(null);
-    const [menu, setMenu] = useState(null);
+    const [menuTemplate, setMenuTemplate] = useState(null);
+    const [menuLeaderboard, setMenuLeaderboard] = useState(null);
+    const [menuStreamers, setMenuStreamers] = useState(null);
     const [eventToApprove, setEventToApprove] = useState({});
 
     useEffect(() => {
@@ -94,8 +98,16 @@ const Router = () => {
         }
     }
 
-    const closeMenu = () => {
-        setMenu(null);
+    const closeMenuTemplate = () => {
+        setMenuTemplate(null);
+    }
+
+    const closeMenuLeaderboard = () => {
+        setMenuLeaderboard(null);
+    }
+
+    const closeMenuStreamers = () => {
+        setMenuStreamers(null);
     }
 
     const eventsLoaded = events ? events : {};
@@ -134,18 +146,18 @@ const Router = () => {
                                                     color='inherit'
                                                     style={{ color: '#FFF' }}
                                                     className='White-Color Margin-Right'
-                                                    onClick={(e) => setMenu(e.currentTarget)} >
+                                                    onClick={(e) => setMenuTemplate(e.currentTarget)} >
                                                     Plantillas
                                                 </Button>
                                                 <Menu
-                                                    anchorEl={menu}
-                                                    open={Boolean(menu)}
-                                                    onClose={closeMenu}>
+                                                    anchorEl={menuTemplate}
+                                                    open={Boolean(menuTemplate)}
+                                                    onClose={closeMenuTemplate}>
                                                     <Link to='/user/templates/create' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Crear</MenuItem>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuTemplate}>Crear</MenuItem>
                                                     </Link>
                                                     <Link to='/user/templates/edit' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenu}>Editar</MenuItem>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuTemplate}>Editar</MenuItem>
                                                     </Link>
                                                 </Menu>
                                             </>
@@ -157,38 +169,48 @@ const Router = () => {
                                                         Donaciones
                                                     </Button>
                                                 </Link>
-                                                <Link to='/leaderboard' className='White-Color Margin-Right'>
-                                                    <Button
-                                                        className='White-Color Margin-Right'
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}>
-                                                        Leaderboard
-                                                    </Button>
-                                                </Link>
-                                                <Link to='/prizes' className='White-Color Margin-Right'>
-                                                    <Button
-                                                        className='White-Color Margin-Right'
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}>
-                                                        Premios
-                                                    </Button>
-                                                </Link>
-                                                <Link to='/create/invitation' className='White-Color Margin-Right'>
-                                                    <Button
-                                                        className='White-Color Margin-Right'
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}>
-                                                        Crear Invitación
-                                                    </Button>
-                                                </Link>
-                                                <Link to='/new/events' className='White-Color Margin-Right'>
-                                                    <Button
-                                                        className='White-Color Margin-Right'
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}>
-                                                        Nuevos Eventos
-                                                    </Button>
-                                                </Link>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}
+                                                    className='White-Color Margin-Right'
+                                                    onClick={(e) => setMenuLeaderboard(e.currentTarget)} >
+                                                    Leaderboard
+                                                </Button>
+                                                <Menu
+                                                    anchorEl={menuLeaderboard}
+                                                    open={Boolean(menuLeaderboard)}
+                                                    onClose={closeMenuLeaderboard}>
+                                                    <Link to='/leaderboard' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Reiniciar</MenuItem>
+                                                    </Link>
+                                                    <Link to='/prizes' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Premios</MenuItem>
+                                                    </Link>
+                                                    <Link to='/winners/leaderboard' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Numero de ganadores</MenuItem>
+                                                    </Link>
+                                                </Menu>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}
+                                                    className='White-Color Margin-Right'
+                                                    onClick={(e) => setMenuStreamers(e.currentTarget)} >
+                                                    Streamers
+                                                </Button>
+                                                <Menu
+                                                    anchorEl={menuStreamers}
+                                                    open={Boolean(menuStreamers)}
+                                                    onClose={closeMenuStreamers}>
+                                                    <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Crear codigo para nuevo streamer</MenuItem>
+                                                    </Link>
+                                                    <Link to='/streamers' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Streamers</MenuItem>
+                                                    </Link>
+                                                    <Link to='/new/events' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
+                                                    </Link>
+                                                </Menu>
                                             <Button
                                                 color='inherit'
                                                 style={{ color: '#FFF' }}
@@ -260,6 +282,9 @@ const Router = () => {
                                 <Route exact path='/event/experience/:eventId'>
                                     <DistributeExperience user={user} />
                                 </Route>
+                                <Route exact path='/create/invitation'>
+                                    <CreateInvitation user={user} />
+                                </Route>
                                 <Route exact path='/new/events'>
                                     <NewEventsList
                                         user={user}
@@ -273,17 +298,20 @@ const Router = () => {
                                         games={games}
                                         platforms={platforms} />
                                 </Route>
+                                <Route exact path='/streamers'>
+                                    <QaplaStreamers />
+                                </Route>
                                 <Route exact path='/login'>
                                     <Login user={user} />
-                                </Route>
-                                <Route exact path='/create/invitation'>
-                                    <CreateInvitation user={user} />
                                 </Route>
                                 <Route exact path='/leaderboard'>
                                     <Leaderboard user={user} />
                                 </Route>
                                 <Route exact path='/prizes'>
                                     <LeaderboardPrizes user={user} />
+                                </Route>
+                                <Route exact path='/winners/leaderboard'>
+                                    <LeaderboardWinners user={user} />
                                 </Route>
                         </>
                     }
