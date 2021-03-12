@@ -482,7 +482,7 @@ export function loadUsersDonations(loadDonations) {
  * @param {string} uid User identifier
  * @param {string} donationId Donation identifier
  * @param {number} qoinsDonated Number of qoins donated
- * @param {string} donationType Name of the currency
+ * @param {number} bitsDonated Number of bits donated
  */
 export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDonated) {
     const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
