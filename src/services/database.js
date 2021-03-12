@@ -26,6 +26,7 @@ const streamsApprovalRef = database.ref('/StreamsApproval');
 const streamersEventsDataRef = database.ref('/StreamersEventsData');
 const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
 const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
+const qaplaStreamersRef = database.ref('/QaplaStreamers');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -481,11 +482,10 @@ export function loadUsersDonations(loadDonations) {
  * @param {string} uid User identifier
  * @param {string} donationId Donation identifier
  * @param {number} qoinsDonated Number of qoins donated
- * @param {string} donationType Name of the currency
+ * @param {number} bitsDonated Number of bits donated
  */
-export async function completeUserDonation(uid, donationId, qoinsDonated, donationType) {
+export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDonated) {
     const pointsToAdd = qoinsDonated / (await getDonationQoinsBase()).val();
-    const eCoinValue = qoinsDonated * (await getDonationsCosts()).val();
 
     const rewardProgress = await usersRewardsProgressRef.child(uid).once('value');
     let tensInPoints = Math.floor(pointsToAdd / 10);
@@ -493,7 +493,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
     if (!rewardProgress.exists()) {
         const currentPoints = pointsToAdd - tensInPoints * 10;
         const donations = {
-            [donationType]:  eCoinValue
+            bits:  bitsDonated,
+            qoins: qoinsDonated
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -508,7 +509,8 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, donati
         currentPoints -= tensInPoints * 10;
         const donations = {
             ...rewardProgress.val().donations,
-            [donationType]:  (rewardProgress.val().donations[donationType] ? rewardProgress.val().donations[donationType] : 0) + eCoinValue
+            bits: (rewardProgress.val().donations.bits ? rewardProgress.val().donations.bits : 0) + bitsDonated,
+            qoins: (rewardProgress.val().donations.qoins ? rewardProgress.val().donations.qoins : 0) + qoinsDonated
         };
 
         await usersRewardsProgressRef.child(uid).update({
@@ -751,4 +753,31 @@ export async function getLeaderboardWinnersNumber() {
  */
 export async function setLeaderboardWinnersNumber(numberOfWinners) {
     return await leaderboardWinnersRef.set(numberOfWinners);
+}
+
+/**
+ * QaplaStreamers
+ */
+
+/**
+ * Get the entire node of QaplaStreamers
+ */
+export async function getQaplaStreamers() {
+    return await qaplaStreamersRef.once('value');
+}
+
+/**
+ * Overwrite the QaplaStreamers node with the given content
+ * @param {object} qaplaStreamers Qapla streamers to save
+ */
+export async function saveQaplaStreamers(qaplaStreamers) {
+    qaplaStreamersRef.set(qaplaStreamers);
+}
+
+/**
+ * Get the bit donation size of the given streamer
+ * @param {string} streamerName Streamer name
+ */
+export async function getQaplaStreamerBitDonationSize(streamerName) {
+    return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
 }

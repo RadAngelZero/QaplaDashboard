@@ -40,6 +40,7 @@ import NewEventsList from './components/NewEventsList/NewEventsList';
 import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes';
 import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
+import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -200,8 +201,11 @@ const Router = () => {
                                                     <Link to='/create/invitation' className='White-Color Margin-Right'>
                                                         <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Crear codigo para nuevo streamer</MenuItem>
                                                     </Link>
+                                                    <Link to='/streamers' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Streamers</MenuItem>
+                                                    </Link>
                                                     <Link to='/new/events' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar streams</MenuItem>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
                                                     </Link>
                                                 </Menu>
                                             <Button
@@ -275,6 +279,9 @@ const Router = () => {
                                 <Route exact path='/event/experience/:eventId'>
                                     <DistributeExperience user={user} />
                                 </Route>
+                                <Route exact path='/create/invitation'>
+                                    <CreateInvitation user={user} />
+                                </Route>
                                 <Route exact path='/new/events'>
                                     <NewEventsList
                                         user={user}
@@ -288,11 +295,11 @@ const Router = () => {
                                         games={games}
                                         platforms={platforms} />
                                 </Route>
+                                <Route exact path='/streamers'>
+                                    <QaplaStreamers />
+                                </Route>
                                 <Route exact path='/login'>
                                     <Login user={user} />
-                                </Route>
-                                <Route exact path='/create/invitation'>
-                                    <CreateInvitation user={user} />
                                 </Route>
                                 <Route exact path='/leaderboard'>
                                     <Leaderboard user={user} />
