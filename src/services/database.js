@@ -489,11 +489,12 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDo
 
     const rewardProgress = await usersRewardsProgressRef.child(uid).once('value');
     let tensInPoints = Math.floor(pointsToAdd / 10);
+    const bitsPackagesToDonate = qoinsDonated / 200;
 
     if (!rewardProgress.exists()) {
         const currentPoints = pointsToAdd - tensInPoints * 10;
         const donations = {
-            bits:  bitsDonated,
+            bits:  bitsDonated * bitsPackagesToDonate,
             qoins: qoinsDonated
         };
 
@@ -509,7 +510,7 @@ export async function completeUserDonation(uid, donationId, qoinsDonated, bitsDo
         currentPoints -= tensInPoints * 10;
         const donations = {
             ...rewardProgress.val().donations,
-            bits: (rewardProgress.val().donations.bits ? rewardProgress.val().donations.bits : 0) + bitsDonated,
+            bits: (rewardProgress.val().donations.bits ? rewardProgress.val().donations.bits : 0) + (bitsDonated * bitsPackagesToDonate),
             qoins: (rewardProgress.val().donations.qoins ? rewardProgress.val().donations.qoins : 0) + qoinsDonated
         };
 
