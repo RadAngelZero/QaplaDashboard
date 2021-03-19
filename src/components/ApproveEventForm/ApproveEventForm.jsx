@@ -131,6 +131,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         }
 
         const eventData = {
+            idStreamer,
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
             dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
