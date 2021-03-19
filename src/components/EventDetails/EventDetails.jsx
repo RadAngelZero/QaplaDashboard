@@ -196,6 +196,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             return;
         }
 
+        eventData.timestamp = selectedDate.getTime();
+
         const eventData = {
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later

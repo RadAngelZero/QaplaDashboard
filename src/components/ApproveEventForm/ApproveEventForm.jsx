@@ -131,6 +131,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         }
 
         const eventData = {
+            idStreamer,
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
             dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
@@ -636,7 +637,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                             <option aria-label='None' value='' />
                             {games && games['allGames'] && Object.keys(games['allGames']).map((gameKey) => (
                                 <option key={gameKey} value={gameKey}>
-                                    {games['allGames'][gameKey].name}
+                                    {games['allGames'][gameKey].gameName}
                                 </option>
                             ))}
                         </QaplaSelect>

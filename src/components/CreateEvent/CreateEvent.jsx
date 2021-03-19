@@ -110,9 +110,9 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
                     }
                 });
 
-            if (!validColors) {
-                return;
-            }
+        if (!validColors) {
+            return;
+        }
 
         const eventData = {
             title: titles,
@@ -193,6 +193,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
             eventData.hourUTC = template ? '' : `${UTCHour}:${UTCMinutes}`;
             eventData.tiempoLimite = template ? '' : `${day}-${month}-${year}`;
             eventData.hour = hour;
+
+            eventData.timestamp = selectedDate.getTime();
 
             createEvent(eventData,
                 async (error, key) => {
