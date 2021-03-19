@@ -20,7 +20,7 @@ const EventCard = ({ games, setEventToApprove, newEvent = false, eventKey, event
 
     useEffect(() => {
         if (newEvent) {
-            setTitle(`Evento de ${games.allGames[event.game].name}`);
+            setTitle(`Evento de ${games.allGames[event.game].gameName}`);
         }
     }, []);
 
