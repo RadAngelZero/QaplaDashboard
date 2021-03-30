@@ -709,7 +709,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 <Grid container>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Fecha (CST)'
+                            label='Fecha (CST) Año-mes-día'
                             variant='outlined'
                             value={date}
                             onChange={setDate} />
