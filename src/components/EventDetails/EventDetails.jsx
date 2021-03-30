@@ -100,13 +100,12 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 acceptAllUsers,
                 participantNumber,
                 featured,
-                eventChatUrl
+                eventChatUrl,
+                timestamp
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
-            if (tiempoLimite && tiempoLimite.includes('-')) {
-                const [day, month, year] = tiempoLimite.split('-');
-                setDate(`${year}-${month}-${day}`);
-            }
+            const eventDate = new Date(timestamp);
+            setDate(`${eventDate.getFullYear()}-${eventDate.getMonth() + 1 > 10 ? eventDate.getMonth() + 1 : `0${eventDate.getMonth() + 1}`}-${eventDate.getDate() > 10 ? eventDate.getDate() : `0${eventDate.getDate()}`}`);
             setHour(hour ? hour : '');
             setDiscordLink(discordLink ? discordLink : '');
             setPlatform(platform ? platform : '');
@@ -712,7 +711,6 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                         <QaplaTextField
                             label='Fecha (CST)'
                             variant='outlined'
-                            type='date'
                             value={date}
                             onChange={setDate} />
                     </Grid>
