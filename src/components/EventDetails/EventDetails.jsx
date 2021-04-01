@@ -191,11 +191,11 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 }
             });
 
+
         if (!validColors) {
             return;
         }
 
-        eventData.timestamp = selectedDate.getTime();
 
         const eventData = {
             title: titles,
@@ -230,7 +230,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             isMatchesEvent,
             acceptAllUsers,
             participantNumber,
-            featured
+            featured,
+            timestamp: selectedDate.getTime()
         };
 
         if (eventDuplicated) {
