@@ -89,7 +89,8 @@ const DistributeExperience = () => {
                     Email: email,
                     UserName: userName,
                     ...participants[participant],
-                    Experience: 0
+                    Experience: 0,
+                    Qoins: 0
                 }
             });
 
