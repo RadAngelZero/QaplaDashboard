@@ -75,8 +75,6 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
         if (events[eventId]) {
             const {
                 title,
-                tiempoLimite,
-                hour,
                 discordLink,
                 platform,
                 tipoLogro,
