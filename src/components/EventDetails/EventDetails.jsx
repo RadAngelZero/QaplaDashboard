@@ -100,14 +100,13 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 acceptAllUsers,
                 participantNumber,
                 featured,
-                eventChatUrl
+                eventChatUrl,
+                timestamp
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
-            if (tiempoLimite && tiempoLimite.includes('-')) {
-                const [day, month, year] = tiempoLimite.split('-');
-                setDate(`${year}-${month}-${day}`);
-            }
-            setHour(hour ? hour : '');
+            const eventDate = new Date(timestamp);
+            setDate(`${eventDate.getFullYear()}-${eventDate.getMonth() + 1 > 10 ? eventDate.getMonth() + 1 : `0${eventDate.getMonth() + 1}`}-${eventDate.getDate() > 10 ? eventDate.getDate() : `0${eventDate.getDate()}`}`);
+            setHour(`${eventDate.getHours() > 10 ? eventDate.getHours() : `0${eventDate.getHours()}`}:${eventDate.getMinutes() > 10 ? eventDate.getMinutes() : `0${eventDate.getMinutes()}`}`);
             setDiscordLink(discordLink ? discordLink : '');
             setPlatform(platform ? platform : '');
             setGame(tipoLogro ? tipoLogro : '');
@@ -192,11 +191,11 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 }
             });
 
+
         if (!validColors) {
             return;
         }
 
-        eventData.timestamp = selectedDate.getTime();
 
         const eventData = {
             title: titles,
@@ -231,7 +230,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             isMatchesEvent,
             acceptAllUsers,
             participantNumber,
-            featured
+            featured,
+            timestamp: selectedDate.getTime()
         };
 
         if (eventDuplicated) {
@@ -710,15 +710,14 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                 <Grid container>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Fecha (CST)'
+                            label='Fecha (CST) Año-mes-día'
                             variant='outlined'
-                            type='date'
                             value={date}
                             onChange={setDate} />
                     </Grid>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Hora'
+                            label='Hora (Formato 24 horas)'
                             variant='outlined'
                             type='time'
                             value={hour}

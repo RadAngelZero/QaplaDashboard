@@ -681,9 +681,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                 <Grid container>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Fecha (CST)'
+                            label='Fecha (CST) Año-mes-día'
                             variant='outlined'
-                            type='date'
                             value={date}
                             onChange={setDate} />
                     </Grid>
