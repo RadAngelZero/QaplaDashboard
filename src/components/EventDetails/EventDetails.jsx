@@ -106,7 +106,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             setTitle(title ? title : { 'es': '', 'en': '' });
             const eventDate = new Date(timestamp);
             setDate(`${eventDate.getFullYear()}-${eventDate.getMonth() + 1 > 10 ? eventDate.getMonth() + 1 : `0${eventDate.getMonth() + 1}`}-${eventDate.getDate() > 10 ? eventDate.getDate() : `0${eventDate.getDate()}`}`);
-            setHour(hour ? hour : '');
+            setHour(`${eventDate.getHours() > 10 ? eventDate.getHours() : `0${eventDate.getHours()}`}:${eventDate.getMinutes() > 10 ? eventDate.getMinutes() : `0${eventDate.getMinutes()}`}`);
             setDiscordLink(discordLink ? discordLink : '');
             setPlatform(platform ? platform : '');
             setGame(tipoLogro ? tipoLogro : '');
@@ -717,7 +717,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                     </Grid>
                     <Grid item md={4}>
                         <QaplaTextField
-                            label='Hora'
+                            label='Hora (Formato 24 horas)'
                             variant='outlined'
                             type='time'
                             value={hour}
