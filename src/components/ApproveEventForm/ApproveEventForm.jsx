@@ -14,7 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './../EventDetails/EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, approveStreamRequest, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
+import { updateEvent, approveStreamRequest, loadPublicEventTemplates, loadPrivateTemplates, rejectStreamRequest } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const fixedPrizesValues = {
@@ -74,10 +74,10 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
      * Delete the event from the database
      */
     const removeEventFromDatabase = () => {
-        deleteEvent(eventId, (error) => {
+        rejectStreamRequest(idStreamer, eventId, (error) => {
             alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
             if (!error) {
-                history.push(`/`);
+                history.push(`/new/events`);
             }
         });
     }
@@ -693,6 +693,13 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                             type='time'
                             value={hour}
                             onChange={setHour} />
+                    </Grid>
+                    <Grid item md={4}>
+                        <QaplaTextField
+                            label='Fecha en string'
+                            variant='outlined'
+                            value={event.stringDate || ''}
+                            onChange={() => {}} />
                     </Grid>
                 </Grid>
                 <br/>
