@@ -696,6 +696,17 @@ export async function approveStreamRequest(idStreamer, streamId) {
 }
 
 /**
+ * Reject a stream request
+ * @param {string} idStreamer Id of the streamer
+ * @param {string} streamId Stream identifier
+ * @param {function} onFinished Callback called once the stream is rejected
+ */
+export async function rejectStreamRequest(idStreamer, streamId, onFinished) {
+    removeEventToApprove(streamId);
+    streamersEventsDataRef.child(idStreamer).child(streamId).remove(onFinished);
+}
+
+/**
  * Create a stream request in the nodes StreamersEvents and StreamsApproval
  * @param {object} streamer User object
  * @param {string} game Selected game for the stream
