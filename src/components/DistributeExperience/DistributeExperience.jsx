@@ -45,7 +45,7 @@ const DistributeExperience = () => {
 
                         workBook.SheetNames.forEach((sheetName) => {
                             xlsx.utils.sheet_to_json(workBook.Sheets[sheetName])
-                            .filter((user) => user.Experience)
+                            .filter((user) => user.Experience || user.Qoins)
                             .sort((a, b) => b['Experience'] - a['Experience'])
                             .forEach((row) => {
                                 usersArray.push(row);
@@ -89,7 +89,8 @@ const DistributeExperience = () => {
                     Email: email,
                     UserName: userName,
                     ...participants[participant],
-                    Experience: 0
+                    Experience: 0,
+                    Qoins: 0
                 }
             });
 

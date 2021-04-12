@@ -14,7 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './../EventDetails/EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, approveStreamRequest, loadPublicEventTemplates, loadPrivateTemplates } from '../../services/database';
+import { updateEvent, approveStreamRequest, loadPublicEventTemplates, loadPrivateTemplates, rejectStreamRequest } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const fixedPrizesValues = {
@@ -74,10 +74,10 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
      * Delete the event from the database
      */
     const removeEventFromDatabase = () => {
-        deleteEvent(eventId, (error) => {
+        rejectStreamRequest(idStreamer, eventId, (error) => {
             alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
             if (!error) {
-                history.push(`/`);
+                history.push(`/new/events`);
             }
         });
     }
@@ -496,6 +496,12 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         setFeatured(featured ? featured : false);
     }
 
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+
+        return `${date.getFullYear()}-${date.getMonth() + 1 > 10 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`}-${date.getDate() > 10 ? date.getDate() : `0${date.getDate()}`} ${date.getHours() > 10 ? date.getHours() : `0${date.getHours()}`}:${date.getMinutes() > 10 ? date.getMinutes() : `0${date.getMinutes()}`}`
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -693,6 +699,20 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                             type='time'
                             value={hour}
                             onChange={setHour} />
+                    </Grid>
+                    <Grid item md={4}>
+                        <QaplaTextField
+                            label='Fecha en string'
+                            variant='outlined'
+                            value={event.stringDate || ''}
+                            onChange={() => {}} />
+                    </Grid>
+                    <Grid item md={4}>
+                        <QaplaTextField
+                            label='Fecha de creación de solicitud'
+                            variant='outlined'
+                            value={formatTimestamp(event.createdAt)}
+                            onChange={() => {}} />
                     </Grid>
                 </Grid>
                 <br/>
