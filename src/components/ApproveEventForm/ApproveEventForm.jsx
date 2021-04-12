@@ -496,6 +496,12 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         setFeatured(featured ? featured : false);
     }
 
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+
+        return `${date.getFullYear()}-${date.getMonth() + 1 > 10 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`}-${date.getDate() > 10 ? date.getDate() : `0${date.getDate()}`} ${date.getHours() > 10 ? date.getHours() : `0${date.getHours()}`}:${date.getMinutes() > 10 ? date.getMinutes() : `0${date.getMinutes()}`}`
+    }
+
     return (
         <Container maxWidth='lg' className={styles.Container}>
             <Typography
@@ -699,6 +705,13 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                             label='Fecha en string'
                             variant='outlined'
                             value={event.stringDate || ''}
+                            onChange={() => {}} />
+                    </Grid>
+                    <Grid item md={4}>
+                        <QaplaTextField
+                            label='Fecha de creación de solicitud'
+                            variant='outlined'
+                            value={formatTimestamp(event.createdAt)}
                             onChange={() => {}} />
                     </Grid>
                 </Grid>
