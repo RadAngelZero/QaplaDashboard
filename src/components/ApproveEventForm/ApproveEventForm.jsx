@@ -165,7 +165,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             participantNumber,
             featured,
             idLogro: eventId,
-            timestamp
+            timestamp,
+            createdAt: (new Date()).getTime()
         };
 
         updateEvent(

@@ -143,7 +143,8 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
             acceptAllUsers,
             participantNumber,
             featured,
-            sponsorImage
+            sponsorImage,
+            createdAt: (new Date()).getTime()
         };
 
         if (editTemplate) {
