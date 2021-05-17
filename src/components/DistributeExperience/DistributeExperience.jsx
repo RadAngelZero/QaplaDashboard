@@ -73,7 +73,19 @@ const DistributeExperience = () => {
         const participants = await getEventParticipantsOnce(eventId);
 
         if (participants) {
-            const participantsData = Object.keys(participants).map((participant) => {
+            const participantsData = Object.keys(participants)
+            .sort((a, b) => {
+                if (!participants[a].xqRedeemed) {
+                    participants[a].xqRedeemed = 0;
+                }
+
+                if (!participants[b].xqRedeemed) {
+                    participants[b].xqRedeemed = 0;
+                }
+
+                return participants[b].xqRedeemed - participants[a].xqRedeemed;
+            })
+            .map((participant) => {
                 const { email, userName } = participants[participant];
                 delete participants[participant].eventEntry;
                 delete participants[participant].timeStamp;
@@ -84,13 +96,15 @@ const DistributeExperience = () => {
                 delete participants[participant].firebaseUserIdentifier;
                 delete participants[participant].email;
                 delete participants[participant].userName;
+                participants[participant].Experience = participants[participant].xqRedeemed;
+                delete participants[participant].xqRedeemed;
+                participants[participant].Qoins = participants[participant].qoinsRedeemed;
+                delete participants[participant].qoinsRedeemed;
                 return {
                     'Qapla ID': participant,
                     Email: email,
                     UserName: userName,
-                    ...participants[participant],
-                    Experience: 0,
-                    Qoins: 0
+                    ...participants[participant]
                 }
             });
 
