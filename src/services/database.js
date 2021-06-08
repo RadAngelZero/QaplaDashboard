@@ -27,6 +27,7 @@ const streamersEventsDataRef = database.ref('/StreamersEventsData');
 const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
 const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
 const qaplaStreamersRef = database.ref('/QaplaStreamers');
+const activeCustomRewardsRef = database.ref('/ActiveCustomRewards');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -375,12 +376,15 @@ export async function loadUserAdminProfile(uid, dataHandler) {
 export function loadStreamerProfile(uid, dataHandler) {
     userStreamersRef.child(uid).on('value', (streamerData) => {
         if (streamerData.exists()) {
-            console.log('Streamer');
             dataHandler(streamerData.val());
         } else {
             removeUserAdminListener(uid);
         }
     });
+}
+
+export async function getStreamerProfile(streamerUid) {
+    return await userStreamersRef.child(streamerUid).once('value');
 }
 
 /**
@@ -793,4 +797,12 @@ export async function saveQaplaStreamers(qaplaStreamers) {
  */
 export async function getQaplaStreamerBitDonationSize(streamerName) {
     return await qaplaStreamersRef.child(streamerName).child('donationSize').child('bits').once('value');
+}
+
+/**
+ * ActiveCustomRewards
+ */
+
+export async function getAllActiveCustomRewards() {
+    return await activeCustomRewardsRef.once('value');
 }
