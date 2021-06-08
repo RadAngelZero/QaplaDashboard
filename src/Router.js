@@ -40,7 +40,6 @@ import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes';
 import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
 import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
-import ActiveCustomRewards from './components/ActiveCustomRewards/ActiveCustomRewards';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -207,9 +206,6 @@ const Router = () => {
                                                     <Link to='/new/events' className='White-Color Margin-Right'>
                                                         <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
                                                     </Link>
-                                                    <Link to='/customRewards' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Custom Rewards</MenuItem>
-                                                    </Link>
                                                 </Menu>
                                             <Button
                                                 color='inherit'
@@ -312,9 +308,6 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/winners/leaderboard'>
                                     <LeaderboardWinners user={user} />
-                                </Route>
-                                <Route exact path='/customRewards'>
-                                    <ActiveCustomRewards />
                                 </Route>
                         </>
                     }
