@@ -696,11 +696,15 @@ export async function removeEventToApprove(streamId) {
 
 /**
  * Remove stream to approve and update streamerreference to approved
+ * @param {string} idStreamer Id of the streamer that request the approval
  * @param {string} streamId Stream identifier
+ * @param {number} timestamp Final timestamp of the event
+ * @param {string} date UTC date in format DD-MM-YYYY
+ * @param {string} hour UTC hour in format HH:MM
  */
-export async function approveStreamRequest(idStreamer, streamId) {
+export async function approveStreamRequest(idStreamer, streamId, timestamp, date, hour) {
     removeEventToApprove(streamId);
-    streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2 });
+    streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2, timestamp, date, hour });
 }
 
 /**
