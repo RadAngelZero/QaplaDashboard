@@ -383,6 +383,10 @@ export function loadStreamerProfile(uid, dataHandler) {
     });
 }
 
+/**
+ * Gets all the profile from the given streamer
+ * @param {string} streamerUid Uid of the streamer
+ */
 export async function getStreamerProfile(streamerUid) {
     return await userStreamersRef.child(streamerUid).once('value');
 }
@@ -803,6 +807,9 @@ export async function getQaplaStreamerBitDonationSize(streamerName) {
  * ActiveCustomRewards
  */
 
+/**
+ * Get the snapshot of all the active custom rewards
+ */
 export async function getAllActiveCustomRewards() {
     return await activeCustomRewardsRef.once('value');
 }
