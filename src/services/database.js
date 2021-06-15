@@ -708,6 +708,18 @@ export async function approveStreamRequest(idStreamer, streamId, timestamp, date
 }
 
 /**
+ * Update the stream information on the streamer node
+ * @param {string} idStreamer Id of the streamer that request the approval
+ * @param {string} streamId Stream identifier
+ * @param {number} timestamp Final timestamp of the event
+ * @param {string} date UTC date in format DD-MM-YYYY
+ * @param {string} hour UTC hour in format HH:MM
+ */
+export async function updateStreamerEventData(idStreamer, streamId, timestamp, date, hour) {
+    streamersEventsDataRef.child(idStreamer).child(streamId).update({ timestamp, date, hour });
+}
+
+/**
  * Reject a stream request
  * @param {string} idStreamer Id of the streamer
  * @param {string} streamId Stream identifier

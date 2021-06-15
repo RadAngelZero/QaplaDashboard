@@ -14,7 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import styles from './EventDetails.module.css';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
-import { deleteEvent, updateEvent, getEventRanking, closeEvent, createEvent } from '../../services/database';
+import { deleteEvent, updateEvent, getEventRanking, closeEvent, createEvent, updateStreamerEventData } from '../../services/database';
 import Languages from '../../utilities/Languages';
 
 const fixedPrizesValues = {
@@ -194,12 +194,14 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             return;
         }
 
+        let dateUTC = `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`;
+        let hourUTC = `${UTCHour}:${UTCMinutes}`;
 
         const eventData = {
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
-            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-            hourUTC: `${UTCHour}:${UTCMinutes}`,
+            dateUTC,
+            hourUTC,
             tiempoLimite: `${day}-${month}-${year}`,
             hour,
             discordLink,
@@ -255,6 +257,9 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
                         return;
                     }
 
+                    if (events[eventId] && events[eventId].idStreamer) {
+                        updateStreamerEventData(events[eventId].idStreamer, eventId, selectedDate.getTime(), dateUTC, hourUTC);
+                    }
                     alert('Evento actualizado exitosamente');
                 }
             );
