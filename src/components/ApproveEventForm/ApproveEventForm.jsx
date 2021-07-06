@@ -130,12 +130,15 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             return;
         }
 
+        let dateUTC = `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`;
+        let hourUTC = `${UTCHour}:${UTCMinutes}`;
+
         const eventData = {
             idStreamer,
             title: titles,
             titulo: titles['es'], // <- Temporary field, remove it later
-            dateUTC: `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`,
-            hourUTC: `${UTCHour}:${UTCMinutes}`,
+            dateUTC,
+            hourUTC,
             tiempoLimite: `${day}-${month}-${year}`,
             hour,
             prices: prizes,
@@ -179,7 +182,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                     return;
                 }
 
-                approveStreamRequest(idStreamer, eventId);
+                approveStreamRequest(idStreamer, eventId, timestamp, dateUTC, hourUTC);
                 alert('Evento creado exitosamente');
                 history.push('/');
             }
