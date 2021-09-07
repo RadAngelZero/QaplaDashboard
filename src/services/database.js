@@ -663,6 +663,12 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
     }, 1500);
 }
 
+/**
+ * Determines the current level of the given user
+ * @param {string} uid User identifier of the user
+ * @param {array} qaplaLevels Array with the details of the Qapla levels
+ * @returns {number} Level of the given user
+ */
 export async function getUserSeasonLevel(uid, qaplaLevels) {
     const userSeasonXQ = (await usersRef.child(uid).child('seasonXQ').once('value')).val() || 0;
 
