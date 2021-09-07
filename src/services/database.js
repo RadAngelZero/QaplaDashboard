@@ -705,6 +705,12 @@ export async function removeEventToApprove(streamId) {
 export async function approveStreamRequest(idStreamer, streamId, timestamp, date, hour) {
     removeEventToApprove(streamId);
     streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2, timestamp, date, hour });
+
+    // Update last event timestamp to show on cheers list
+    const lastTimestamp = await userStreamersRef.child(idStreamer).child('lastStreamTs').once('value');
+    if (!lastTimestamp.exists() || (lastTimestamp.exists() && lastTimestamp.val() < timestamp)) {
+        userStreamersRef.child(idStreamer).update({ lastStreamTs: timestamp });
+    }
 }
 
 /**
@@ -717,6 +723,12 @@ export async function approveStreamRequest(idStreamer, streamId, timestamp, date
  */
 export async function updateStreamerEventData(idStreamer, streamId, timestamp, date, hour) {
     streamersEventsDataRef.child(idStreamer).child(streamId).update({ timestamp, date, hour });
+
+    // Update last event timestamp to show on cheers list
+    const lastTimestamp = await userStreamersRef.child(idStreamer).child('lastStreamTs').once('value');
+    if (!lastTimestamp.exists() || (lastTimestamp.exists() && lastTimestamp.val() < timestamp)) {
+        userStreamersRef.child(idStreamer).update({ lastStreamTs: timestamp });
+    }
 }
 
 /**
