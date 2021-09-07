@@ -13,12 +13,15 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import styles from './ApproveLeaderboardResetDialog.module.css';
 import { resetLeaderboard } from '../../services/database';
 
 const ApproveLeaderboardResetDialog = ({ open, onClose, users }) => {
     const [userFields, setUserFields] = useState([]);
+    const [resetInProgress, setResetInProgress] = useState(false);
+    const [helperText, setHelperText] = useState('');
     const hidedFields = ['__rowNum__', 'Uid'];
 
     useEffect(() => {
@@ -29,6 +32,7 @@ const ApproveLeaderboardResetDialog = ({ open, onClose, users }) => {
         });
     }, [open]);
 
+
     const distributePrizes = async () => {
         const usersToAssignQoins = users
         // Filter users with no experience
@@ -36,9 +40,10 @@ const ApproveLeaderboardResetDialog = ({ open, onClose, users }) => {
         // Create a valid object for the uploadEventResults function
         .map((user) => ({ uid: user.Uid, experience: user.experience, qoins: user.Qoins }));
 
-        resetLeaderboard(usersToAssignQoins);
-
-        onClose();
+        setResetInProgress(true);
+        resetLeaderboard(usersToAssignQoins, setHelperText, () => {
+            onClose();
+        });
     }
 
     return (
@@ -51,39 +56,48 @@ const ApproveLeaderboardResetDialog = ({ open, onClose, users }) => {
                     <Typography variant='h6' className={styles.headerBarTitle}>
                         Resultados
                     </Typography>
-                    <Button autoFocus color='inherit' onClick={distributePrizes}>
+                    <Button autoFocus color='inherit' onClick={distributePrizes} disabled={resetInProgress}>
                         Confirmar, resetear leaderboard y dar qoins
                     </Button>
                 </Toolbar>
             </AppBar>
-            <TableContainer component={Paper}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            {userFields.map((field) => (
-                                <React.Fragment key={field}>
-                                    {hidedFields.indexOf(field) === -1 &&
-                                        <TableCell align='center'>{field}</TableCell>
-                                    }
-                                </React.Fragment>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {users.map((user) => (
-                        <TableRow key={user.Uid}>
-                            {(user.experience) && userFields.map((userField) => (
-                                <React.Fragment key={`${userField}-${user.Uid}`}>
-                                    {hidedFields.indexOf(userField) === -1 &&
-                                        <TableCell align='center'>{user[userField] || 'N/A'}</TableCell>
-                                    }
-                                </React.Fragment>
-                            ))}
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {!resetInProgress ?
+                <TableContainer component={Paper}>
+                    <Table stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                {userFields.map((field) => (
+                                    <React.Fragment key={field}>
+                                        {hidedFields.indexOf(field) === -1 &&
+                                            <TableCell align='center'>{field}</TableCell>
+                                        }
+                                    </React.Fragment>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {users.map((user) => (
+                            <TableRow key={user.Uid}>
+                                {(user.experience) && userFields.map((userField) => (
+                                    <React.Fragment key={`${userField}-${user.Uid}`}>
+                                        {hidedFields.indexOf(userField) === -1 &&
+                                            <TableCell align='center'>{user[userField] || 'N/A'}</TableCell>
+                                        }
+                                    </React.Fragment>
+                                ))}
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            :
+                <>
+                    <CircularProgress />
+                    <p>
+                        {helperText}
+                    </p>
+                </>
+            }
         </Dialog>
     );
 }

@@ -28,6 +28,7 @@ const leaderBoardPrizesRef = database.ref('/LeaderBoardPrizes');
 const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
 const qaplaStreamersRef = database.ref('/QaplaStreamers');
 const activeCustomRewardsRef = database.ref('/ActiveCustomRewards');
+const qaplaLevelsRequirementsRef = database.ref('QaplaLevelsRequirements');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -611,33 +612,68 @@ export async function getLeaderboard() {
 
 /**
  * Reset the leaderboard and give prizes to users
+ * @param {array} users Array of the top users in the leaderboard
+ * @param {function} updateHelperText Function called on every step of the process
+ * @param {function} onSuccess Function called once the process is finished
  */
-export async function resetLeaderboard(users) {
-    const donations = (await DonationsLeaderBoardRef.once('value')).val();
+export async function resetLeaderboard(users, updateHelperText, onSuccess) {
+    updateHelperText('Obteniendo usuarios del leaderboard...')
+    const donations = (await DonationsLeaderBoardRef.orderByChild('totalDonations').startAt(1).once('value')).val();
+    const qaplaLevels = await qaplaLevelsRequirementsRef.once('value');
 
     let usersWithDonations = [];
     let updateLeaderboard = {};
+
+    updateHelperText('Procesando usuarios del leaderboard...');
     Object.keys(donations).map((uid) => {
-        if (donations[uid].totalDonations > 0) {
-            usersWithDonations.push({ uid });
-        }
+        usersWithDonations.push({ uid });
 
         updateLeaderboard[`${uid}/`] = { ...donations[uid], totalDonations: 0 };
     });
 
+    updateHelperText('Reseteando valores del leaderboard...');
     await DonationsLeaderBoardRef.update(updateLeaderboard);
 
+    updateHelperText('Definiendo niveles de fin del temporada 0%');
+    for (let i = 0; i < usersWithDonations.length; i++) {
+        const user = usersWithDonations[i];
+        const lastSeasonLevel = await getUserSeasonLevel(user.uid, qaplaLevels.val());
+        await usersRef.child(user.uid).update({ lastSeasonLevel, seasonXQ: 0 });
+        let progress = Math.round(i / usersWithDonations.length * 100);
+        updateHelperText(`Definiendo niveles de fin del temporada ${progress}%`);
+    }
+
+    updateHelperText('Entregando premios...');
     users.map((user) => {
         usersRef.child(user.uid).child('credits').transaction((qoins) => {
             if (qoins !== null) {
                 return qoins + user.qoins;
             }
 
-            return qoins;
+            return user.qoins;
         });
     });
 
-    notificateUsersOnLeaderboardReset(usersWithDonations);
+    updateHelperText('Notificando usuarios...');
+    await notificateUsersOnLeaderboardReset(usersWithDonations);
+
+    updateHelperText('Listo, cerrando modal!');
+    setTimeout(() => {
+        onSuccess();
+    }, 1500);
+}
+
+export async function getUserSeasonLevel(uid, qaplaLevels) {
+    const userSeasonXQ = (await usersRef.child(uid).child('seasonXQ').once('value')).val() || 0;
+
+    let currentLevel = 0;
+    qaplaLevels.forEach((level, index) => {
+        if (userSeasonXQ >= level.requiredXQ) {
+            currentLevel = index + 1;
+        }
+    });
+
+    return currentLevel;
 }
 
 /**
