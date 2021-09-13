@@ -626,7 +626,7 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
 
     updateHelperText('Procesando usuarios del leaderboard...');
     Object.keys(donations).map((uid) => {
-        usersWithDonations.push({ uid });
+        usersWithDonations.push({ uid, seasonXQ: donations[uid].totalDonations });
 
         updateLeaderboard[`${uid}/`] = { ...donations[uid], totalDonations: 0 };
     });
@@ -637,7 +637,7 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
     updateHelperText('Definiendo niveles de fin del temporada 0%');
     for (let i = 0; i < usersWithDonations.length; i++) {
         const user = usersWithDonations[i];
-        const lastSeasonLevel = await getUserSeasonLevel(user.uid, qaplaLevels.val());
+        const lastSeasonLevel = getUserSeasonLevel(user.seasonXQ, qaplaLevels.val());
         await usersRef.child(user.uid).update({ lastSeasonLevel, seasonXQ: 0 });
         let progress = Math.round(i / usersWithDonations.length * 100);
         updateHelperText(`Definiendo niveles de fin del temporada ${progress}%`);
@@ -665,14 +665,12 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
 
 /**
  * Determines the current level of the given user
- * @param {string} uid User identifier of the user
+ * @param {number} userSeasonXQ XQ acumulated of the season
  * @param {array} qaplaLevels Array with the details of the Qapla levels
  * @returns {number} Level of the given user
  */
-export async function getUserSeasonLevel(uid, qaplaLevels) {
-    const userSeasonXQ = (await usersRef.child(uid).child('seasonXQ').once('value')).val() || 0;
-
-    let currentLevel = 0;
+export function getUserSeasonLevel(userSeasonXQ, qaplaLevels) {
+    let currentLevel = 1;
     qaplaLevels.forEach((level, index) => {
         if (userSeasonXQ >= level.requiredXQ) {
             currentLevel = index + 1;
