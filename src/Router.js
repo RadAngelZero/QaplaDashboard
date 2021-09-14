@@ -41,6 +41,7 @@ import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes'
 import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
 import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 import ActiveCustomRewards from './components/ActiveCustomRewards/ActiveCustomRewards';
+import { notificateToTopic } from './services/functions';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -105,6 +106,13 @@ const Router = () => {
 
     const closeMenuStreamers = () => {
         setMenuStreamers(null);
+    }
+
+    const sendNewEventsPushNotification = () => {
+        if (window.confirm('¿Estas seguro que deseas enviar notificación de nuevos eventos?')) {
+            notificateToTopic(`events`, { es: '', en: '' }, { es: '', en: '' });
+        }
+        closeMenuStreamers();
     }
 
     const eventsLoaded = events ? events : {};
@@ -209,6 +217,9 @@ const Router = () => {
                                                     </Link>
                                                     <Link to='/customRewards' className='White-Color Margin-Right'>
                                                         <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Custom Rewards</MenuItem>
+                                                    </Link>
+                                                    <Link to='/new/events' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={sendNewEventsPushNotification}>Enviar notificación de eventos</MenuItem>
                                                     </Link>
                                                 </Menu>
                                             <Button
