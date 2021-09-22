@@ -60,13 +60,14 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     const [instructionsToParticipate, setInstructionsToParticipate] = useState(event.instructionsToParticipate ? event.instructionsToParticipate : {});
     const [streamerGameData, setStreamerGameData] = useState(event.streamerGameData ? event.streamerGameData : {});
     const [eventEntry, setEventEntry] = useState(event.eventEntry ? event.eventEntry : 0);
-    const [acceptAllUsers, setAcceptAllUsers] = useState(event.acceptAllUsers ? event.acceptAllUsers : false);
+    const [acceptAllUsers, setAcceptAllUsers] = useState(event.acceptAllUsers ? event.acceptAllUsers : true);
     const [participantNumber, setParticipantNumber] = useState(event.participantNumber ? event.participantNumber : 0);
     const [featured, setFeatured] = useState(event.featured ? event.featured : false);
     const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
     const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [idStreamer, setIdStreamer] = useState(event.idStreamer);
+    const [customRewardsMultipliers, setCustomRewardsMultipliers] = useState({ xq: 1, qoins: 1});
 
     const history = useHistory();
 
@@ -169,7 +170,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             featured,
             idLogro: eventId,
             timestamp,
-            createdAt: (new Date()).getTime()
+            createdAt: (new Date()).getTime(),
+            customRewardsMultipliers
         };
 
         updateEvent(
@@ -504,6 +506,12 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         const date = new Date(timestamp);
 
         return `${date.getFullYear()}-${date.getMonth() + 1 > 10 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`}-${date.getDate() > 10 ? date.getDate() : `0${date.getDate()}`} ${date.getHours() > 10 ? date.getHours() : `0${date.getHours()}`}:${date.getMinutes() > 10 ? date.getMinutes() : `0${date.getMinutes()}`}`
+    }
+
+    const updateCustomRewardsMultipliers = (field, value) => {
+        const multipliers = {...customRewardsMultipliers};
+        multipliers[field] = parseFloat(value);
+        setCustomRewardsMultipliers(multipliers);
     }
 
     return (
@@ -925,7 +933,26 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                 <FormControlLabel
                     control={<Checkbox checked={featured} onChange={() => setFeatured(!featured)} color='primary' />}
                     label='Evento destacado' />
+
                 <br/>
+                <Typography
+                    variant='h5'
+                    className={styles.ItalicFont}>
+                    Boosts para el evento
+                </Typography>
+                <p style={{ fontSize: 12, lineHeight: 0 }}>No modificar si el evento es normal</p>
+                <br/>
+                <QaplaTextField
+                    label='Multiplicador de Qoins'
+                    type='number'
+                    value={customRewardsMultipliers.qoins}
+                    onChange={(qoinsMultiplier) => updateCustomRewardsMultipliers('qoins', qoinsMultiplier)} />
+                <br/>
+                <QaplaTextField
+                    label='Multiplicador de XQ'
+                    type='number'
+                    value={customRewardsMultipliers.xq}
+                    onChange={(xqMultiplier) => updateCustomRewardsMultipliers('xq', xqMultiplier)} />
                 <div className={styles.MarginTop16}>
                     {!eventDuplicated &&
                         <Button
