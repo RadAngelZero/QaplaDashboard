@@ -643,6 +643,20 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
         updateHelperText(`Definiendo niveles de fin del temporada ${progress}%`);
     }
 
+    updateHelperText('Bajando nivel a usuarios que no participaron esta temporada');
+    const usersWithLevel = await usersRef.orderByChild('lastSeasonLevel').startAt(1).once('value');
+
+    const keysOfUsersWithLevel = Object.keys(usersWithLevel.val()).map((uid) => ({ uid, ...usersWithLevel.val()[uid] }));
+    for (let i = 0; i < Object.keys(usersWithLevel.val()).length; i++) {
+        const user = keysOfUsersWithLevel[i];
+        const thisUserHaveXQ = usersWithDonations.find((userWithXQ) => userWithXQ.uid === user.uid);
+
+        if (!thisUserHaveXQ) {
+            console.log(user.uid, user.lastSeasonLevel);
+            await usersRef.child(user.uid).update({ lastSeasonLevel: 1, seasonXQ: 0 });
+        }
+    }
+
     updateHelperText('Entregando premios...');
     users.map((user) => {
         usersRef.child(user.uid).child('credits').transaction((qoins) => {
@@ -661,6 +675,32 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
     setTimeout(() => {
         onSuccess();
     }, 1500);
+}
+
+export async function getUsersWithLastSeasonLevel() {
+    const donations = (await DonationsLeaderBoardRef.orderByChild('totalDonations').startAt(1).once('value')).val();
+
+    let usersWithDonations = [];
+    Object.keys(donations).map((uid) => {
+        usersWithDonations.push({ uid, seasonXQ: donations[uid].totalDonations });
+    });
+
+    const usersWithLevel = await usersRef.orderByChild('lastSeasonLevel').startAt(1).once('value');
+    let peopleWithoutXQ = [];
+
+    const keysOfUsersWithLevel = Object.keys(usersWithLevel.val()).map((uid) => ({ uid, ...usersWithLevel.val()[uid] }));
+    for (let i = 0; i < Object.keys(usersWithLevel.val()).length; i++) {
+        const user = keysOfUsersWithLevel[i];
+        const thisUserHaveXQ = usersWithDonations.find((userWithXQ) => userWithXQ.uid === user.uid);
+
+        if (!thisUserHaveXQ) {
+            peopleWithoutXQ.push(user);
+            console.log(user.uid, user.lastSeasonLevel);
+            // await usersRef.child(user.uid).update({ lastSeasonLevel: 1, seasonXQ: 0 });
+        }
+    }
+
+    console.log(peopleWithoutXQ.length);
 }
 
 /**
