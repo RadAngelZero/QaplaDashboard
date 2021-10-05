@@ -921,3 +921,20 @@ export async function getQaplaStreamerBitDonationSize(streamerName) {
 export async function getAllActiveCustomRewards() {
     return await activeCustomRewardsRef.once('value');
 }
+
+export async function addGameToCategories(gameKey, gameName) {
+    gamesRef.child('allGames').child(gameKey).set({
+        gameName,
+        acronym: 'Twitch',
+        name: 'Twitch',
+        informationNeededToAdd: {
+            'Twitch Username': {
+                required: true,
+                hint: {
+                    en: 'Username of Twitch',
+                    es: 'Username de Twitch'
+                }
+            }
+        }
+    });
+}
