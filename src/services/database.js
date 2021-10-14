@@ -29,6 +29,7 @@ const leaderboardWinnersRef = database.ref('/LeaderboardWinners');
 const qaplaStreamersRef = database.ref('/QaplaStreamers');
 const activeCustomRewardsRef = database.ref('/ActiveCustomRewards');
 const qaplaLevelsRequirementsRef = database.ref('QaplaLevelsRequirements');
+const streamersDonationsRef = database.ref('StreamersDonations');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -936,5 +937,55 @@ export async function addGameToCategories(gameKey, gameName) {
                 }
             }
         }
+    });
+}
+
+/**
+ * Retruns all the streamers with premium flag equal to true
+ */
+export async function getPremiumStreamers() {
+    return await userStreamersRef.orderByChild('premium').equalTo(true).once('value');
+}
+
+/**
+ * Store cheers on the database at StreamersDonations node
+ * @param {string} streamerUid Streamer uid
+ * @param {string} streamerName Name of the streamer
+ * @param {number} amountQoins Amount of donated Qoins
+ * @param {string} message Message from the user
+ * @param {number} timeStamp Timestamp of the moment when the donation is sent
+ * @param {string} userName Qapla username
+ * @param {string} twitchUserName Username of Twitch
+ * @param {string} userPhotoURL URL of the user profile photo
+ */
+ export async function sendCheersFromQapla(streamerUid, streamerName, amountQoins, message, timestamp, userName, twitchUserName, userPhotoURL) {
+    const donationRef = streamersDonationsRef.child(streamerUid).push({
+        amountQoins,
+        message,
+        timestamp,
+        uid: '',
+        read: false,
+        twitchUserName,
+        userName,
+        photoURL: userPhotoURL
+    });
+
+    userStreamersRef.child(streamerUid).child('qoinsBalance').transaction((streamerQoins) => {
+        if (streamerQoins) {
+            streamerQoins += amountQoins;
+        }
+
+        return streamerQoins ? streamerQoins : amountQoins;
+    });
+
+    database.ref('/StreamersDonationAdministrative').child(donationRef.key).set({
+        amountQoins,
+        message,
+        timestamp,
+        uid: '',
+        sent: false,
+        twitchUserName,
+        userName,
+        streamerName
     });
 }
