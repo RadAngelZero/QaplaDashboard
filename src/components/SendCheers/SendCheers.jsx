@@ -29,7 +29,8 @@ const SendCheers = () => {
 
     const sendCheersToStreamer = async () => {
         try {
-            await sendCheersFromQapla(selectedStreamer.uid, selectedStreamer.displayName, parseInt(qoinsToDonate), message, (new Date).getTime(), 'Qapla gaming', 'Qapla gaming', '');
+            const qaplaLogolURL = 'https://firebasestorage.googleapis.com/v0/b/qapplaapp.appspot.com/o/QaplaImages%2FQ-logo.png?alt=media&token=64ba2610-31db-4548-8338-3094ec31cbb5';
+            await sendCheersFromQapla(selectedStreamer.uid, selectedStreamer.displayName, parseInt(qoinsToDonate), message, (new Date).getTime(), 'Qapla gaming', 'Qapla gaming', qaplaLogolURL);
             setQoinsToDonate('');
             setMessage('');
             setSelectedStreamer({ uid: '', displayName: '' });
