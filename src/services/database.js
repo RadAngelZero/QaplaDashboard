@@ -1,3 +1,4 @@
+import staticLeaderboard from './../assets/Leaderboard.json';
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
 import { distributeLeaderboardExperience, notificateUsersOnLeaderboardReset } from './functions';
@@ -678,30 +679,32 @@ export async function resetLeaderboard(users, updateHelperText, onSuccess) {
     }, 1500);
 }
 
+/**
+ * Helper function to validate if the level distribution was correct after a leadarboard reset
+ */
 export async function getUsersWithLastSeasonLevel() {
-    const donations = (await DonationsLeaderBoardRef.orderByChild('totalDonations').startAt(1).once('value')).val();
+    const donations = staticLeaderboard; // (await DonationsLeaderBoardRef.orderByChild('totalDonations').startAt(1).once('value')).val();
 
     let usersWithDonations = [];
     Object.keys(donations).map((uid) => {
-        usersWithDonations.push({ uid, seasonXQ: donations[uid].totalDonations });
+        if (donations[uid].totalDonations) {
+            usersWithDonations.push({ uid, seasonXQ: donations[uid].totalDonations });
+        }
     });
 
-    const usersWithLevel = await usersRef.orderByChild('lastSeasonLevel').startAt(1).once('value');
-    let peopleWithoutXQ = [];
+    const qaplaLevels = await qaplaLevelsRequirementsRef.once('value');
 
-    const keysOfUsersWithLevel = Object.keys(usersWithLevel.val()).map((uid) => ({ uid, ...usersWithLevel.val()[uid] }));
-    for (let i = 0; i < Object.keys(usersWithLevel.val()).length; i++) {
-        const user = keysOfUsersWithLevel[i];
-        const thisUserHaveXQ = usersWithDonations.find((userWithXQ) => userWithXQ.uid === user.uid);
+    for (let i = 0; i < usersWithDonations.length; i++) {
+        const user = usersWithDonations[i];
+        const calculatedLevel = getUserSeasonLevel(user.seasonXQ, qaplaLevels.val());
+        const actualLevel = await usersRef.child(user.uid).child('lastSeasonLevel').once('value');
 
-        if (!thisUserHaveXQ) {
-            peopleWithoutXQ.push(user);
-            console.log(user.uid, user.lastSeasonLevel);
-            // await usersRef.child(user.uid).update({ lastSeasonLevel: 1, seasonXQ: 0 });
+        if (calculatedLevel !== actualLevel.val()) {
+            console.error('Usuario mal: ', user.uid, calculatedLevel, actualLevel.val());
+        } else {
+            console.log('Usuario bien: ', user.uid, calculatedLevel, actualLevel.val());
         }
     }
-
-    console.log(peopleWithoutXQ.length);
 }
 
 /**
