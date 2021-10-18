@@ -31,7 +31,6 @@ import './App.css';
 import Login from './components/Login/Login';
 import { auth } from './services/firebase';
 import { connectUserToSendBird } from './services/SendBird';
-import DonationsRequests from './components/DonationsRequests/DonationsRequests';
 import DistributeExperience from './components/DistributeExperience/DistributeExperience';
 import Leaderboard from './components/Leaderboard/Leaderboard';
 import CreateInvitation from './components/CreateInvitation/CreateInvitation';
@@ -41,6 +40,8 @@ import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes'
 import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
 import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 import ActiveCustomRewards from './components/ActiveCustomRewards/ActiveCustomRewards';
+import SendCheers from './components/SendCheers/SendCheers';
+
 import { notificateToTopic } from './services/functions';
 
 const Router = () => {
@@ -166,12 +167,12 @@ const Router = () => {
                                                     </Link>
                                                 </Menu>
                                             </>
-                                                <Link to='/donations' className='White-Color Margin-Right'>
+                                                <Link to='/sendCheers' className='White-Color Margin-Right'>
                                                     <Button
                                                         className='White-Color Margin-Right'
                                                         color='inherit'
                                                         style={{ color: '#FFF' }}>
-                                                        Donaciones
+                                                        Enviar Cheers
                                                     </Button>
                                                 </Link>
                                                 <Button
@@ -287,8 +288,8 @@ const Router = () => {
                                         platforms={platforms}
                                         eventDuplicated />
                                 </Route>
-                                <Route exact path='/donations'>
-                                    <DonationsRequests user={user} />
+                                <Route exact path='/sendCheers'>
+                                    <SendCheers user={user} />
                                 </Route>
                                 <Route exact path='/event/experience/:eventId'>
                                     <DistributeExperience user={user} />
