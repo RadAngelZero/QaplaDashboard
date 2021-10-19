@@ -2,8 +2,9 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
-const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '', placeholder = '', required = false, fullWidth = false }) => (
+const QaplaTextField = ({ autoFocus = false, value, label, multiline = false, rows = 1, onChange, type = 'text', mini = false, disabled = false, inputAdornment = null, onPressAdornment = () => {}, id = '', placeholder = '', required = false, fullWidth = false, error = false, helperText = '' }) => (
     <TextField
+        autoFocus={autoFocus}
         required={required}
         fullWidth={fullWidth}
         style={{
@@ -12,6 +13,8 @@ const QaplaTextField = ({ value, label, multiline = false, rows = 1, onChange, t
             minWidth: mini ? '14vw' : '20vw',
             maxWidth: mini ? '14vw' : undefined
         }}
+        error={error}
+        helperText={helperText}
         label={label}
         variant='outlined'
         value={value}

@@ -2,6 +2,7 @@ import staticLeaderboard from './../assets/Leaderboard.json';
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
 import { distributeLeaderboardExperience, notificateUsersOnLeaderboardReset } from './functions';
+import { QOINS, XQ } from '../utilities/Constants';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -31,6 +32,7 @@ const qaplaStreamersRef = database.ref('/QaplaStreamers');
 const activeCustomRewardsRef = database.ref('/ActiveCustomRewards');
 const qaplaLevelsRequirementsRef = database.ref('QaplaLevelsRequirements');
 const streamersDonationsRef = database.ref('StreamersDonations');
+const userStreamsRewardsRef = database.ref('/UserStreamsRewards');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -218,7 +220,7 @@ export async function uploadEventResults(eventId, placesArray, eventChannelUrl) 
     closeEvent(eventId, eventChannelUrl);
 }
 
-async function getUserUserName(uid) {
+export async function getUserUserName(uid) {
     return await usersRef.child(uid).child('userName').once('value');
 }
 
@@ -991,4 +993,72 @@ export async function getPremiumStreamers() {
         userName,
         streamerName
     });
+}
+
+/**
+ * Write (with transactions) the qoins on user profile and the XQ on qaplaLevel, seasonXQ and totalDonations nodes
+ * @param {string} uid User identifier
+ * @param {number} xq Ammount of XQ to assign
+ * @param {number} qoins Amount of Qoins to assign
+ * @returns Empty string if completed and error list on string otherwise
+ */
+export async function giveQoinsAndXQToUser(uid, xq, qoins) {
+    let errorString = '';
+
+    const qaplaLevelUpdate = await usersRef.child(uid).child('qaplaLevel').transaction((level) => {
+        if (level) {
+            return level + xq;
+        }
+
+        return xq;
+    });
+
+    if (!qaplaLevelUpdate.committed) {
+        errorString += '\nError al actualizar qaplaLevel';
+    }
+
+    const seasonXQUpdate = await usersRef.child(uid).child('seasonXQ').transaction((seasonXQ) => {
+        if (seasonXQ) {
+            return seasonXQ + xq;
+        }
+
+        return xq;
+    });
+
+    if (!seasonXQUpdate.committed) {
+        errorString += '\nError al actualizar seasonXQ';
+    }
+
+    const totalDonationsUpdate = await DonationsLeaderBoardRef.child(uid).child('totalDonations').transaction((totalDonations) => {
+        if (totalDonations) {
+            return totalDonations + xq;
+        }
+
+        return xq;
+    });
+
+    if (!totalDonationsUpdate.committed) {
+        errorString += '\nError al actualizar totalDonations';
+    }
+
+    if (!errorString) {
+        const date = new Date();
+        await userStreamsRewardsRef.child(uid).push({ type: XQ, streamerName: 'Qapla', streamId: '', amount: xq, timestamp: date.getTime() });
+    }
+
+    const qoinsUpdate = await usersRef.child(uid).child('credits').transaction((currentQoins) => {
+        if (currentQoins) {
+            return currentQoins + qoins;
+        }
+
+        return qoins;
+    });
+
+    if (!qoinsUpdate.committed) {
+        errorString += '\nError al dar Qoins';
+        const date = new Date();
+        await userStreamsRewardsRef.child(uid).push({ type: QOINS, streamerName: 'Qapla', streamId: '', amount: qoins, timestamp: date.getTime() });
+    }
+
+    return errorString;
 }
