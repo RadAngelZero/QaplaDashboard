@@ -15,10 +15,14 @@ const QaplaInsurance = () => {
     const validateUser = async () => {
         setUserWasValidated(false);
 
-        const userName = await getUserUserName(uid);
-        if (userName.exists()) {
-            setUserName(userName.val());
-            setUserExists(true);
+        if (uid) {
+            const userName = await getUserUserName(uid);
+            if (userName.exists()) {
+                setUserName(userName.val());
+                setUserExists(true);
+            } else {
+                setUserExists(false);
+            }
         } else {
             setUserExists(false);
         }
