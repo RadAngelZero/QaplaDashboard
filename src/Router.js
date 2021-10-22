@@ -41,6 +41,7 @@ import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinne
 import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 import ActiveCustomRewards from './components/ActiveCustomRewards/ActiveCustomRewards';
 import SendCheers from './components/SendCheers/SendCheers';
+import QaplaInsurance from './components/QaplaInsurance/QaplaInsurance';
 
 import { notificateToTopic } from './services/functions';
 
@@ -52,6 +53,7 @@ const Router = () => {
     const [menuTemplate, setMenuTemplate] = useState(null);
     const [menuLeaderboard, setMenuLeaderboard] = useState(null);
     const [menuStreamers, setMenuStreamers] = useState(null);
+    const [menuPrizes, setMenuPrizes] = useState(null);
     const [eventToApprove, setEventToApprove] = useState({});
 
     useEffect(() => {
@@ -107,6 +109,10 @@ const Router = () => {
 
     const closeMenuStreamers = () => {
         setMenuStreamers(null);
+    }
+
+    const closeMenuPrizes = () => {
+        setMenuPrizes(null);
     }
 
     const sendNewEventsPushNotification = () => {
@@ -167,14 +173,24 @@ const Router = () => {
                                                     </Link>
                                                 </Menu>
                                             </>
-                                                <Link to='/sendCheers' className='White-Color Margin-Right'>
-                                                    <Button
-                                                        className='White-Color Margin-Right'
-                                                        color='inherit'
-                                                        style={{ color: '#FFF' }}>
-                                                        Enviar Cheers
-                                                    </Button>
-                                                </Link>
+                                                <Button
+                                                    className='White-Color Margin-Right'
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}
+                                                    onClick={(e) => setMenuPrizes(e.currentTarget)}>
+                                                    Enviar Premios
+                                                </Button>
+                                                <Menu
+                                                    anchorEl={menuPrizes}
+                                                    open={Boolean(menuPrizes)}
+                                                    onClose={closeMenuPrizes}>
+                                                    <Link to='/sendCheers' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>Cheers (streamers)</MenuItem>
+                                                    </Link>
+                                                    <Link to='/qaplaInsurance' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>XQ y Qoins (Usuarios)</MenuItem>
+                                                    </Link>
+                                                </Menu>
                                                 <Button
                                                     color='inherit'
                                                     style={{ color: '#FFF' }}
@@ -290,6 +306,9 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/sendCheers'>
                                     <SendCheers user={user} />
+                                </Route>
+                                <Route exact path='/qaplaInsurance'>
+                                    <QaplaInsurance user={user} />
                                 </Route>
                                 <Route exact path='/event/experience/:eventId'>
                                     <DistributeExperience user={user} />

@@ -47,7 +47,7 @@ const SendCheers = () => {
                 value={selectedStreamer.uid}
                 onChange={(streamerId) => setStreamer(streamerId)}>
                 <option aria-label='None' value='' />
-                {Object.keys(premiumStreamers).sort((a, b) => premiumStreamers[a].displayName > premiumStreamers[b].displayName ? 1 : -1).map((streamerUid) => (
+                {Object.keys(premiumStreamers).sort((a, b) => premiumStreamers[a].displayName.toLowerCase() > premiumStreamers[b].displayName.toLowerCase() ? 1 : -1).map((streamerUid) => (
                     <option
                         key={streamerUid}
                         value={streamerUid}>{premiumStreamers[streamerUid].displayName}</option>
