@@ -1056,6 +1056,7 @@ export async function giveQoinsAndXQToUser(uid, xq, qoins) {
 
     if (!qoinsUpdate.committed) {
         errorString += '\nError al dar Qoins';
+    } else {
         const date = new Date();
         await userStreamsRewardsRef.child(uid).push({ type: QOINS, streamerName: 'Qapla', streamId: '', amount: qoins, timestamp: date.getTime() });
     }
