@@ -34,11 +34,11 @@ const QaplaInsurance = () => {
         const xq = parseInt(XQToGive);
         const qoins = parseInt(qoinsToGive)
         if (userExists && userWasValidated) {
-            if (!isNaN(xq) && !isNaN(qoins) && xq > 0 && qoins > 0) {
+            if ((!isNaN(qoins) && qoins > 0) || (!isNaN(xq) && xq > 0)) {
                 const error = await giveQoinsAndXQToUser(uid, xq, qoins, (errorString) => alert(errorString));
 
                 if (!error) {
-                    alert('La XQ y los Qoins fueron repartidos exitosamente');
+                    alert('Recompensas repartidas correctamente')
                     setUid('');
                     setUserName('');
                     setUserExists(false);
@@ -49,7 +49,7 @@ const QaplaInsurance = () => {
                 }
 
             } else {
-                alert('El valor de XQ o Qoins no es valido, debe ser un numero mayor a 0');
+                alert('El valor de XQ o Qoins no es valido, debe ser un numero mayor a 0 para al menos uno de los dos parametros');
             }
         } else {
             alert('El usuario no fue validado correctamente, recarga la pagina e intenta de nuevo');
@@ -98,7 +98,7 @@ const QaplaInsurance = () => {
                 {!userExists ?
                     'Validar usuario'
                     :
-                    'Dar XQ y Qoins'
+                    'Repartir recompensas'
                 }
             </Button>
         </Container>

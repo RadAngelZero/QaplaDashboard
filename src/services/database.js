@@ -1005,60 +1005,64 @@ export async function getPremiumStreamers() {
 export async function giveQoinsAndXQToUser(uid, xq, qoins) {
     let errorString = '';
 
-    const qaplaLevelUpdate = await usersRef.child(uid).child('qaplaLevel').transaction((level) => {
-        if (level) {
-            return level + xq;
+    if (xq && xq > 0) {
+        const qaplaLevelUpdate = await usersRef.child(uid).child('qaplaLevel').transaction((level) => {
+            if (level) {
+                return level + xq;
+            }
+
+            return xq;
+        });
+
+        if (!qaplaLevelUpdate.committed) {
+            errorString += '\nError al actualizar qaplaLevel';
         }
 
-        return xq;
-    });
+        const seasonXQUpdate = await usersRef.child(uid).child('seasonXQ').transaction((seasonXQ) => {
+            if (seasonXQ) {
+                return seasonXQ + xq;
+            }
 
-    if (!qaplaLevelUpdate.committed) {
-        errorString += '\nError al actualizar qaplaLevel';
-    }
+            return xq;
+        });
 
-    const seasonXQUpdate = await usersRef.child(uid).child('seasonXQ').transaction((seasonXQ) => {
-        if (seasonXQ) {
-            return seasonXQ + xq;
+        if (!seasonXQUpdate.committed) {
+            errorString += '\nError al actualizar seasonXQ';
         }
 
-        return xq;
-    });
+        const totalDonationsUpdate = await DonationsLeaderBoardRef.child(uid).child('totalDonations').transaction((totalDonations) => {
+            if (totalDonations) {
+                return totalDonations + xq;
+            }
 
-    if (!seasonXQUpdate.committed) {
-        errorString += '\nError al actualizar seasonXQ';
-    }
+            return xq;
+        });
 
-    const totalDonationsUpdate = await DonationsLeaderBoardRef.child(uid).child('totalDonations').transaction((totalDonations) => {
-        if (totalDonations) {
-            return totalDonations + xq;
+        if (!totalDonationsUpdate.committed) {
+            errorString += '\nError al actualizar totalDonations';
         }
 
-        return xq;
-    });
-
-    if (!totalDonationsUpdate.committed) {
-        errorString += '\nError al actualizar totalDonations';
-    }
-
-    if (!errorString) {
-        const date = new Date();
-        await userStreamsRewardsRef.child(uid).push({ type: XQ, streamerName: 'Qapla', streamId: '', amount: xq, timestamp: date.getTime() });
-    }
-
-    const qoinsUpdate = await usersRef.child(uid).child('credits').transaction((currentQoins) => {
-        if (currentQoins) {
-            return currentQoins + qoins;
+        if (!errorString) {
+            const date = new Date();
+            await userStreamsRewardsRef.child(uid).push({ type: XQ, streamerName: 'Qapla', streamId: '', amount: xq, timestamp: date.getTime() });
         }
+    }
 
-        return qoins;
-    });
+    if (qoins && qoins > 0) {
+        const qoinsUpdate = await usersRef.child(uid).child('credits').transaction((currentQoins) => {
+            if (currentQoins) {
+                return currentQoins + qoins;
+            }
 
-    if (!qoinsUpdate.committed) {
-        errorString += '\nError al dar Qoins';
-    } else {
-        const date = new Date();
-        await userStreamsRewardsRef.child(uid).push({ type: QOINS, streamerName: 'Qapla', streamId: '', amount: qoins, timestamp: date.getTime() });
+            return qoins;
+        });
+
+        if (!qoinsUpdate.committed) {
+            errorString += '\nError al dar Qoins';
+        } else {
+            const date = new Date();
+            await userStreamsRewardsRef.child(uid).push({ type: QOINS, streamerName: 'Qapla', streamId: '', amount: qoins, timestamp: date.getTime() });
+        }
     }
 
     return errorString;
