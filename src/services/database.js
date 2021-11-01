@@ -694,19 +694,31 @@ export async function getUsersWithLastSeasonLevel() {
         }
     });
 
+    // Uncomment to check reset of levels succesful for users who dont participate this season
+    /* const usersWithLevel = (await usersRef.orderByChild('lastSeasonLevel').startAt(2).once('value')).val();
+
+    Object.keys(usersWithLevel).forEach((uid) => {
+        if (!donations[uid]) {
+            console.log('Usuario con 0 donaciones pero nivel 2 o mas', uid, usersWithLevel[uid].lastSeasonLevel);
+        }
+    }); */
+
     const qaplaLevels = await qaplaLevelsRequirementsRef.once('value');
 
+    let badUsers = [];
     for (let i = 0; i < usersWithDonations.length; i++) {
         const user = usersWithDonations[i];
         const calculatedLevel = getUserSeasonLevel(user.seasonXQ, qaplaLevels.val());
         const actualLevel = await usersRef.child(user.uid).child('lastSeasonLevel').once('value');
 
         if (calculatedLevel !== actualLevel.val()) {
-            console.error('Usuario mal: ', user.uid, calculatedLevel, actualLevel.val());
+            badUsers.push({ uid: user.uid, calculatedLevel, actualLevel: actualLevel.val() });
         } else {
             console.log('Usuario bien: ', user.uid, calculatedLevel, actualLevel.val());
         }
     }
+
+    console.table(badUsers);
 }
 
 /**
