@@ -940,11 +940,18 @@ export async function getAllActiveCustomRewards() {
     return await activeCustomRewardsRef.once('value');
 }
 
-export async function addGameToCategories(gameKey, gameName) {
-    gamesRef.child('allGames').child(gameKey).set({
+/**
+ * Add a game on the games resources -> all games node
+ * @param {string} gameKey Key of the game to save
+ * @param {string} gameName Name of the game to save
+ * @param {url} fallbackImageUrl URL of the image to show in streamers dashboard if there are no local file
+ */
+export async function addGameToCategories(gameKey, gameName, fallbackImageUrl) {
+    return await gamesRef.child('allGames').child(gameKey).set({
         gameName,
         acronym: 'Twitch',
         name: 'Twitch',
+        fallbackImageUrl,
         informationNeededToAdd: {
             'Twitch Username': {
                 required: true,
