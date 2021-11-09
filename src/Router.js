@@ -44,6 +44,7 @@ import SendCheers from './components/SendCheers/SendCheers';
 import QaplaInsurance from './components/QaplaInsurance/QaplaInsurance';
 
 import { notificateToTopic } from './services/functions';
+import AddGame from './components/AddGame/AddGame';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -173,72 +174,80 @@ const Router = () => {
                                                     </Link>
                                                 </Menu>
                                             </>
+                                            <Button
+                                                className='White-Color Margin-Right'
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}
+                                                onClick={(e) => setMenuPrizes(e.currentTarget)}>
+                                                Enviar Premios
+                                            </Button>
+                                            <Menu
+                                                anchorEl={menuPrizes}
+                                                open={Boolean(menuPrizes)}
+                                                onClose={closeMenuPrizes}>
+                                                <Link to='/sendCheers' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>Cheers (streamers)</MenuItem>
+                                                </Link>
+                                                <Link to='/qaplaInsurance' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>XQ y Qoins (Usuarios)</MenuItem>
+                                                </Link>
+                                            </Menu>
+                                            <Button
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}
+                                                className='White-Color Margin-Right'
+                                                onClick={(e) => setMenuLeaderboard(e.currentTarget)} >
+                                                Leaderboard
+                                            </Button>
+                                            <Menu
+                                                anchorEl={menuLeaderboard}
+                                                open={Boolean(menuLeaderboard)}
+                                                onClose={closeMenuLeaderboard}>
+                                                <Link to='/leaderboard' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Reiniciar</MenuItem>
+                                                </Link>
+                                                <Link to='/prizes' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Premios</MenuItem>
+                                                </Link>
+                                                <Link to='/winners/leaderboard' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Numero de ganadores</MenuItem>
+                                                </Link>
+                                            </Menu>
+                                            <Button
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}
+                                                className='White-Color Margin-Right'
+                                                onClick={(e) => setMenuStreamers(e.currentTarget)} >
+                                                Streamers
+                                            </Button>
+                                            <Menu
+                                                anchorEl={menuStreamers}
+                                                open={Boolean(menuStreamers)}
+                                                onClose={closeMenuStreamers}>
+                                                <Link to='/create/invitation' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Crear codigo para nuevo streamer</MenuItem>
+                                                </Link>
+                                                <Link to='/streamers' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Streamers</MenuItem>
+                                                </Link>
+                                                <Link to='/new/events' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
+                                                </Link>
+                                                <Link to='/customRewards' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Custom Rewards</MenuItem>
+                                                </Link>
+                                                <Link to='/new/events' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={sendNewEventsPushNotification}>Enviar notificación de eventos</MenuItem>
+                                                </Link>
+                                            </Menu>
+                                            <Link to='/addGame' className='White-Color'>
                                                 <Button
                                                     className='White-Color Margin-Right'
                                                     color='inherit'
-                                                    style={{ color: '#FFF' }}
-                                                    onClick={(e) => setMenuPrizes(e.currentTarget)}>
-                                                    Enviar Premios
+                                                    style={{ color: '#FFF' }}>
+                                                    Agregar juego
                                                 </Button>
-                                                <Menu
-                                                    anchorEl={menuPrizes}
-                                                    open={Boolean(menuPrizes)}
-                                                    onClose={closeMenuPrizes}>
-                                                    <Link to='/sendCheers' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>Cheers (streamers)</MenuItem>
-                                                    </Link>
-                                                    <Link to='/qaplaInsurance' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuPrizes}>XQ y Qoins (Usuarios)</MenuItem>
-                                                    </Link>
-                                                </Menu>
-                                                <Button
-                                                    color='inherit'
-                                                    style={{ color: '#FFF' }}
-                                                    className='White-Color Margin-Right'
-                                                    onClick={(e) => setMenuLeaderboard(e.currentTarget)} >
-                                                    Leaderboard
-                                                </Button>
-                                                <Menu
-                                                    anchorEl={menuLeaderboard}
-                                                    open={Boolean(menuLeaderboard)}
-                                                    onClose={closeMenuLeaderboard}>
-                                                    <Link to='/leaderboard' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Reiniciar</MenuItem>
-                                                    </Link>
-                                                    <Link to='/prizes' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Premios</MenuItem>
-                                                    </Link>
-                                                    <Link to='/winners/leaderboard' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuLeaderboard}>Numero de ganadores</MenuItem>
-                                                    </Link>
-                                                </Menu>
-                                                <Button
-                                                    color='inherit'
-                                                    style={{ color: '#FFF' }}
-                                                    className='White-Color Margin-Right'
-                                                    onClick={(e) => setMenuStreamers(e.currentTarget)} >
-                                                    Streamers
-                                                </Button>
-                                                <Menu
-                                                    anchorEl={menuStreamers}
-                                                    open={Boolean(menuStreamers)}
-                                                    onClose={closeMenuStreamers}>
-                                                    <Link to='/create/invitation' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Crear codigo para nuevo streamer</MenuItem>
-                                                    </Link>
-                                                    <Link to='/streamers' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Streamers</MenuItem>
-                                                    </Link>
-                                                    <Link to='/new/events' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
-                                                    </Link>
-                                                    <Link to='/customRewards' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Custom Rewards</MenuItem>
-                                                    </Link>
-                                                    <Link to='/new/events' className='White-Color Margin-Right'>
-                                                        <MenuItem style={{ color: '#000' }} onClick={sendNewEventsPushNotification}>Enviar notificación de eventos</MenuItem>
-                                                    </Link>
-                                                </Menu>
+                                            </Link>
                                             <Button
                                                 color='inherit'
                                                 style={{ color: '#FFF' }}
@@ -346,6 +355,9 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/customRewards'>
                                     <ActiveCustomRewards />
+                                </Route>
+                                <Route exact path='/addGame'>
+                                    <AddGame />
                                 </Route>
                         </>
                     }
