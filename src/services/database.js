@@ -751,11 +751,18 @@ export async function invitationCodeExists(invitationCode) {
 }
 
 /**
- * Save the invitation code in the database
+ * Save the invitation code in the database, if free trial true saves the details of the subscription
+ * so the user can inmediatly get the benefits of their free trial
  * @param {string} invitationCode Invitation code
+ * @param {boolean} freeTrial Flag to know if the user will have or not a free trial
+ * @param {object} subscriptionDetails Details like streamsIncluded and redemptionsPerStream
  */
-export async function saveInvitationCode(invitationCode) {
-    InvitationCodeRef.child(invitationCode).set(true);
+export async function saveInvitationCode(invitationCode, freeTrial, subscriptionDetails) {
+    if (freeTrial) {
+        await InvitationCodeRef.child(invitationCode).set({ freeTrial, subscriptionDetails });
+    } else {
+        await InvitationCodeRef.child(invitationCode).set(true);
+    }
 }
 
 /**
