@@ -58,7 +58,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
     const [descriptions, setDescriptions] = useState({ 'es': '', 'en': '' });
     const [prizes, setPrizes] = useState({});
     const [eventLinks, setEventLinks] = useState([]);
-    const [isMatchesEvent, setIsMatchesEvent] = useState(true);
+    const [isMatchesEvent, setIsMatchesEvent] = useState(false);
     const [streamerName, setStreamerName] = useState('');
     const [streamerChannelLink, setStreamerChannelLink] = useState('');
     const [streamerPhoto, setStreamerPhoto] = useState('');
@@ -77,6 +77,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
     const [publicEventsTemplates, setPublicEventsTemplates] = useState(null);
     const [privateEventsTemplates, setPrivateEventsTemplates] = useState(null);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const [customRewardsMultipliers, setCustomRewardsMultipliers] = useState({ xq: 1, qoins: 1});
     const history = useHistory();
 
     /**
@@ -144,6 +145,7 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
             participantNumber,
             featured,
             sponsorImage,
+            customRewardsMultipliers,
             createdAt: (new Date()).getTime()
         };
 
@@ -577,6 +579,12 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
         if (user && user.uid) {
             setPrivateEventsTemplates(await loadPrivateTemplates(user.uid) || {});
         }
+    }
+
+    const updateCustomRewardsMultipliers = (field, value) => {
+        const multipliers = {...customRewardsMultipliers};
+        multipliers[field] = parseFloat(value);
+        setCustomRewardsMultipliers(multipliers);
     }
 
     return (
@@ -1060,6 +1068,24 @@ const CreateEvent = ({ games, platforms, template = false, user = {}, editTempla
                             type='number'
                             value={eventEntry}
                             onChange={(eventEntry) => eventEntry >= 0 && setEventEntry(eventEntry)} />
+                        <br/>
+                        <Typography
+                            variant='h5'
+                            className={styles.ItalicFont}>
+                            Boosts para el evento
+                        </Typography>
+                        <br/>
+                        <QaplaTextField
+                            label='Multiplicador de Qoins'
+                            type='number'
+                            value={customRewardsMultipliers.qoins}
+                            onChange={(qoinsMultiplier) => updateCustomRewardsMultipliers('qoins', qoinsMultiplier)} />
+                        <br/>
+                        <QaplaTextField
+                            label='Multiplicador de XQ'
+                            type='number'
+                            value={customRewardsMultipliers.xq}
+                            onChange={(xqMultiplier) => updateCustomRewardsMultipliers('xq', xqMultiplier)} />
                         <br/>
                         <Typography
                             variant='h5'
