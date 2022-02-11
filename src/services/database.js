@@ -2,7 +2,7 @@ import staticLeaderboard from './../assets/Leaderboard.json';
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
 import { distributeLeaderboardExperience, notificateUsersOnLeaderboardReset } from './functions';
-import { QOINS, XQ } from '../utilities/Constants';
+import { QLANES, QOINS, XQ } from '../utilities/Constants';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -68,8 +68,8 @@ export function updateEvent(eventId, eventData, onFinished) {
  * @param {string} eventId Event identifier
  * @param {function} onFinished Callback called when the event is deleted
  */
-export function deleteEvent(eventId, onFinished) {
-    eventsRef.child(eventId).remove(onFinished);
+export async function deleteEvent(eventId, onFinished) {
+    await eventsRef.child(eventId).remove(onFinished);
 }
 
 /**
@@ -988,8 +988,9 @@ export async function getPremiumStreamers() {
  * @param {string} userName Qapla username
  * @param {string} twitchUserName Username of Twitch
  * @param {string} userPhotoURL URL of the user profile photo
+ * @param {string} type Type of donation (one of QLANES or OTHER)
  */
- export async function sendCheersFromQapla(streamerUid, streamerName, amountQoins, message, timestamp, userName, twitchUserName, userPhotoURL) {
+ export async function sendCheersFromQapla(streamerUid, streamerName, amountQoins, message, timestamp, userName, twitchUserName, userPhotoURL, type) {
     const donationRef = streamersDonationsRef.child(streamerUid).push({
         amountQoins,
         message,
@@ -1001,13 +1002,23 @@ export async function getPremiumStreamers() {
         photoURL: userPhotoURL
     });
 
-    userStreamersRef.child(streamerUid).child('qoinsBalance').transaction((streamerQoins) => {
-        if (streamerQoins) {
-            streamerQoins += amountQoins;
-        }
+    if (type === QLANES) {
+        userStreamersRef.child(streamerUid).child('qlanBalance').transaction((streamerQoins) => {
+            if (streamerQoins) {
+                streamerQoins += amountQoins;
+            }
 
-        return streamerQoins ? streamerQoins : amountQoins;
-    });
+            return streamerQoins ? streamerQoins : amountQoins;
+        });
+    } else {
+        userStreamersRef.child(streamerUid).child('qoinsBalance').transaction((streamerQoins) => {
+            if (streamerQoins) {
+                streamerQoins += amountQoins;
+            }
+
+            return streamerQoins ? streamerQoins : amountQoins;
+        });
+    }
 
     database.ref('/StreamersDonationAdministrative').child(donationRef.key).set({
         amountQoins,

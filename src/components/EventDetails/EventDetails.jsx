@@ -16,6 +16,7 @@ import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { deleteEvent, updateEvent, getEventRanking, closeEvent, createEvent, updateStreamerEventData } from '../../services/database';
 import Languages from '../../utilities/Languages';
+import { notificateToTopic } from '../../services/functions';
 
 const fixedPrizesValues = {
     0: {},
@@ -135,10 +136,22 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     /**
      * Delete the event from the database
      */
-    const removeEventFromDatabase = () => {
-        deleteEvent(eventId, (error) => {
+    const removeEventFromDatabase = async () => {
+        await deleteEvent(eventId, (error) => {
             alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
             if (!error) {
+                if (events[eventId].idStreamer) {
+                    notificateToTopic(events[eventId].idStreamer,
+                        {
+                            es: `🚨 ${streamerName} ha cancelado su stream `,
+                            en: `${streamerName}'s streams has been canceled`
+                        },
+                        {
+                            es:`El stream ${titles.es} no podrá llevarse a cabo 😢`,
+                            en: `${streamerName} won't be able to stream ${titles.es} 😢`
+                        }, { navigateTo: 'Achievements' });
+                }
+
                 history.push(`/`);
             }
         });

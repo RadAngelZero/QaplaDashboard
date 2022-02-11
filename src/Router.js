@@ -38,7 +38,6 @@ import NewEventsList from './components/NewEventsList/NewEventsList';
 import ApproveEventForm from './components/ApproveEventForm/ApproveEventForm';
 import LeaderboardPrizes from './components/LeaderboardPrizes/LeaderboardPrizes';
 import LeaderboardWinners from './components/LeaderboardWinners/LeaderboardWinners';
-import QaplaStreamers from './components/QaplaStreamers/QaplaStreamers';
 import ActiveCustomRewards from './components/ActiveCustomRewards/ActiveCustomRewards';
 import SendCheers from './components/SendCheers/SendCheers';
 import QaplaInsurance from './components/QaplaInsurance/QaplaInsurance';
@@ -227,9 +226,6 @@ const Router = () => {
                                                 <Link to='/create/invitation' className='White-Color Margin-Right'>
                                                     <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Crear codigo para nuevo streamer</MenuItem>
                                                 </Link>
-                                                <Link to='/streamers' className='White-Color Margin-Right'>
-                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Streamers</MenuItem>
-                                                </Link>
                                                 <Link to='/new/events' className='White-Color Margin-Right'>
                                                     <MenuItem style={{ color: '#000' }} onClick={closeMenuStreamers}>Gestionar Eventos</MenuItem>
                                                 </Link>
@@ -337,9 +333,6 @@ const Router = () => {
                                         user={user}
                                         games={games}
                                         platforms={platforms} />
-                                </Route>
-                                <Route exact path='/streamers'>
-                                    <QaplaStreamers />
                                 </Route>
                                 <Route exact path='/login'>
                                     <Login user={user} />
