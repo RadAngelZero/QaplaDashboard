@@ -14,3 +14,9 @@ export const TWITCH_SECRET_ID = 'xt2ed1xz00cwglz34fu2m95k77xnj6';
  */
  export const XQ = 'xq';
  export const QOINS = 'qoins';
+
+/**
+ * Type of cheers
+ */
+export const QLANES = 'QLANES';
+export const OTHER = 'OTHER';

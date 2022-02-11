@@ -4,11 +4,13 @@ import { Container, Button } from '@material-ui/core';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { getPremiumStreamers, sendCheersFromQapla } from '../../services/database';
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
+import { OTHER, QLANES } from '../../utilities/Constants';
 
 const SendCheers = () => {
     const [qoinsToDonate, setQoinsToDonate] = useState('');
     const [message, setMessage] = useState('');
     const [premiumStreamers, setPremiumStreamers] = useState({});
+    const [type, setType] = useState(QLANES);
     const [selectedStreamer, setSelectedStreamer] = useState({ uid: '', displayName: '' });
 
     useEffect(() => {
@@ -30,7 +32,7 @@ const SendCheers = () => {
     const sendCheersToStreamer = async () => {
         try {
             const qaplaLogolURL = 'https://firebasestorage.googleapis.com/v0/b/qapplaapp.appspot.com/o/QaplaImages%2FQ-logo.png?alt=media&token=64ba2610-31db-4548-8338-3094ec31cbb5';
-            await sendCheersFromQapla(selectedStreamer.uid, selectedStreamer.displayName, parseInt(qoinsToDonate), message, (new Date).getTime(), 'Qapla gaming', 'Qapla gaming', qaplaLogolURL);
+            await sendCheersFromQapla(selectedStreamer.uid, selectedStreamer.displayName, parseInt(qoinsToDonate), message, (new Date).getTime(), 'Qapla gaming', 'Qapla gaming', qaplaLogolURL, type);
             setQoinsToDonate('');
             setMessage('');
             setSelectedStreamer({ uid: '', displayName: '' });
@@ -52,6 +54,14 @@ const SendCheers = () => {
                         key={streamerUid}
                         value={streamerUid}>{premiumStreamers[streamerUid].displayName}</option>
                 ))}
+            </QaplaSelect>
+            <br />
+            <QaplaSelect
+                label='Tipo de Cheers'
+                value={type}
+                onChange={(type) => setType(type)}>
+                <option value={QLANES} label='Qlanes' />
+                <option value={OTHER} label='Otro' />
             </QaplaSelect>
             <br />
             <QaplaTextField
