@@ -44,6 +44,7 @@ import QaplaInsurance from './components/QaplaInsurance/QaplaInsurance';
 
 import { notificateToTopic } from './services/functions';
 import AddGame from './components/AddGame/AddGame';
+import PastEventsList from './components/PastEventsList/PastEventsList';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -54,6 +55,7 @@ const Router = () => {
     const [menuLeaderboard, setMenuLeaderboard] = useState(null);
     const [menuStreamers, setMenuStreamers] = useState(null);
     const [menuPrizes, setMenuPrizes] = useState(null);
+    const [menuStreams, setMenuStreams] = useState(null);
     const [eventToApprove, setEventToApprove] = useState({});
 
     useEffect(() => {
@@ -111,6 +113,10 @@ const Router = () => {
         setMenuStreamers(null);
     }
 
+    const closeMenuStreams = () => {
+        setMenuStreams(null);
+    }
+
     const closeMenuPrizes = () => {
         setMenuPrizes(null);
     }
@@ -154,6 +160,24 @@ const Router = () => {
                                     {user &&
                                         <>
                                             <>
+                                                <Button
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}
+                                                    className='White-Color Margin-Right'
+                                                    onClick={(e) => setMenuStreams(e.currentTarget)} >
+                                                    Streams
+                                                </Button>
+                                                <Menu
+                                                    anchorEl={menuStreams}
+                                                    open={Boolean(menuStreams)}
+                                                    onClose={closeMenuStreams}>
+                                                    <Link to='/' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreams}>Streams</MenuItem>
+                                                    </Link>
+                                                    <Link to='/pastStreams' className='White-Color Margin-Right'>
+                                                        <MenuItem style={{ color: '#000' }} onClick={closeMenuStreams}>Streams pasados</MenuItem>
+                                                    </Link>
+                                                </Menu>
                                                 <Button
                                                     color='inherit'
                                                     style={{ color: '#FFF' }}
@@ -253,19 +277,13 @@ const Router = () => {
                                             </Button>
                                         </>
                                     }
-                                    <Link to='/event/create' className='White-Color Margin-Right'>
-                                        <Button
-                                            className='White-Color Margin-Right'
-                                            variant='contained'
-                                            color='secondary'
-                                            style={{ color: '#FFF' }}>
-                                            Crear evento
-                                        </Button>
-                                    </Link>
                                 </Toolbar>
                             </AppBar>
                                 <Route exact path='/'>
                                     <EventsList events={eventsLoaded} />
+                                </Route>
+                                <Route exact path='/pastStreams'>
+                                    <PastEventsList />
                                 </Route>
                                 <Route exact path='/event/prizes/:eventId'>
                                     <AssignPrizesForEvent events={eventsLoaded} />
@@ -282,12 +300,12 @@ const Router = () => {
                                 <Route exact path='/event/participants/:eventId'>
                                     <EventParticipantsList events={eventsLoaded} />
                                 </Route>
-                                <Route exact path='/event/create'>
+                                {/* <Route exact path='/event/create'>
                                     <CreateEvent
                                         games={games}
                                         platforms={platforms}
                                         user={user} />
-                                </Route>
+                                </Route> */}
                                 <Route exact path='/user/templates/create'>
                                     <CreateEvent
                                         games={games}
