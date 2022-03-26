@@ -16,7 +16,7 @@ import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import QaplaSelect from '../QaplaSelect/QaplaSelect';
 import { deleteEvent, updateEvent, getEventRanking, closeEvent, createEvent, updateStreamerEventData } from '../../services/database';
 import Languages from '../../utilities/Languages';
-import { notificateToTopic } from '../../services/functions';
+import { notificateToEventParticipantsAndStreamerFollowers, notificateToTopic } from '../../services/functions';
 
 const fixedPrizesValues = {
     0: {},
@@ -104,8 +104,8 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             } = events[eventId];
             setTitle(title ? title : { 'es': '', 'en': '' });
             const eventDate = new Date(timestamp);
-            setDate(`${eventDate.getFullYear()}-${eventDate.getMonth() + 1 > 10 ? eventDate.getMonth() + 1 : `0${eventDate.getMonth() + 1}`}-${eventDate.getDate() > 10 ? eventDate.getDate() : `0${eventDate.getDate()}`}`);
-            setHour(`${eventDate.getHours() > 10 ? eventDate.getHours() : `0${eventDate.getHours()}`}:${eventDate.getMinutes() > 10 ? eventDate.getMinutes() : `0${eventDate.getMinutes()}`}`);
+            setDate(`${eventDate.getFullYear()}-${eventDate.getMonth() + 1 >= 10 ? eventDate.getMonth() + 1 : `0${eventDate.getMonth() + 1}`}-${eventDate.getDate() >= 10 ? eventDate.getDate() : `0${eventDate.getDate()}`}`);
+            setHour(`${eventDate.getHours() >= 10 ? eventDate.getHours() : `0${eventDate.getHours()}`}:${eventDate.getMinutes() >= 10 ? eventDate.getMinutes() : `0${eventDate.getMinutes()}`}`);
             setDiscordLink(discordLink ? discordLink : '');
             setPlatform(platform ? platform : '');
             setGame(tipoLogro ? tipoLogro : '');
@@ -141,15 +141,17 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
             alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
             if (!error) {
                 if (events[eventId].idStreamer) {
-                    notificateToTopic(events[eventId].idStreamer,
+                    notificateToEventParticipantsAndStreamerFollowers(eventId,
+                        events[eventId].idStreamer,
                         {
                             es: `🚨 ${streamerName} ha cancelado su stream `,
-                            en: `${streamerName}'s streams has been canceled`
+                            en: `${streamerName}'s stream has been canceled`
                         },
                         {
                             es:`El stream ${titles.es} no podrá llevarse a cabo 😢`,
                             en: `${streamerName} won't be able to stream ${titles.es} 😢`
-                        }, { navigateTo: 'Achievements' });
+                        }, { navigateTo: 'Achievements' }
+                    );
                 }
 
                 history.push(`/`);
@@ -164,7 +166,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
     const updateEventOnDatabase = () => {
         const [year, month, day] = date.split('-');
         const [hours, minutes] = hour.split(':');
-        const selectedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+        const selectedDate = new Date(year, parseInt(month - 1), parseInt(day), hours, minutes, 0, 0);
 
         /**
          * Add a 0 in front of every date variable if is less tan 10 because in the cloud functions and app

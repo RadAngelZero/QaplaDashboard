@@ -84,3 +84,12 @@ export async function notificateUsersOnLeaderboardReset(usersToNotificate) {
         console.log(error);
     }
 }
+
+export async function notificateToEventParticipantsAndStreamerFollowers(streamId, streamerId, titles, bodies) {
+    const notificateToEventParticipantsAndStreamerFollowersFunction = functions.httpsCallable('notificateToEventParticipantsAndStreamerFollowers');
+    try {
+        return await notificateToEventParticipantsAndStreamerFollowersFunction({ streamId, streamerId, titles, bodies });
+    } catch (error) {
+        console.log(error);
+    }
+}
