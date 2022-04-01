@@ -137,7 +137,7 @@ const EventDetails = ({ events, games, platforms, eventDuplicated = false }) => 
      * Delete the event from the database
      */
     const removeEventFromDatabase = async () => {
-        await deleteEvent(eventId, (error) => {
+        await deleteEvent(eventId, events[eventId].idStreamer, (error) => {
             alert(error ? `Error al eliminar el evento: ${error}` : 'Evento eliminado');
             if (!error) {
                 if (events[eventId].idStreamer) {

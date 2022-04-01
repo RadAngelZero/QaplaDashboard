@@ -65,12 +65,21 @@ export function updateEvent(eventId, eventData, onFinished) {
 }
 
 /**
- * Delete an event from the database
+ * Delete an event from the database and reduce the streamsRequested counter for the streamer
  * @param {string} eventId Event identifier
+ * @param {string} streamerUid Streamer identifier
  * @param {function} onFinished Callback called when the event is deleted
  */
-export async function deleteEvent(eventId, onFinished) {
+export async function deleteEvent(eventId, streamerUid, onFinished) {
     await eventsRef.child(eventId).remove(onFinished);
+    await streamersEventsDataRef.child(streamerUid).child(eventId).remove();
+    userStreamersRef.child(streamerUid).child('subscriptionDetails').child('streamsRequested').transaction((requests) => {
+        if (requests && requests > 0) {
+            return requests - 1;
+        }
+
+        return requests;
+    });
 }
 
 /**
