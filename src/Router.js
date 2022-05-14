@@ -45,6 +45,7 @@ import QaplaInsurance from './components/QaplaInsurance/QaplaInsurance';
 import { notificateToTopic } from './services/functions';
 import AddGame from './components/AddGame/AddGame';
 import PastEventsList from './components/PastEventsList/PastEventsList';
+import QlanesMembersReports from './components/QlanesMembersReports/QlanesMembersReports';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -268,6 +269,14 @@ const Router = () => {
                                                     Agregar juego
                                                 </Button>
                                             </Link>
+                                            <Link to='/qlanes/members/reports' className='White-Color'>
+                                                <Button
+                                                    className='White-Color Margin-Right'
+                                                    color='inherit'
+                                                    style={{ color: '#FFF' }}>
+                                                    Qlanes
+                                                </Button>
+                                            </Link>
                                             <Button
                                                 color='inherit'
                                                 style={{ color: '#FFF' }}
@@ -369,6 +378,9 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/addGame'>
                                     <AddGame />
+                                </Route>
+                                <Route exact path='/qlanes/members/reports'>
+                                    <QlanesMembersReports />
                                 </Route>
                         </>
                     }

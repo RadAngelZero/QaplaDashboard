@@ -34,6 +34,7 @@ const qaplaLevelsRequirementsRef = database.ref('QaplaLevelsRequirements');
 const streamersDonationsRef = database.ref('StreamersDonations');
 const userStreamsRewardsRef = database.ref('/UserStreamsRewards');
 const eventsDataAdminRef = database.ref('/EventsDataAdmin');
+const qlanesMembersRef = database.ref('/QlanesMembers');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -1117,4 +1118,11 @@ export async function giveQoinsAndXQToUser(uid, xq, qoins) {
 
 export async function getPastEventsByTimestamp(startTimestamp) {
     return await eventsDataAdminRef.orderByChild('timestamp').startAt(startTimestamp).once('value');
+}
+
+/**
+ * Get all the Qlanes members data
+ */
+export async function getQlanesMembers() {
+    return await qlanesMembersRef.once('value');
 }
