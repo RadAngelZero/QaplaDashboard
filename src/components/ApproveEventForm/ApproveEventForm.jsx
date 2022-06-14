@@ -184,7 +184,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
                     return;
                 }
 
-                approveStreamRequest(idStreamer, eventId, timestamp, dateUTC, hourUTC);
+                approveStreamRequest(idStreamer, eventId, timestamp, dateUTC, hourUTC, backgroundImage);
                 alert('Evento creado exitosamente');
                 history.push('/');
             }

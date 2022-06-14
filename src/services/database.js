@@ -817,10 +817,11 @@ export async function removeEventToApprove(streamId) {
  * @param {number} timestamp Final timestamp of the event
  * @param {string} date UTC date in format DD-MM-YYYY
  * @param {string} hour UTC hour in format HH:MM
+ * @param {string} image Image url of the approved stream
  */
-export async function approveStreamRequest(idStreamer, streamId, timestamp, date, hour) {
+export async function approveStreamRequest(idStreamer, streamId, timestamp, date, hour, image) {
     removeEventToApprove(streamId);
-    streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2, timestamp, date, hour });
+    streamersEventsDataRef.child(idStreamer).child(streamId).update({ status: 2, timestamp, date, hour, image });
 
     // Update last event timestamp to show on cheers list
     const lastTimestamp = await userStreamersRef.child(idStreamer).child('lastStreamTs').once('value');
