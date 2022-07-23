@@ -87,7 +87,7 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
     /**
      * Update the event on the database
      */
-    const updateEventOnDatabase = () => {
+    const updateEventOnDatabase = async () => {
         const [day, month, year] = date.split('-');
         const selectedDate = new Date(timestamp);
 
@@ -134,6 +134,35 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
         let dateUTC = `${UTCDay}-${UTCMonth}-${selectedDate.getUTCFullYear()}`;
         let hourUTC = `${UTCHour}:${UTCMinutes}`;
 
+        const streamLinkRequest = await fetch(`https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAwrwwTRiyYV7-SzOvE6kEteE0lmYhBe8c`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                dynamicLinkInfo: {
+                    domainUriPrefix: 'https://qapla.page.link',
+                    link: `https://qapla.app/?type=stream&streamId=${eventId}`,
+                    androidInfo: {
+                        androidPackageName: 'com.qapla.gaming.app'
+                    },
+                    iosInfo: {
+                        iosBundleId: 'org.Qapla.QaplaApp',
+                        iosAppStoreId: '1485332229'
+                    },
+                    socialMetaTagInfo: {
+                        socialTitle: titles['es'],
+                        socialDescription: descriptions['es'],
+                        socialImageLink: backgroundImage
+                    }
+                },
+                suffix: {
+                    option: 'UNGUESSABLE'
+                }
+            })
+        });
+        const data = await streamLinkRequest.json();
+
         const eventData = {
             idStreamer,
             title: titles,
@@ -171,7 +200,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             idLogro: eventId,
             timestamp,
             createdAt: (new Date()).getTime(),
-            customRewardsMultipliers
+            customRewardsMultipliers,
+            streamLink: data.shortLink
         };
 
         updateEvent(
