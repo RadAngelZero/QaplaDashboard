@@ -46,6 +46,7 @@ import { notificateToTopic } from './services/functions';
 import AddGame from './components/AddGame/AddGame';
 import PastEventsList from './components/PastEventsList/PastEventsList';
 import QlanesMembersReports from './components/QlanesMembersReports/QlanesMembersReports';
+import AddMemes from './components/AddMemes/AddMemes';
 
 const Router = () => {
     const [events, setEvents] = useState();
@@ -57,6 +58,7 @@ const Router = () => {
     const [menuStreamers, setMenuStreamers] = useState(null);
     const [menuPrizes, setMenuPrizes] = useState(null);
     const [menuStreams, setMenuStreams] = useState(null);
+    const [menuContent, setMenuContent] = useState(null);
     const [eventToApprove, setEventToApprove] = useState({});
 
     useEffect(() => {
@@ -120,6 +122,10 @@ const Router = () => {
 
     const closeMenuPrizes = () => {
         setMenuPrizes(null);
+    }
+
+    const closeMenuContent = () => {
+        setMenuContent(null);
     }
 
     const sendNewEventsPushNotification = () => {
@@ -261,14 +267,24 @@ const Router = () => {
                                                     <MenuItem style={{ color: '#000' }} onClick={sendNewEventsPushNotification}>Enviar notificación de eventos</MenuItem>
                                                 </Link>
                                             </Menu>
-                                            <Link to='/addGame' className='White-Color'>
-                                                <Button
-                                                    className='White-Color Margin-Right'
-                                                    color='inherit'
-                                                    style={{ color: '#FFF' }}>
-                                                    Agregar juego
-                                                </Button>
-                                            </Link>
+                                            <Button
+                                                color='inherit'
+                                                style={{ color: '#FFF' }}
+                                                className='White-Color Margin-Right'
+                                                onClick={(e) => setMenuContent(e.currentTarget)} >
+                                                Agregar contenido
+                                            </Button>
+                                            <Menu
+                                                anchorEl={menuContent}
+                                                open={Boolean(menuContent)}
+                                                onClose={closeMenuContent}>
+                                                <Link to='/addGame' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar juego</MenuItem>
+                                                </Link>
+                                                <Link to='/addMemes' className='White-Color Margin-Right'>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar memes/Stickers</MenuItem>
+                                                </Link>
+                                            </Menu>
                                             <Link to='/qlanes/members/reports' className='White-Color'>
                                                 <Button
                                                     className='White-Color Margin-Right'
@@ -378,6 +394,9 @@ const Router = () => {
                                 </Route>
                                 <Route exact path='/addGame'>
                                     <AddGame />
+                                </Route>
+                                <Route exact path='/addMemes'>
+                                    <AddMemes />
                                 </Route>
                                 <Route exact path='/qlanes/members/reports'>
                                     <QlanesMembersReports />

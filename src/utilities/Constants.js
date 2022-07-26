@@ -15,4 +15,7 @@ export const SENDBIRD_KEY = '7E54A9F8-DCE3-420E-8DC8-D3E8B081A2B0';
 export const QLANES = 'QLANES';
 export const OTHER = 'OTHER';
 
+export const EMOTES = 'emotes';
+export const MEME = 'memes';
+
 export const ONE_DAY_IN_MILLISECONDS = 86400000;

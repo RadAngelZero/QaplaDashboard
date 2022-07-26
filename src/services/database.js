@@ -2,7 +2,7 @@ import staticLeaderboard from './../assets/Leaderboard.json';
 import { database } from './firebase';
 import { deleteEventChannel } from './SendBird';
 import { distributeLeaderboardExperience, notificateUsersOnLeaderboardReset } from './functions';
-import { QLANES, QOINS, XQ } from '../utilities/Constants';
+import { EMOTES, MEME, QLANES, QOINS, XQ } from '../utilities/Constants';
 
 const eventsRef = database.ref('/eventosEspeciales').child('eventsData');
 const eventsRequestsRef = database.ref('/eventosEspeciales').child('JoinRequests');
@@ -35,6 +35,9 @@ const streamersDonationsRef = database.ref('StreamersDonations');
 const userStreamsRewardsRef = database.ref('/UserStreamsRewards');
 const eventsDataAdminRef = database.ref('/EventsDataAdmin');
 const qlanesMembersRef = database.ref('/QlanesMembers');
+const qaplaInteractionsRef = database.ref('/QaplaInteractions');
+const qapalMemesInteractionsRef = qaplaInteractionsRef.child('/Memes');
+const qapalEmotesInteractionsRef = qaplaInteractionsRef.child('/Emotes');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -1126,4 +1129,33 @@ export async function getPastEventsByTimestamp(startTimestamp) {
  */
 export async function getQlanesMembers() {
     return await qlanesMembersRef.once('value');
+}
+
+/**
+ * Upload to the corresponent library the given media information
+ * @param {string} url Url of the media
+ * @param {number} height Height in px of the image
+ * @param {number} width Width in px of the image
+ * @param {('memes' | 'emotes')} type Type of the media
+ */
+export async function uploadMediaToQaplaInteractions(url, height, width, type) {
+    const date = new Date()
+    switch (type) {
+        case EMOTES:
+            qapalEmotesInteractionsRef.push({
+                url,
+                height,
+                width
+            });
+            break;
+        case MEME:
+            qapalMemesInteractionsRef.push({
+                url,
+                height,
+                width
+            });
+            break;
+        default:
+            break;
+    }
 }
