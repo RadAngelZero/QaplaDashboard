@@ -282,7 +282,7 @@ const Router = () => {
                                                     <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar juego</MenuItem>
                                                 </Link>
                                                 <Link to='/addMemes' className='White-Color Margin-Right'>
-                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar memes/Stickers</MenuItem>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar memes/stickers</MenuItem>
                                                 </Link>
                                             </Menu>
                                             <Link to='/qlanes/members/reports' className='White-Color'>
