@@ -105,9 +105,9 @@ const AddGame = () => {
                     <label htmlFor='contained-button-file'>
                         <Button variant='contained' color='primary' component='span'>
                             {!images.length > 0 ?
-                                'Cargar Imagen'
+                                'Cargar Imagenes'
                             :
-                                'Cambiar Imagen'
+                                'Cambiar Imagenes'
                             }
                         </Button>
                     </label>
