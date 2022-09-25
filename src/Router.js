@@ -279,7 +279,7 @@ const Router = () => {
                                                 open={Boolean(menuContent)}
                                                 onClose={closeMenuContent}>
                                                 <Link to='/addGame' className='White-Color Margin-Right'>
-                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar juego</MenuItem>
+                                                    <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar categoría</MenuItem>
                                                 </Link>
                                                 <Link to='/addMemes' className='White-Color Margin-Right'>
                                                     <MenuItem style={{ color: '#000' }} onClick={closeMenuContent}>Agregar memes/emotes</MenuItem>

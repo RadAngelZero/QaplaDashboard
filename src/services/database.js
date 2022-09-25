@@ -38,6 +38,7 @@ const qlanesMembersRef = database.ref('/QlanesMembers');
 const qaplaInteractionsRef = database.ref('/QaplaInteractions');
 const qapalMemesInteractionsRef = qaplaInteractionsRef.child('/Memes');
 const qapalEmotesInteractionsRef = qaplaInteractionsRef.child('/Emotes');
+const streamsCardsImagesRef = database.ref('/StreamsCardsImages');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -966,14 +967,12 @@ export async function getAllActiveCustomRewards() {
  * Add a game on the games resources -> all games node
  * @param {string} gameKey Key of the game to save
  * @param {string} gameName Name of the game to save
- * @param {url} fallbackImageUrl URL of the image to show in streamers dashboard if there are no local file
  */
-export async function addGameToCategories(gameKey, gameName, fallbackImageUrl) {
+export async function addGameToCategories(gameKey, gameName) {
     return await gamesRef.child('allGames').child(gameKey).set({
         gameName,
         acronym: 'Twitch',
         name: 'Twitch',
-        fallbackImageUrl,
         informationNeededToAdd: {
             'Twitch Username': {
                 required: true,
@@ -1158,4 +1157,21 @@ export async function uploadMediaToQaplaInteractions(url, height, width, type) {
         default:
             break;
     }
+}
+
+/**
+ * Streams Cards Images
+ */
+
+/**
+ * Create the database reference for the games images used in streamers dashboard and apps cards
+ * @param {string} gameKey Game identifier
+ * @param {Array<String>} images Array of images url´s
+ */
+export async function createGameCardsImages(gameKey, images) {
+    await streamsCardsImagesRef.child(gameKey).set({
+        front: 0,
+        images,
+        length: images.length
+    });
 }

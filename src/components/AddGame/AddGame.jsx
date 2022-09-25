@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { makeStyles, Container, Button, Grid, LinearProgress } from '@material-ui/core';
+import {
+    makeStyles,
+    Container,
+    Button,
+    Grid,
+    LinearProgress
+} from '@material-ui/core';
 
 import QaplaTextField from '../QaplaTextField/QaplaTextField';
 import { uploadImage } from '../../services/storage';
-import { addGameToCategories } from '../../services/database';
+import { addGameToCategories, createGameCardsImages } from '../../services/database';
 
 const useStyles = makeStyles(() => ({
     input: {
@@ -13,47 +19,69 @@ const useStyles = makeStyles(() => ({
 
 const AddGame = () => {
     const [gameName, setGameName] = useState('');
-    const [image, setImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [images, setImages] = useState([]);
     const [uploadImageStatus, setUploadImageStatus] = useState(0);
 
     const classes = useStyles();
 
     const loadImage = (e) => {
-        setImage(e.target.files[0]);
+        const images = [];
 
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-            setImagePreview(reader.result);
-        });
+        for (let i = 0; i < e.target.files.length; i++) {
+            const file = e.target.files[i];
+            images.push(file);
+        }
 
-        reader.readAsDataURL(e.target.files[0]);
+        setImages(images);
     }
 
     const cleanForm = () => {
         setGameName('');
-        setImage(null);
-        setImagePreview(null);
+        setImages([]);
         setUploadImageStatus(0);
     }
 
     const uploadGame = async () => {
         // Game but without blank spaces
         const gameKey = gameName.replace(/\s+/g, '');
+        try {
+            await addGameToCategories(gameKey, gameName);
+            uploadImageByIndex(0, []);
+        } catch (error) {
+            alert('Hubo un error al agregar el juego en la base de datos');
+            console.log(error);
+        }
+    }
+
+    const uploadImageByIndex = (index, urlArray) => {
         uploadImage(
-            image,
+            images[index],
             '/gamesResourcesImages',
             (progressValue) => setUploadImageStatus(progressValue * 100),
-            (error) => { alert('Error al agregar imagen'); console.log(error); },
+            (error) => {
+                alert(`Error al agregar la imagen Nº${index + 1}, las primeras ${index} imagenes se agregaron correctamente`);
+                /**
+                 * There was an error updating the images[index] image, that means all the images from images[0] to images[index - 1] were correctly
+                 * uploaded, so we save them on the database
+                 */
+                createGameCardsImages(urlArray);
+                alert('Juego agregado correctamente');
+                cleanForm();
+                console.log(error);
+            },
             async (url) => {
-                try {
-                    await addGameToCategories(gameKey, gameName, url);
+                urlArray.push(url);
+
+                if (index + 1 < images.length) {
+                    uploadImageByIndex(index + 1, urlArray);
+                } else {
+                    const gameKey = gameName.replace(/\s+/g, '');
+                    createGameCardsImages(gameKey, urlArray);
                     alert('Juego agregado correctamente');
                     cleanForm();
-                } catch (error) {
-                    alert('Hubo un error al agregar el juego en la base de datos');
-                    console.log(error);
                 }
+
+                setUploadImageStatus(0);
             }
         );
     }
@@ -71,11 +99,12 @@ const AddGame = () => {
                         accept='image/*'
                         className={classes.input}
                         id='contained-button-file'
+                        multiple
                         onChange={loadImage}
                         type='file' />
                     <label htmlFor='contained-button-file'>
                         <Button variant='contained' color='primary' component='span'>
-                            {!image ?
+                            {!images.length > 0 ?
                                 'Cargar Imagen'
                             :
                                 'Cambiar Imagen'
@@ -92,22 +121,17 @@ const AddGame = () => {
                         <>
                             {uploadImageStatus === 100 ?
                                 <p>
-                                    Imagen guardada correctamente
+                                    Imágenes  guardadas correctamente
                                 </p>
                                 :
                                 <>
                                     <p>
-                                        Guardando imagen
+                                        Guardando imágenes
                                     </p>
                                     <LinearProgress variant='determinate' value={uploadImageStatus} />
                                 </>
                             }
                         </>
-                    }
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    {imagePreview &&
-                        <img style={{ maxHeight: '50vh', maxWidth: '50vw' }} src={imagePreview} />
                     }
                 </Grid>
             </Grid>
