@@ -4,7 +4,6 @@ import Typography from '@material-ui/core/Typography';
 
 import styles from './EventsList.module.css'
 import EventCard from '../EventCard/EventCard';
-import { getDateElementsAsNumber, getHourElementsAsNumber } from '../../utils/utils';
 import { Toolbar } from '@material-ui/core';
 import SendPushNotificationDialog from '../SendPushNotificationDialog/SendPushNotificationDialog';
 
@@ -28,7 +27,7 @@ const EventListOfTheDay = ({ day, initialShow, setSelectedEventKey }) => {
                         <EventCard
                             key={`EventCard-${index}`}
                             setSelectedEvent={setSelectedEventKey}
-                            eventKey={event.idLogro}
+                            eventKey={event.eventKey}
                             event={event}
                             onClick={() => console.log('press')} />
                     ))}
@@ -42,32 +41,15 @@ const EventsList = ({ events }) => {
     const [selectedEventKey, setSelectedEventKey] = useState(null);
     const orderedEvents = [];
 
-    Object.keys(events).filter((eventKey) => {
-        if (events[eventKey].dateUTC && events[eventKey].hourUTC) {
-            return true;
-        }
-
-        return false;
-    })
-    // Create an array with the valid events
-    .map((eventKey) => events[eventKey])
+    Object.keys(events)
+    .map((eventKey) => ({ ...events[eventKey], eventKey }))
     // Sort the events by date
     .sort((a, b) => {
-        const [aDay, aMonth, aYear] = getDateElementsAsNumber(a.dateUTC);
-            const [aHour, aMinute] = getHourElementsAsNumber(a.hourUTC);
-            const [bDay, bMonth, bYear] = getDateElementsAsNumber(b.dateUTC);
-            const [bHour, bMinute] = getHourElementsAsNumber(b.hourUTC);
-
-            const aEventDate = new Date(Date.UTC(aYear, aMonth - 1, aDay, aHour, aMinute));
-            const bEventDate = new Date(Date.UTC(bYear, bMonth - 1, bDay, bHour, bMinute));
-
-            return aEventDate.getTime() - bEventDate.getTime();
+        return a.timestamp - b.timestamp;
     })
     // Fill orderedEvents array for the SectionList of the LogrosList component
     .reverse().forEach((event) => {
-        let [day, month, year] = getDateElementsAsNumber(event.dateUTC);
-        let [hour, minute] = getHourElementsAsNumber(event.hourUTC);
-        const localDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
+        const localDate = new Date(event.timestamp);
 
         const eventSectionTitle = `${localDate.getDate()}/${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
 

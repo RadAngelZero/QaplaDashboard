@@ -201,7 +201,8 @@ const ApproveEventForm = ({ user, event, games, eventDuplicated = false }) => {
             timestamp,
             createdAt: (new Date()).getTime(),
             customRewardsMultipliers,
-            streamLink: data.shortLink
+            streamLink: data.shortLink,
+            drops: event.drops
         };
 
         updateEvent(

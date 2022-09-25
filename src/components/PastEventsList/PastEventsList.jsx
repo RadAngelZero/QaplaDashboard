@@ -16,10 +16,10 @@ const PastEventsList = () => {
             const date = new Date();
             const streams = await getPastEventsByTimestamp(date.getTime() - (ONE_DAY_IN_MILLISECONDS * daysToLoad));
             if (streams.exists()) {
-                console.log(streams.val());
                 setEvents(streams.val());
-                setReload(false);
             }
+
+            setReload(false);
         }
 
         if (reload) {
