@@ -1,116 +1,153 @@
-import React, { useState } from 'react';
-import { makeStyles, Container, Button, Grid, LinearProgress, Radio, RadioGroup, FormControlLabel } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Button, Chip, CircularProgress, Container, Dialog, DialogActions, DialogContent, GridList, GridListTile } from '@material-ui/core';
 
-import { uploadImage } from '../../services/storage';
-import { uploadMediaToQaplaInteractions } from '../../services/database';
-import { EMOTES, MEME } from '../../utilities/Constants';
-
-const useStyles = makeStyles(() => ({
-    input: {
-      display: 'none'
-    },
-}));
+import { deleteMemeModerationRequest, getMemesToModerate } from '../../services/database';
+import { deleteImage } from '../../services/storage';
+import { addMemeToQaplaLibrary } from '../../services/functions';
 
 const AddMemes = () => {
-    const [file, setFile] = useState(null);
-    const [filePreview, setFilePreview] = useState(null);
-    const [uploadFileStatus, setUploadFileStatus] = useState(0);
-    const [fileDimensions, setFileDimensions] = useState({ width: 0, height: 0 });
-    const [type, setType] = useState(MEME);
+    const [memes, setMemes] = useState([]);
+    const [selectedMeme, setSelectedMeme] = useState(null);
+    const [aprobing, setAprobing] = useState(false);
 
-    const classes = useStyles();
+    useEffect(() => {
+        async function loadMemes() {
+            const memes = await getMemesToModerate();
 
-    const loadImage = (e) => {
-        setFile(e.target.files[0]);
-
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-            setFilePreview(reader.result);
-        });
-
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    const cleanForm = () => {
-        setFile(null);
-        setFilePreview(null);
-        setUploadFileStatus(0);
-    }
-
-    const uploadFile = async () => {
-        uploadImage(
-            file,
-            `/QaplaInteractions/${type}`,
-            (progressValue) => setUploadFileStatus(progressValue * 100),
-            (error) => { alert('Error al agregar imagen'); console.log(error); },
-            async (url) => {
-                try {
-                    await uploadMediaToQaplaInteractions(url, fileDimensions.height, fileDimensions.width, type);
-                    alert('Multimedia agregada correctamente');
-                    cleanForm();
-                } catch (error) {
-                    alert('Hubo un error al guardar el archivo en la base de datos');
-                    console.log(error);
-                }
+            if (memes.exists()) {
+                const memesArray = Object.keys(memes.val()).map((meme) => ({ id: meme, ...memes.val()[meme] }))
+                setMemes(memesArray);
             }
-        );
+        }
+
+        loadMemes();
+    }, []);
+
+    const removeMemeTag = (index) => {
+        const selectedMemeCopy = {...selectedMeme};
+        selectedMemeCopy.tags.splice(index, 1);
+
+        setSelectedMeme(selectedMemeCopy);
+    }
+
+    const rejectMeme = async () => {
+        if (window.confirm('Estas seguro que desas rechazar este meme?')) {
+            // Remove meme from storage and database
+            await deleteImage(selectedMeme.id);
+            await deleteMemeModerationRequest(selectedMeme.id);
+
+            // Remove meme from UI
+            const memesCopy = [...memes];
+            const index = memesCopy.findIndex((meme) => {
+                return meme.id === selectedMeme.id
+            });
+            memesCopy.splice(index, 1);
+            setMemes(memesCopy);
+
+            // Close dialog
+            setSelectedMeme(null);
+        }
+    }
+
+    const aprobeMeme = async () => {
+        try {
+            setAprobing(true);
+            // Index meme
+            await addMemeToQaplaLibrary(
+                selectedMeme.uid,
+                selectedMeme.tags,
+                selectedMeme.mediaType,
+                selectedMeme.imageUrl,
+                selectedMeme.width,
+                selectedMeme.height,
+                selectedMeme.userLanguage
+            );
+            await deleteMemeModerationRequest(selectedMeme.id);
+
+            // Remove meme from UI
+            const memesCopy = [...memes];
+            const index = memesCopy.findIndex((meme) => {
+                return meme.id === selectedMeme.id
+            });
+            memesCopy.splice(index, 1);
+            setMemes(memesCopy);
+
+            // Close dialog
+            setSelectedMeme(null);
+            setAprobing(false);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
         <Container maxWidth='lg' style={{ marginTop: '2em' }}>
-            <Grid container>
-                <Grid item xs={12} sm={6}>
-                    <RadioGroup value={type} onChange={(event) => setType(event.target.value)}>
-                        <FormControlLabel value={MEME} control={<Radio />} label='Meme' />
-                        <FormControlLabel value={EMOTES} control={<Radio />} label='Emote' />
-                    </RadioGroup>
-                    <br />
-                    <input
-                        accept='image/*'
-                        className={classes.input}
-                        id='contained-button-file'
-                        onChange={loadImage}
-                        type='file' />
-                    <label htmlFor='contained-button-file'>
-                        <Button variant='contained' color='primary' component='span'>
-                            {!file ?
-                                'Cargar Imagen'
-                            :
-                                'Cambiar Imagen'
-                            }
-                        </Button>
-                    </label>
-                    <br />
-                    <br />
-                    <Button variant='contained' color='primary' onClick={uploadFile}>
-                        Guardar
-                    </Button>
-                    <br /><br />
-                    {uploadFileStatus > 0 &&
+            <GridList cols={3} spacing={10}>
+                {memes.map((meme) => (
+                    <GridListTile key={meme.imageUrl}>
+                        <img src={meme.imageUrl} style={{
+                                height: 200,
+                                maxWidth: window.innerWidth / 3,
+                                objectFit: 'contain',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => setSelectedMeme(meme)} />
+                    </GridListTile>
+                ))}
+            </GridList>
+            <Dialog open={selectedMeme}
+                onClose={() => setSelectedMeme(null)}>
+                <DialogContent style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    {selectedMeme &&
                         <>
-                            {uploadFileStatus === 100 ?
-                                <p>
-                                    Imagen guardada correctamente
-                                </p>
-                                :
-                                <>
-                                    <p>
-                                        Guardando imagen
-                                    </p>
-                                    <LinearProgress variant='determinate' value={uploadFileStatus} />
-                                </>
-                            }
+                        <img src={selectedMeme.imageUrl} style={{
+                                height: 200,
+                                maxWidth: window.innerWidth / 3,
+                                objectFit: 'contain',
+                                alignSelf: 'center'
+                            }} />
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            listStyle: 'none',
+                            margin: 0,
+                            marginTop: 16
+                        }}>
+                            {selectedMeme.tags.map((tag, index) => (
+                                <li key={tag}>
+                                    <Chip label={tag}
+                                        onDelete={() => removeMemeTag(index)}
+                                        style={{
+                                            margin: 2
+                                        }} />
+                                </li>
+                            ))}
+                        </div>
                         </>
                     }
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    {filePreview &&
-                        <img style={{ maxHeight: '50vh', maxWidth: '50vw' }}
-                            src={filePreview}  />
-                    }
-                </Grid>
-                <img style={{ display: 'none' }} src={filePreview} onLoad={({ target: img }) => setFileDimensions({ width: img.naturalWidth, height: img.naturalHeight })}  />
-            </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='contained'
+                        color='secondary'
+                        onClick={rejectMeme}>
+                        Rechazar
+                    </Button>
+                    <Button variant='contained'
+                        color='primary'
+                        onClick={aprobeMeme}>
+                        {aprobing ?
+                            <CircularProgress size={30} />
+                        :
+                            'Aceptar'
+                        }
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

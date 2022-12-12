@@ -39,6 +39,7 @@ const qaplaInteractionsRef = database.ref('/QaplaInteractions');
 const qapalMemesInteractionsRef = qaplaInteractionsRef.child('/Memes');
 const qapalEmotesInteractionsRef = qaplaInteractionsRef.child('/Emotes');
 const streamsCardsImagesRef = database.ref('/StreamsCardsImages');
+const memesModerationRef = database.ref('/MemesModeration');
 
 /**
  * Returns the events ordered by their dateUTC field
@@ -1174,4 +1175,12 @@ export async function createGameCardsImages(gameKey, images) {
         images,
         length: images.length
     });
+}
+
+export async function getMemesToModerate() {
+    return await memesModerationRef.limitToFirst(50).once('value');
+}
+
+export async function deleteMemeModerationRequest(requestId) {
+    return await memesModerationRef.child(requestId).remove();
 }

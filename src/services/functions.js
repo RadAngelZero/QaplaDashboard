@@ -93,3 +93,13 @@ export async function notificateToEventParticipantsAndStreamerFollowers(streamId
         console.log(error);
     }
 }
+
+export async function addMemeToQaplaLibrary(uid, tags, mediaType, imageUrl, imageWidth, imageHeight, userLanguage) {
+    const indexMeme = functions.httpsCallable('indexMeme');
+
+    try {
+        return await indexMeme({ uid, tags, mediaType, imageUrl, imageWidth, imageHeight, userLanguage });
+    } catch (error) {
+        console.log(error);
+    }
+}

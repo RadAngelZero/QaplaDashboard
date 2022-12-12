@@ -21,3 +21,7 @@ export function uploadImage(image, ref, updateUploadStatus, onError, onFinished)
         onFinished(url);
     });
 }
+
+export async function deleteImage(memeId) {
+    return await storage.ref('Memes').child(memeId).delete();
+}
