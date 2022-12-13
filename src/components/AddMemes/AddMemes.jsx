@@ -49,7 +49,7 @@ const AddMemes = () => {
         }
     }
 
-    const aprobeMeme = async () => {
+    const approveMeme = async () => {
         try {
             setAprobing(true);
             // Index meme
@@ -139,7 +139,7 @@ const AddMemes = () => {
                     </Button>
                     <Button variant='contained'
                         color='primary'
-                        onClick={aprobeMeme}>
+                        onClick={approveMeme}>
                         {aprobing ?
                             <CircularProgress size={30} />
                         :
