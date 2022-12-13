@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Chip, CircularProgress, Container, Dialog, DialogActions, DialogContent, GridList, GridListTile } from '@material-ui/core';
 
-import { deleteMemeModerationRequest, getMemesToModerate } from '../../services/database';
+import { deleteMemeModerationRequest, getMemesToModerate, getUserToken } from '../../services/database';
 import { deleteImage } from '../../services/storage';
-import { addMemeToQaplaLibrary } from '../../services/functions';
+import { addMemeToQaplaLibrary, notificateUser } from '../../services/functions';
 
 const AddMemes = () => {
     const [memes, setMemes] = useState([]);
@@ -43,6 +43,31 @@ const AddMemes = () => {
             });
             memesCopy.splice(index, 1);
             setMemes(memesCopy);
+
+            if (selectedMeme.uid && selectedMeme.userLanguage) {
+                const userToken = await getUserToken(selectedMeme.uid);
+                const rejectNotificationContent = {
+                    es: {
+                        title: '😟 Desafortunadamente tu meme fue rechazado',
+                        body: `Tu meme no se alinea con las reglas de la comunidad. Si crees que esto es un error, por favor contacta a soporte via Discord.`
+                    },
+                    en: {
+                        title: '😟 Unfortunately your meme was rejected',
+                        body: `Your meme is not aligned with our community guidelines. If you feel this was a mistake, please get in touch with support on Discord.`
+                    }
+                };
+
+                await notificateUser(
+                    selectedMeme.uid,
+                    userToken.val(),
+                    rejectNotificationContent[selectedMeme.userLanguage].title,
+                    rejectNotificationContent[selectedMeme.userLanguage].body,
+                    {},
+                    {
+                        navigateTo: 'Upload'
+                    }
+                );
+            }
 
             // Close dialog
             setSelectedMeme(null);
